@@ -1,18 +1,19 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-# Laravel template with Voyager
+# Laravel Admin
+
+## Requisitos
+- php >= 8.1 y sus extensiones.
 
 ## Instalación
-```
-sudo apt install php8.0-mbstring php8.0-intl php8.0-dom php8.0-gd php8.0-xml php8.0-zip php8.0-mysql
+```bash
+sudo apt install php-mbstring php-intl php-dom php-gd php-xml php-zip php-mysql
 composer install --no-dev
 cp .env.example .env
-php artisan template:install
+php artisan template:install [-r]
 chmod -R 777 storage bootstrap/cache
 ```
 
-## Colaboradores
+## Credits
 
-<a href="https://github.com/agustinmejia/laravel_template/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=agustinmejia/laravel_template" />
-</a>
+<a href="https://x.com/AgustinMejiaM" target="_blank">@AgustinMejiaM</a>
