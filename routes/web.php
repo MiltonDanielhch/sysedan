@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\FormController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use TCG\Voyager\Facades\Voyager;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +29,13 @@ Route::get('maintenance', function () {
 })->name('errors.maintenance');
 
 Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], function () {
+    Route::resource('formularios', FormController::class)->middleware('auth');
+
+    Route::get('formularios/create/provincia/{id_provincia}', [FormController::class, 'buscar_municipio'])->name('admin.formulario.buscar_municipio');
+
+    Route::get('formularios/create/get-alcalde/{municipioId}', [FormController::class, 'getAlcalde'])->name('admin.formulario.getAlcalde');
+
+
     Voyager::routes();
 });
 
