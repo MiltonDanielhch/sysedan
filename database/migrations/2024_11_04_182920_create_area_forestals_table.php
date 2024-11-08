@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('area_forestals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('detalle_area_forestal_id')->constrained('detalle_area_forestals');
-            $table->integer('hectareas_perdidas');
+            $table->integer('hectareas_perdidas')->nullable();
             $table->foreignId('formulario_id')->constrained('formularios');
             $table->timestamps();
         });

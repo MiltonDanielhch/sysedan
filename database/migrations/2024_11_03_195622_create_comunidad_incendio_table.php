@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('comunidad_incendio', function (Blueprint $table) {
             $table->id();
-            $table->integer('incendios_registrados');
-            $table->integer('incendios_activos');
-            $table->string('necesidades');
-            $table->integer('num_familias_afectadas');
-            $table->integer('num_familias_damnificadas');
+            $table->integer('incendios_registrados')->nullable();
+            $table->integer('incendios_activos')->nullable();
+            $table->string('necesidades')->nullable();
+            $table->integer('num_familias_afectadas')->nullable();
+            $table->integer('num_familias_damnificadas')->nullable();
             $table->foreignId('comunidad_id')->constrained('comunidads')->onDelete('cascade');
             $table->foreignId('incendio_id')->constrained('incendios')->onDelete('cascade');
             $table->timestamps();

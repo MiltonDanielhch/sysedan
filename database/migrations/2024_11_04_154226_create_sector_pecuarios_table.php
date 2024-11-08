@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('sector_pecuarios', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tipo_especie_id')->constrained('tipo_especies');
-            $table->integer('numero_animales_afectados');
-            $table->integer('numero_animales_fallecidos');
+            $table->integer('numero_animales_afectados')->nullable();
+            $table->integer('numero_animales_fallecidos')->nullable();
             $table->foreignId('formulario_id')->constrained('formularios');
             $table->timestamps();
         });

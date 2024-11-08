@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Incendio extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'fecha_inicio',
+        'causas_probables',
+        'estado',
+    ];
 
     public function comunidadIncendios()
     {

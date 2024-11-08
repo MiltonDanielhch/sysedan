@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('infraestructuras', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tipo_infraestructura_id')->constrained('tipo_infraestructuras');
-            $table->integer('numeros_infraestructuras_afectadas');
+            $table->integer('numeros_infraestructuras_afectadas')->nullable();
             $table->foreignId('formulario_id')->constrained('formularios');
             $table->timestamps();
         });

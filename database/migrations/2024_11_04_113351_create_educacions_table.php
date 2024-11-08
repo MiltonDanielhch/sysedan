@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('institucion_id')->constrained('institucions');
             $table->foreignId('modalidad_educacion_id')->constrained('modalidad_educacions');
-            $table->integer('numero_estudiantes');
+            $table->integer('numero_estudiantes')->nullable();
             $table->foreignId('formulario_id')->constrained('formularios');
             $table->timestamps();
         });

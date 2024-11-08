@@ -34,6 +34,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], funct
     Route::get('formularios/create/provincia/{id_provincia}', [FormController::class, 'buscar_municipio'])->name('admin.formulario.buscar_municipio');
 
     Route::get('formularios/create/get-alcalde/{municipioId}', [FormController::class, 'getAlcalde'])->name('admin.formulario.getAlcalde');
+    Route::get('formularios/create/get-poblacion/{municipioId}', [FormController::class, 'getPoblacion'])->name('admin.formulario.getPoblacion');
 
 
     Voyager::routes();

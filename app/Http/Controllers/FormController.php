@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comunidad;
+use App\Models\ComunidadIncendio;
 use App\Models\DetalleAreaForestal;
 use App\Models\DetalleEnfermedad;
 use App\Models\DetalleFaunaSilvestre;
+use App\Models\Formulario;
 use App\Models\GrupoEtario;
+use App\Models\Incendio;
 use App\Models\Institucion;
 use App\Models\ModalidadEducacion;
 use App\Models\Municipio;
@@ -17,6 +21,7 @@ use App\Models\TipoInfraestructura;
 use App\Models\TipoServicioBasico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FormController extends Controller
 {
@@ -65,62 +70,79 @@ class FormController extends Controller
         }
     }
 
+    public function getPoblacion($municipioId)
+    {
+        $municipio = Municipio::find($municipioId);
+
+        // Verifica que el municipio exista antes de intentar acceder a sus datos
+        if ($municipio) {
+            return response()->json(['poblacion_total' => $municipio->poblacion_total]);
+        } else {
+            return response()->json(['error' => 'Municipio no encontrado'], 404);
+        }
+    }
+
 
 
     public function store(Request $request)
     {
-        $datos = request()->all();
-        dd($datos);
-        // $validatedData = $request->validate([
-        //     'provincia_id' => 'required|exists:provincias,id',
-        //     'municipio_id' => 'required|exists:municipios,id',
-        //     'nombre_alcalde' => 'required|string|max:255',
-        //     'poblacion_total' => 'required|integer|min:1',
-        // ]);
+        // Validación de datos
+        $validatedData = $request->validate([
+            'nombre_comunidad' => 'required|string',
+            'tipo_comunidad' => 'required|string',
+            'fecha_llenado' => 'required|date',
+            'fecha_inicio' => 'required|date',
+            'causas_probables' => 'nullable|string',
+            'estado' => 'nullable|string',
+            'incendios_registrados' => 'required|integer',
+            'incendios_activos' => 'required|integer',
+            'necesidades' => 'nullable|string',
+            'num_familias_afectadas' => 'required|integer',
+            'num_familias_damnificadas' => 'required|integer',
+            'municipio_id' => 'required|integer|exists:municipios,id',
+        ]);
 
-        // DB::beginTransaction();
+        return DB::transaction(function () use ($validatedData) {
+            // Encontrar el municipio
+            $municipio = Municipio::find($validatedData['municipio_id']);
 
-        // try {
-        //     // Buscar la provincia y el municipio seleccionados
-        //     $provincia = Provincia::findOrFail($validatedData['provincia_id']);
-        //     $municipio = Municipio::findOrFail($validatedData['municipio_id']);
+            // Crear la comunidad
+            $comunidad = Comunidad::create([
+                'nombre_comunidad' => $validatedData['nombre_comunidad'],
+                'tipo_comunidad' => $validatedData['tipo_comunidad'],
+                'municipio_id' => $municipio->id,
+            ]);
 
-        //     $municipio->nombre_alcalde = $validatedData['nombre_alcalde'];
-        //     $municipio->poblacion_total =$validatedData['poblacion_total'];
+            // Crear el incendio
+            $incendio = Incendio::create([
+                'fecha_inicio' => $validatedData['fecha_inicio'],
+                'causas_probables' => $validatedData['causas_probables'],
+                'estado' => $validatedData['estado'],
+            ]);
 
-        //     // Guardar los cambios
-        //     $municipio->save();
-        //     dd($municipio);
+            // Crear el formulario
+            Formulario::create([
+                'fecha_llenado' => $validatedData['fecha_llenado'],
+                'comunidad_id' => $comunidad->id,
+            ]);
 
-        //     DB::commit();
+            // Crear o actualizar el registro en comunidad_incendio
+            ComunidadIncendio::updateOrCreate(
+                ['comunidad_id' => $comunidad->id, 'incendio_id' => $incendio->id],
+                [
+                    'incendios_registrados' => $validatedData['incendios_registrados'],
+                    'incendios_activos' => $validatedData['incendios_activos'],
+                    'necesidades' => $validatedData['necesidades'],
+                    'num_familias_afectadas' => $validatedData['num_familias_afectadas'],
+                    'num_familias_damnificadas' => $validatedData['num_familias_damnificadas'],
+                ]
+            );
 
-        //     return redirect()->back()->with('success', 'Datos guardados correctamente.');
-
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-
-        //     // Manejo de errores
-        //     return redirect()->back()->with('error', 'Ocurrió un error al guardar los datos: ' . $e->getMessage());
-        // }
+            // Redirigir después de guardar
+            return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
+        }, 5); // Reintenta la transacción hasta 5 veces en caso de deadlock
     }
-    // public function updateMunicipio(Request $request, $id)
-    // {
-    //     // Validación de los datos del formulario
-    //     $request->validate([
-    //         'nombre_alcalde' => 'required|string',
-    //         'poblacion_total' => 'required|integer',
-    //     ]);
 
-    //     // Encuentra el municipio por su ID
-    //     $municipio = Municipio::findOrFail($id);
 
-    //     // Actualiza los campos especificados
-    //     $municipio->update([
-    //         'nombre_alcalde' => $request->nombre_alcalde,
-    //         'poblacion_total' => $request->poblacion_total,
-    //     ]);
-    //     dd($municipio);
-    //     // Redireccionar o devolver una respuesta
-    //     return redirect()->back()->with('success', 'Datos del municipio actualizados correctamente.');
-    // }
 }
+

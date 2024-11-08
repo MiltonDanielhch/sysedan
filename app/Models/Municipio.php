@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Municipio extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'nombre_municipio',
+        'nombre_alcalde',
+        'poblacion_total',
+        'provincia_id'
+    ];
     public function provincia(){
         return $this->belongsTo(Provincia::class);
     }

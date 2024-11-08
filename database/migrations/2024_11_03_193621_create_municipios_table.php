@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre_municipio')->nullable();
             $table->string('nombre_alcalde')->nullable();
-            $table->integer('poblacion_total')->nullable();
+            $table->float('poblacion_total')->nullable();
             $table->unsignedBigInteger('provincia_id');
             $table->foreign('provincia_id')->references('id')->on('provincias')->onDelete('cascade');
             $table->timestamps();

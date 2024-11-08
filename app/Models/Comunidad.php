@@ -9,6 +9,12 @@ class Comunidad extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'nombre_comunidad',
+        'tipo_comunidad',
+        'municipio_id',
+    ];
+
     public function municipio(){
         return $this->belongsTo(Municipio::class);
     }

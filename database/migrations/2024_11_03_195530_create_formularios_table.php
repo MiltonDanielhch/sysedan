@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('formularios', function (Blueprint $table) {
             $table->id();
             $table->date('fecha_llenado');
-            $table->string('titulo')->nullable();
             $table->foreignId('comunidad_id')->constrained('comunidads')->onDelete('cascade');
+            $table->foreignId('incendio_id')->constrained('incendios')->onDelete('cascade');
             $table->timestamps();
         });
     }

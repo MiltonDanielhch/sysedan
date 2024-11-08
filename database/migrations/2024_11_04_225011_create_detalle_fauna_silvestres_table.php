@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('detalle_fauna_silvestres', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_detalle_fauna_silvestre');
+            $table->string('nombre_detalle_fauna_silvestre')->nullable();
             $table->timestamps();
         });
     }

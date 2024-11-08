@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('sector_agricolas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tipo_cultivo_id')->constrained('tipo_cultivos');
-            $table->integer('hectareas_afectados');
-            $table->integer('hectareas_perdidas');
+            $table->integer('hectareas_afectados')->nullable();
+            $table->integer('hectareas_perdidas')->nullable();
             $table->foreignId('formulario_id')->constrained('formularios');
             $table->timestamps();
         });

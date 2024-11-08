@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('fecha_inicio');
             $table->string('causas_probables')->nullable();
-            $table->string('estado');
+            $table->string('estado')->nullable();
             $table->timestamps();
         });
 

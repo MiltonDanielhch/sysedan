@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Formulario extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'fecha_llenado',
+    ];
     public function comunidad(){
         return $this->belongsTo(Comunidad::class);
     }
