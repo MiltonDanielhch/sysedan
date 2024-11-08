@@ -10,6 +10,8 @@ class Formulario extends Model
     use HasFactory;
     protected $fillable = [
         'fecha_llenado',
+        'comunidad_id',
+        'incendio_id',
     ];
     public function comunidad(){
         return $this->belongsTo(Comunidad::class);

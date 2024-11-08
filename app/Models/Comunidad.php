@@ -9,10 +9,16 @@ class Comunidad extends Model
 {
     use HasFactory;
 
+    // protected $table = 'comunidad_incendios';
     protected $fillable = [
         'nombre_comunidad',
         'tipo_comunidad',
         'municipio_id',
+        'incendios_registrados',
+        'incendios_activos',
+        'necesidades',
+        'num_familias_afectadas',
+        'num_familias_damnificadas',
     ];
 
     public function municipio(){
@@ -22,10 +28,14 @@ class Comunidad extends Model
     public function formularios(){
         return $this->hasMany(Formulario::class);
     }
-    public function comunidadIncendios()
+    public function incendios()
     {
-        return $this->hasMany(ComunidadIncendio::class);
+        return $this->belongsToMany(Incendio::class)->withPivot(['incendios_registrados', 'incendios_activos', 'necesidades', 'num_familias_afectadas', 'num_familias_damnificadas']);
     }
+    // public function comunidadIncendios()
+    // {
+    //     return $this->hasMany(ComunidadIncendio::class);
+    // }
 
     public function servicioBasico()
     {

@@ -14,9 +14,13 @@ class Incendio extends Model
         'estado',
     ];
 
-    public function comunidadIncendios()
-    {
-        return $this->hasMany(ComunidadIncendio::class);
-    }
+    // public function comunidad()
+    // {
+    //     return $this->belongsToMany(Comunidad::class)->withPivot(['incendios_registrados', 'incendios_activos', 'necesidades', 'num_familias_afectadas', 'num_familias_damnificadas']);
+    // }
+    // public function comunidadIncendios()
+    // {
+    //     return $this->hasMany(ComunidadIncendio::class);
+    // }
 
 }

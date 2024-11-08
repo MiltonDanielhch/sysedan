@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comunidad_incendio', function (Blueprint $table) {
+        Schema::create('comunidad_incendios', function (Blueprint $table) {
             $table->id();
             $table->integer('incendios_registrados')->nullable();
             $table->integer('incendios_activos')->nullable();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comunidad_incendio');
+        Schema::dropIfExists('comunidad_incendios');
     }
 };

@@ -47,6 +47,7 @@
                                                             </select>
                                                         </div>
 
+
                                                         {{-- Select Municipio --}}
                                                         <div class="form-group">
                                                             <label for="municipio">Municipio</label>
@@ -177,8 +178,81 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="panel-group" id="accordionIncendio" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingIncendio">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordionIncendio" href="#collapseIncendio"
+                                                aria-expanded="true" aria-controls="collapseIncendio">
+                                                INCENDIOS FORESTALES
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseIncendio" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingIncendio">
+                                        <div class="panel-body">
+                                            <div class="form-group col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading"><b>Incendio</b></div>
+                                                    <div class="panel-body">
+                                                        <div class="form-group">
+                                                            <label for="fecha_inicio">Fecha de Inicio</label>
+                                                            <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="causas_probables">Causas Probables</label>
+                                                            <input type="text" id="causas_probables" name="causas_probables" placeholder="Introducir Probables"
+                                                                class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="estado">Estado</label>
+                                                            <input type="text" id="estado" name="estado" placeholder="Introducir estado del incendio"
+                                                                class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                    {{-- PERSONAS AFECTADAS --}}
+                                            {{-- Incendios en la comunidad --}}
+                                            <div class="form-group col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading"><b>Incendios en la Comunidad</b></div>
+                                                    <div class="panel-body">
+                                                        <div class="form-group">
+                                                            <label for="incendios_registrados">Incendios Registrados</label>
+                                                            <input type="number" id="incendios_registrados" name="incendios_registrados"
+                                                                placeholder="Introducir Incendios Registrados" class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="incendios_activos">Incendios Activos</label>
+                                                            <input type="number" id="incendios_activos" name="incendios_activos"
+                                                                placeholder="Introducir Incendios Activos" class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="necesidades">Necesidades</label>
+                                                            <input type="text" id="necesidades" name="necesidades" placeholder="Introducir necesidades"
+                                                                class="form-control">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="num_familias_afectadas">Familias Afectadas</label>
+                                                            <input type="number" id="num_familias_afectadas" name="num_familias_afectadas"
+                                                                placeholder="Introducir Numero" class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="num_familias_damnificadas">Familias Damnificadas</label>
+                                                            <input type="number" id="num_familias_damnificadas" name="num_familias_damnificadas"
+                                                                placeholder="Introducir Numero" class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+ 
+  {{-- PERSONAS AFECTADAS --}}
                         {{-- <div class="row">
                             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                 <div class="panel panel-default">
@@ -602,11 +676,11 @@
         </div>
     </div>
 </div>
-@stop
+@endsection
 
 @section('css')
 
-@stop
+@endsection
 @section('javascript')
 <script>
     // $('#select_provincia').on('change', function(){
@@ -624,7 +698,7 @@
     //             alert('debe seleccionar un pais');
     //         }
     // });
-    $('#select_provincia').on('change', function() {
+$('#select_provincia').on('change', function() {
     var id_provincia = $(this).val();
     $('#respuesta_provincia').html('<div class="loading-indicator">Loading...</div>');
 
@@ -691,7 +765,7 @@ $(document).on('change', '#select_municipio', function(){
                     $('#nombre_alcalde').val('');
             }
     });
-    </script>
+</script>
 
 
 @endsection

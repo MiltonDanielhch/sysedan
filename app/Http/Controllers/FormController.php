@@ -86,23 +86,31 @@ class FormController extends Controller
 
     public function store(Request $request)
     {
+        // $datos = request()->all();
+        // return response()->json($datos);
+
         // Validación de datos
-        $validatedData = $request->validate([
+         $validatedData = $request->validate([
+            // formulario
+            'fecha_llenado' => 'required|date',
+            //comunidad
             'nombre_comunidad' => 'required|string',
             'tipo_comunidad' => 'required|string',
-            'fecha_llenado' => 'required|date',
+            'municipio_id' => 'required|integer|exists:municipios,id',
+            //incendio
             'fecha_inicio' => 'required|date',
             'causas_probables' => 'nullable|string',
             'estado' => 'nullable|string',
+            // comunidad_incendios
             'incendios_registrados' => 'required|integer',
             'incendios_activos' => 'required|integer',
             'necesidades' => 'nullable|string',
             'num_familias_afectadas' => 'required|integer',
             'num_familias_damnificadas' => 'required|integer',
-            'municipio_id' => 'required|integer|exists:municipios,id',
         ]);
 
         return DB::transaction(function () use ($validatedData) {
+
             // Encontrar el municipio
             $municipio = Municipio::find($validatedData['municipio_id']);
 
@@ -110,11 +118,10 @@ class FormController extends Controller
             $comunidad = Comunidad::create([
                 'nombre_comunidad' => $validatedData['nombre_comunidad'],
                 'tipo_comunidad' => $validatedData['tipo_comunidad'],
-                'municipio_id' => $municipio->id,
+                'municipio_id' => $validatedData['municipio_id'],
             ]);
-
             // Crear el incendio
-            $incendio = Incendio::create([
+              $incendio = Incendio::create([
                 'fecha_inicio' => $validatedData['fecha_inicio'],
                 'causas_probables' => $validatedData['causas_probables'],
                 'estado' => $validatedData['estado'],
@@ -124,19 +131,38 @@ class FormController extends Controller
             Formulario::create([
                 'fecha_llenado' => $validatedData['fecha_llenado'],
                 'comunidad_id' => $comunidad->id,
+                'incendio_id' => $incendio->id,
             ]);
 
+
+            $comunidad->incendios()->attach($incendio, [
+                'incendios_registrados' => $validatedData['incendios_registrados'],
+                'incendios_activos' => $validatedData['incendios_activos'],
+                'necesidades' => $validatedData['necesidades'],
+                'num_familias_afectadas' => $validatedData['num_familias_afectadas'],
+                'num_familias_damnificadas' => $validatedData['num_familias_damnificadas'],
+                'comunidad_id' => $comunidad->id,
+                'incendio_id' => $incendio->id,
+            ]);
+
+
             // Crear o actualizar el registro en comunidad_incendio
-            ComunidadIncendio::updateOrCreate(
-                ['comunidad_id' => $comunidad->id, 'incendio_id' => $incendio->id],
-                [
-                    'incendios_registrados' => $validatedData['incendios_registrados'],
-                    'incendios_activos' => $validatedData['incendios_activos'],
-                    'necesidades' => $validatedData['necesidades'],
-                    'num_familias_afectadas' => $validatedData['num_familias_afectadas'],
-                    'num_familias_damnificadas' => $validatedData['num_familias_damnificadas'],
-                ]
-            );
+            // try {
+            //     ComunidadIncendio::updateOrCreate(
+            //         ['comunidad_id' => $comunidad->id, 'incendio_id' => $incendio->id],
+            //         [
+            //             'incendios_registrados' => $validatedData['incendios_registrados'],
+            //             'incendios_activos' => $validatedData['incendios_activos'],
+            //             'necesidades' => $validatedData['necesidades'],
+            //             'num_familias_afectadas' => $validatedData['num_familias_afectadas'],
+            //             'num_familias_damnificadas' => $validatedData['num_familias_damnificadas'],
+            //         ]
+            //     );
+            // } catch (\Exception $e) {
+            //     // Manejar la excepción
+            //     Log::error('Error al actualizar o crear ComunidadIncendio: ' . $e->getMessage());
+            //     // Puedes enviar una notificación o tomar otras acciones aquí
+            // }
 
             // Redirigir después de guardar
             return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
