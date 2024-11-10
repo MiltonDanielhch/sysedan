@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Voyager\FormController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use TCG\Voyager\Facades\Voyager;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +30,8 @@ Route::get('maintenance', function () {
 
 Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], function () {
     Voyager::routes();
+    Route::resource('formularios', FormController::class)->middleware('auth');
+    Route::post('formularios/list', [FormController::class, 'list'])->name('formularios.list');
 });
 
 // Clear cache
