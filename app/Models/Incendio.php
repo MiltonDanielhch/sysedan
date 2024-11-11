@@ -13,4 +13,9 @@ class Incendio extends Model
         'causas_probables',
         'estado',
     ];
+    public function comunidad()
+    {
+        return $this->belongsToMany(Comunidad::class)->withPivot(['incendios_registrados', 'incendios_activos', 'necesidades', 'num_familias_afectadas', 'num_familias_damnificadas'])->withTimestamps();
+    }
+
 }

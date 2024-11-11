@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comunidad;
+use App\Models\Formulario;
 use App\Models\Incendio;
 use App\Models\Municipio;
 use App\Models\Provincia;
@@ -90,7 +91,7 @@ class FormController extends Controller
         // Validación de datos
         $validatedData = $request->validate([
             // formulario
-            // 'fecha_llenado' => 'required|date',
+            'fecha_llenado' => 'required|date',
             //comunidad
             'nombre_comunidad' => 'required|string',
             'tipo_comunidad' => 'required|string',
@@ -100,11 +101,11 @@ class FormController extends Controller
             'causas_probables' => 'nullable|string',
             'estado' => 'nullable|string',
             // comunidad_incendios
-            // 'incendios_registrados' => 'required|integer',
-            // 'incendios_activos' => 'required|integer',
-            // 'necesidades' => 'nullable|string',
-            // 'num_familias_afectadas' => 'required|integer',
-            // 'num_familias_damnificadas' => 'required|integer',
+            'incendios_registrados' => 'required|integer',
+            'incendios_activos' => 'required|integer',
+            'necesidades' => 'nullable|string',
+            'num_familias_afectadas' => 'required|integer',
+            'num_familias_damnificadas' => 'required|integer',
         ]);
 
         return DB::transaction(function () use ($validatedData) {
@@ -126,6 +127,25 @@ class FormController extends Controller
                 'estado' => $validatedData['estado'],
             ]);
 
+            // Crear el formulario
+            Formulario::create([
+                'fecha_llenado' => $validatedData['fecha_llenado'],
+                'comunidad_id' => $comunidad->id,
+                'incendio_id' => $incendio->id,
+            ]);
+
+            // $comunidad = Comunidad::find($validatedData['comunidad_id']);
+            // $incendio = Incendio::find($validatedData['incendio_id']);
+
+            $comunidad->incendios()->attach($incendio, [
+                'incendios_registrados' => $validatedData['incendios_registrados'],
+                'incendios_activos' => $validatedData['incendios_activos'],
+                'necesidades' => $validatedData['necesidades'],
+                'num_familias_afectadas' => $validatedData['num_familias_afectadas'],
+                'num_familias_damnificadas' => $validatedData['num_familias_damnificadas'],
+                'comunidad_id' => $comunidad->id,
+                'incendio_id' => $incendio->id,
+            ]);
 
             // Redirigir después de guardar
             return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');

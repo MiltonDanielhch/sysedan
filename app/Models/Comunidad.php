@@ -23,7 +23,7 @@ class Comunidad extends Model
 
     public function incendios()
     {
-        return $this->belongsToMany(Incendio::class)->withPivot(['incendios_registrados', 'incendios_activos', 'necesidades', 'num_familias_afectadas', 'num_familias_damnificadas']);
+        return $this->belongsToMany(Incendio::class)->withPivot(['incendios_registrados', 'incendios_activos', 'necesidades', 'num_familias_afectadas', 'num_familias_damnificadas'])->withTimestamps();
     }
 
     // public function servicioBasico()
