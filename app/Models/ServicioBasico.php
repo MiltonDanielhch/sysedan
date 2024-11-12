@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class ServicioBasico extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'tipo_servicio_basico_id',
+        'informacion_tipo_dano',
+        'numero_comunidades_afectadas',
+        'formulario_id',
+    ];
 
     public function tipoServicioBasico()
     {

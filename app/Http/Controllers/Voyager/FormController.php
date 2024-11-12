@@ -11,6 +11,7 @@ use App\Models\Educacion;
 use App\Models\Formulario;
 use App\Models\GrupoEtario;
 use App\Models\Incendio;
+use App\Models\Infraestructura;
 use App\Models\Institucion;
 use App\Models\ModalidadEducacion;
 use App\Models\Municipio;
@@ -18,6 +19,9 @@ use App\Models\persona_afectada_incendio;
 use App\Models\PersonaAfectadaIncendio;
 use App\Models\Provincia;
 use App\Models\Salud;
+use App\Models\SectorAgricola;
+use App\Models\SectorPecuario;
+use App\Models\ServicioBasico;
 use App\Models\TipoCultivo;
 use App\Models\TipoEspecie;
 use App\Models\TipoInfraestructura;
@@ -73,10 +77,10 @@ class FormController extends Controller
         $tiposerviciobasicos = TipoServicioBasico::all();
         $tipoEspecies = TipoEspecie::all();
         $tipoCultivos = TipoCultivo::all();
-        $detalleAreaForestals = DetalleAreaForestal::all();
-        $detalleFaunaSilvestres = DetalleFaunaSilvestre::all();
+        // $detalleAreaForestals = DetalleAreaForestal::all();
+        // $detalleFaunaSilvestres = DetalleFaunaSilvestre::all();
         $tipoFaunaEspecies = TipoEspecie::whereIn('nombre_tipo_especie', ['Mamíferos', 'Reptiles'])->get();
-        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions', 'tipoInfraestructuras', 'tiposerviciobasicos', 'tipoEspecies', 'tipoCultivos', 'detalleAreaForestals', 'detalleFaunaSilvestres', 'tipoFaunaEspecies'));
+        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions',  'tipoInfraestructuras','tiposerviciobasicos', 'tipoEspecies','tipoCultivos'));
     }
 
     public function buscar_municipio($id_provincia){
@@ -146,87 +150,150 @@ class FormController extends Controller
             // educacion
            'institucion_id.*' => 'required|integer',
             'num_estudiantes.*.*' => 'nullable|integer',
+
+            // Infraestructura
+            'tipo_infraestructura_id.*' => 'required|integer|exists:tipo_infraestructuras,id',
+            'numeros_infraestructuras_afectadas.*' => 'nullable|integer|min:0',
+
+            //servicios basicos
+            'tipo_servicio_basico_id.*' => 'required|integer|exists:tipo_servicio_basicos,id',
+            'informacion_tipo_dano.*' => 'required|string|max:255',
+            'numero_comunidades_afectadas.*' => 'nullable|integer|min:0',
+
+            // sector pecuario
+            'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
+            'numero_animales_afectados.*' => 'nullable|integer',
+            'numero_animales_fallecidos.*' => 'nullable|integer',
+
+            // sector agricola
+            'tipo_cultivo_id.*' => 'required|integer',
+            'hectareas_afectadas.*' => 'nullable|numeric',
+            'hectareas_perdidas.*' => 'nullable|numeric',
         ]);
 
+
         return DB::transaction(function () use ($validatedData) {
+            try {
+                // Aquí viene el código original
+                // Encontrar el municipio
+                $municipio = Municipio::find($validatedData['municipio_id']);
 
-            // Encontrar el municipio
-            $municipio = Municipio::find($validatedData['municipio_id']);
+                // Crear la comunidad
+                $comunidad = Comunidad::create([
+                    'nombre_comunidad' => $validatedData['nombre_comunidad'],
+                    'tipo_comunidad' => $validatedData['tipo_comunidad'],
+                    'municipio_id' => $validatedData['municipio_id'],
+                ]);
 
-            // Crear la comunidad
-            $comunidad = Comunidad::create([
-                'nombre_comunidad' => $validatedData['nombre_comunidad'],
-                'tipo_comunidad' => $validatedData['tipo_comunidad'],
-                'municipio_id' => $validatedData['municipio_id'],
-            ]);
+                // Crear el incendio
+                $incendio = Incendio::create([
+                    'fecha_inicio' => $validatedData['fecha_inicio'],
+                    'causas_probables' => $validatedData['causas_probables'],
+                    'estado' => $validatedData['estado'],
+                ]);
 
-            // Crear el incendio
-            $incendio = Incendio::create([
-                'fecha_inicio' => $validatedData['fecha_inicio'],
-                'causas_probables' => $validatedData['causas_probables'],
-                'estado' => $validatedData['estado'],
-            ]);
+                // Crear el formulario
+                $formulario = Formulario::create([
+                    'fecha_llenado' => $validatedData['fecha_llenado'],
+                    'comunidad_id' => $comunidad->id,
+                    'incendio_id' => $incendio->id,
+                ]);
 
-            // Crear el formulario
-            $formulario = Formulario::create([
-                'fecha_llenado' => $validatedData['fecha_llenado'],
-                'comunidad_id' => $comunidad->id,
-                'incendio_id' => $incendio->id,
-            ]);
+                $comunidad->incendios()->attach($incendio, [
+                    'incendios_registrados' => $validatedData['incendios_registrados'],
+                    'incendios_activos' => $validatedData['incendios_activos'],
+                    'necesidades' => $validatedData['necesidades'],
+                    'num_familias_afectadas' => $validatedData['num_familias_afectadas'],
+                    'num_familias_damnificadas' => $validatedData['num_familias_damnificadas'],
+                    'comunidad_id' => $comunidad->id,
+                    'incendio_id' => $incendio->id,
+                ]);
 
-            $comunidad->incendios()->attach($incendio, [
-                'incendios_registrados' => $validatedData['incendios_registrados'],
-                'incendios_activos' => $validatedData['incendios_activos'],
-                'necesidades' => $validatedData['necesidades'],
-                'num_familias_afectadas' => $validatedData['num_familias_afectadas'],
-                'num_familias_damnificadas' => $validatedData['num_familias_damnificadas'],
-                'comunidad_id' => $comunidad->id,
-                'incendio_id' => $incendio->id,
-            ]);
-
-            foreach ($validatedData['grupo_etario_id'] as $index => $grupoEtarioId) {
-                // Crear o actualizar un registro en la tabla persona_afectada_incendios
-                PersonaAfectadaIncendio::updateOrCreate(
-                    [
-                        'grupo_etario_id' => $grupoEtarioId,
-                        'formulario_id' => $formulario->id,  // Aseguramos que la búsqueda también incluya el formulario_id
-                    ],
-                    [
-                        'cantidad_afectados_por_incendios' => $validatedData['cantidad_afectados_por_incendios'][$index]
-                    ]
-                );
-            }
-
-            foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
-                foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
-                    try {
-                        Salud::create([
+                foreach ($validatedData['grupo_etario_id'] as $index => $grupoEtarioId) {
+                    // Crear o actualizar un registro en la tabla persona_afectada_incendios
+                    PersonaAfectadaIncendio::updateOrCreate(
+                        [
                             'grupo_etario_id' => $grupoEtarioId,
-                            'detalle_enfermedad_id' => $detalleEnfermedadId,
                             'formulario_id' => $formulario->id,
-                            'cantidad_grupo_enfermos' => $cantidad,
-                        ]);
-                    } catch (\Exception $e) {
-                        Log::error('Error saving salud data: ' . $e->getMessage());
-                        return redirect()->back()->with('error', 'An error occurred while saving the data.');
+                        ],
+                        [
+                            'cantidad_afectados_por_incendios' => $validatedData['cantidad_afectados_por_incendios'][$index]
+                        ]
+                    );
+                }
+
+                foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
+                    foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
+                        try {
+                            Salud::create([
+                                'grupo_etario_id' => $grupoEtarioId,
+                                'detalle_enfermedad_id' => $detalleEnfermedadId,
+                                'formulario_id' => $formulario->id,
+                                'cantidad_grupo_enfermos' => $cantidad,
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Error saving salud data: ' . $e->getMessage());
+                            return redirect()->back()->with('error', 'An error occurred while saving the data.');
+                        }
                     }
                 }
-            }
 
-            foreach ($validatedData['institucion_id'] as $institucionId) {
-                foreach ($validatedData['num_estudiantes'][$institucionId] as $modalidadId => $numEstudiantes) {
-                    Educacion::create([
-                        'institucion_id' => $institucionId,
-                        'modalidad_educacion_id' => $modalidadId,
-                        'numero_estudiantes' => $numEstudiantes,
+                foreach ($validatedData['institucion_id'] as $institucionId) {
+                    foreach ($validatedData['num_estudiantes'][$institucionId] as $modalidadId => $numEstudiantes) {
+                        Educacion::create([
+                            'institucion_id' => $institucionId,
+                            'modalidad_educacion_id' => $modalidadId,
+                            'numero_estudiantes' => $numEstudiantes,
+                            'formulario_id' => $formulario->id,
+                        ]);
+                    }
+                }
+
+                // foreach ($validatedData['tipo_infraestructura_id'] as $index => $tipoInfraestructuraId) {
+                //     Infraestructura::create(
+                //         [
+                //             'tipo_infraestructura_id' => $tipoInfraestructuraId,
+                //             'numeros_infraestructuras_afectadas' => $validatedData['numeros_infraestructuras_afectadas'][$index] ?? 0,
+                //             'formulario_id' => $formulario->id,
+                //         ]
+                //     );
+                // }
+
+                foreach ($validatedData['tipo_servicio_basico_id'] as $index => $tipoServicioBasicoId) {
+                    ServicioBasico::create([
+                        'tipo_servicio_basico_id' => $tipoServicioBasicoId,
+                        'informacion_tipo_dano' => $validatedData['informacion_tipo_dano'][$index],
+                        'numero_comunidades_afectadas' => $validatedData['numero_comunidades_afectadas'][$index],
                         'formulario_id' => $formulario->id,
                     ]);
                 }
+
+                // foreach ($validatedData['tipo_especie_id'] as $index => $tipoEspecieId) {
+                //     SectorPecuario::create([
+                //         'tipo_especie_id' => $tipoEspecieId,
+                //         'numero_animales_afectados' => $validatedData['numero_animales_afectados'][$index],
+                //         'numero_animales_fallecidos' => $validatedData['numero_animales_fallecidos'][$index],
+                //         'formulario_id' => $formulario->id,
+                //     ]);
+                // }
+
+                // foreach ($validatedData['tipo_cultivo_id'] as $index => $tipoCultivoId) {
+                //     SectorAgricola::create([
+                //         'tipo_cultivo_id' => $tipoCultivoId,
+                //         'hectareas_afectadas' => $validatedData['hectareas_afectadas'][$index],
+                //         'hectareas_perdidas' => $validatedData['hectareas_perdidas'][$index],
+                //         'formulario_id' => $formulario->id,
+                //     ]);
+                // }
+
+                // Redirigir después de guardar
+                return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
+
+            } catch (\Exception $e) {
+                Log::error('Error in transaction: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Ocurrió un error al guardar el formulario.');
             }
 
-            // Redirigir después de guardar
-            return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
-        }, 1);
-
+        }, 5);
     }
 }

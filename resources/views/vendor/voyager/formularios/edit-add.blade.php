@@ -346,7 +346,7 @@
                                             aria-labelledby="headingOne">
                                             <div class="panel-body">
 
-                                                <div class="form-group col-md-6">
+                                                {{-- <div class="form-group col-md-6">
                                                     <div class="panel panel-default">
                                                         <div class="panel-heading"><b>Daños</b></div>
                                                         <div class="panel-body">
@@ -363,12 +363,10 @@
                                                                     <tr>
                                                                         <td>
                                                                             {{ $tipoInfraestructura->nombre_tipo_infraestructura }}
-                                                                            <input type="hidden" name="tipo_infraestructura_id[]"
-                                                                                value="{{ $tipoInfraestructura->id }}">
+                                                                            <input type="hidden" name="tipo_infraestructura_id[]" value="{{ $tipoInfraestructura->id }}">
                                                                         </td>
                                                                         <td>
-                                                                            <input type="number" name="numeros_infraestructuras_afectadas[]"
-                                                                                class="form-control">
+                                                                            <input type="number" name="numeros_infraestructuras_afectadas[]" class="form-control" min="0">
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach
@@ -376,7 +374,7 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                                 <div class="form-group col-md-6">
                                                     <div class="panel panel-default">
                                                         <div class="panel-heading"><b>Personas</b></div>
@@ -394,7 +392,7 @@
                                                                     @foreach ($tiposerviciobasicos as $tiposerviciobasico)
                                                                         <tr>
                                                                             <td>{{ $tiposerviciobasico->nombre_servicio_basico }}
-                                                                                <input type="hidden" name="servicio_basico_id[]" value="{{ $tiposerviciobasico->id }}">
+                                                                                <input type="hidden" name="tipo_servicio_basico_id[]" value="{{ $tiposerviciobasico->id }}">
                                                                             </td>
                                                                             <td>
                                                                                 <input type="text" name="informacion_tipo_dano[]" class="form-control">
@@ -403,7 +401,7 @@
                                                                                 <input type="number" name="numero_comunidades_afectadas[]" class="form-control">
                                                                             </td>
                                                                         </tr>
-                                                                @endforeach
+                                                                    @endforeach
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -458,7 +456,7 @@
                                                                         <td>
                                                                             <input type="number" name="numero_animales_fallecidos[]" class="form-control">
                                                                         </td>
-                                                                        </tr>
+                                                                    </tr>
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
@@ -507,7 +505,7 @@
                         </div>
                         <div class="form-group">
                               {{-- ÁREAS FORESTALES PERDIDAS --}}
-                            <div class="row">
+                            {{-- <div class="row">
                                 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                     <div class="panel panel-default">
                                         <div class="panel-heading" role="tab" id="headingOne">
@@ -591,7 +589,7 @@
                                     </div>
 
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>

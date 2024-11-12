@@ -11,7 +11,9 @@ class Infraestructura extends Model
     protected $fillable = [
         'tipo_infraestructura_id',
         'numeros_infraestructuras_afectadas',
+        'formulario_id',
     ];
+
     public function tipoInfraestructura()
     {
         return $this->belongsTo(TipoInfraestructura::class);
