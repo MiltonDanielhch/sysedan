@@ -24,6 +24,18 @@ class TemplateSeeder extends Seeder
             PermissionRoleTableSeeder::class,
             SettingsTableSeeder::class,
             UsersTableSeeder::class,
+            ProvinciaSeeder::class,
+            MunicipioSeeder::class,
+            GrupoEtarioSeeder::class,
+            DetalleEnfermedadSeeder::class,
+            ModalidadEducacionSeeder::class,
+            InstitucionSeeder::class,
+            TipoInfraestructuraSeeder::class,
+            TipoServicioBasicoSeeder::class,
+            TipoEspecieSeeder::class,
+            TipoCultivoSeeder::class,
+            DetalleFaunaSilvestreSeeder::class,
+            DetalleAreaForestalSeeder::class,
         ]);
     }
 }

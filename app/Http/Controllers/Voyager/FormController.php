@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comunidad;
+use App\Models\DetalleAreaForestal;
 use App\Models\DetalleEnfermedad;
+use App\Models\DetalleFaunaSilvestre;
 use App\Models\Educacion;
 use App\Models\Formulario;
 use App\Models\GrupoEtario;
@@ -16,6 +18,11 @@ use App\Models\persona_afectada_incendio;
 use App\Models\PersonaAfectadaIncendio;
 use App\Models\Provincia;
 use App\Models\Salud;
+use App\Models\TipoCultivo;
+use App\Models\TipoEspecie;
+use App\Models\TipoInfraestructura;
+use App\Models\TipoServicioBasico;
+use App\Models\TipoServicioBasicos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -62,7 +69,14 @@ class FormController extends Controller
         $detalleEnfermedades = DetalleEnfermedad::all();
         $modalidadEducacions = ModalidadEducacion::all();
         $institucions = Institucion::all();
-        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions'));
+        $tipoInfraestructuras = TipoInfraestructura::all();
+        $tiposerviciobasicos = TipoServicioBasico::all();
+        $tipoEspecies = TipoEspecie::all();
+        $tipoCultivos = TipoCultivo::all();
+        $detalleAreaForestals = DetalleAreaForestal::all();
+        $detalleFaunaSilvestres = DetalleFaunaSilvestre::all();
+        $tipoFaunaEspecies = TipoEspecie::whereIn('nombre_tipo_especie', ['Mamíferos', 'Reptiles'])->get();
+        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions', 'tipoInfraestructuras', 'tiposerviciobasicos', 'tipoEspecies', 'tipoCultivos', 'detalleAreaForestals', 'detalleFaunaSilvestres', 'tipoFaunaEspecies'));
     }
 
     public function buscar_municipio($id_provincia){

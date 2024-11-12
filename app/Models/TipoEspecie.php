@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Institucion extends Model
+class TipoEspecie extends Model
 {
     use HasFactory;
-
-    public function modalidadEducacion()
+    public function sectorPecuarios()
     {
-        return $this->belongsTo(ModalidadEducacion::class);
+        return $this->hasMany(SectorPecuario::class);
     }
 }
