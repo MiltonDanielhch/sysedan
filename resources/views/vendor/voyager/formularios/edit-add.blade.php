@@ -235,7 +235,7 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- <div class="form-group col-md-5">
+                                                <div class="form-group col-md-5">
                                                     <div class="panel panel-default">
                                                         <div class="panel-heading"><b>Personas</b></div>
                                                         <div class="panel-body">
@@ -266,7 +266,7 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                </div> --}}
+                                                </div>
 
                                             </div>
                                         </div>

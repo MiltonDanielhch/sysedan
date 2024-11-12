@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Voyager;
 use App\Http\Controllers\Controller;
 use App\Models\Comunidad;
 use App\Models\DetalleEnfermedad;
+use App\Models\Educacion;
 use App\Models\Formulario;
 use App\Models\GrupoEtario;
 use App\Models\Incendio;
+use App\Models\Institucion;
+use App\Models\ModalidadEducacion;
 use App\Models\Municipio;
 use App\Models\persona_afectada_incendio;
 use App\Models\PersonaAfectadaIncendio;
@@ -57,7 +60,9 @@ class FormController extends Controller
         $grupoEtarios = GrupoEtario::all();
         $grupoEtarioSaluds = GrupoEtario::whereIn('nombre_grupo_etario', ['NNyA', 'Hombres', 'Mujeres', 'Tercera Edad'])->get();
         $detalleEnfermedades = DetalleEnfermedad::all();
-        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds' ));
+        $modalidadEducacions = ModalidadEducacion::all();
+        $institucions = Institucion::all();
+        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions'));
     }
 
     public function buscar_municipio($id_provincia){
@@ -123,6 +128,10 @@ class FormController extends Controller
             // saluds
             'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
             'cantidad_grupo_enfermos.*.*' => 'nullable|integer|min:0',
+
+            // educacion
+           'institucion_id.*' => 'required|integer',
+            'num_estudiantes.*.*' => 'nullable|integer',
         ]);
 
         return DB::transaction(function () use ($validatedData) {
@@ -190,6 +199,16 @@ class FormController extends Controller
                 }
             }
 
+            foreach ($validatedData['institucion_id'] as $institucionId) {
+                foreach ($validatedData['num_estudiantes'][$institucionId] as $modalidadId => $numEstudiantes) {
+                    Educacion::create([
+                        'institucion_id' => $institucionId,
+                        'modalidad_educacion_id' => $modalidadId,
+                        'numero_estudiantes' => $numEstudiantes,
+                        'formulario_id' => $formulario->id,
+                    ]);
+                }
+            }
 
             // Redirigir después de guardar
             return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
