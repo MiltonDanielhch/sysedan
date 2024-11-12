@@ -4,12 +4,18 @@ namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comunidad;
+use App\Models\DetalleEnfermedad;
 use App\Models\Formulario;
+use App\Models\GrupoEtario;
 use App\Models\Incendio;
 use App\Models\Municipio;
+use App\Models\persona_afectada_incendio;
+use App\Models\PersonaAfectadaIncendio;
 use App\Models\Provincia;
+use App\Models\Salud;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FormController extends Controller
 {
@@ -48,7 +54,10 @@ class FormController extends Controller
     {
         $provincias = Provincia::all();
         $municipios = Municipio::all();
-         return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios'));
+        $grupoEtarios = GrupoEtario::all();
+        $grupoEtarioSaluds = GrupoEtario::whereIn('nombre_grupo_etario', ['NNyA', 'Hombres', 'Mujeres', 'Tercera Edad'])->get();
+        $detalleEnfermedades = DetalleEnfermedad::all();
+        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds' ));
     }
 
     public function buscar_municipio($id_provincia){
@@ -106,6 +115,14 @@ class FormController extends Controller
             'necesidades' => 'nullable|string',
             'num_familias_afectadas' => 'required|integer',
             'num_familias_damnificadas' => 'required|integer',
+
+            // persona_afectada_incendios
+            'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
+            'cantidad_afectados_por_incendios.*' => 'required|integer',
+
+            // saluds
+            'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
+            'cantidad_grupo_enfermos.*.*' => 'nullable|integer|min:0',
         ]);
 
         return DB::transaction(function () use ($validatedData) {
@@ -128,14 +145,11 @@ class FormController extends Controller
             ]);
 
             // Crear el formulario
-            Formulario::create([
+            $formulario = Formulario::create([
                 'fecha_llenado' => $validatedData['fecha_llenado'],
                 'comunidad_id' => $comunidad->id,
                 'incendio_id' => $incendio->id,
             ]);
-
-            // $comunidad = Comunidad::find($validatedData['comunidad_id']);
-            // $incendio = Incendio::find($validatedData['incendio_id']);
 
             $comunidad->incendios()->attach($incendio, [
                 'incendios_registrados' => $validatedData['incendios_registrados'],
@@ -146,6 +160,36 @@ class FormController extends Controller
                 'comunidad_id' => $comunidad->id,
                 'incendio_id' => $incendio->id,
             ]);
+
+            foreach ($validatedData['grupo_etario_id'] as $index => $grupoEtarioId) {
+                // Crear o actualizar un registro en la tabla persona_afectada_incendios
+                PersonaAfectadaIncendio::updateOrCreate(
+                    [
+                        'grupo_etario_id' => $grupoEtarioId,
+                        'formulario_id' => $formulario->id,  // Aseguramos que la búsqueda también incluya el formulario_id
+                    ],
+                    [
+                        'cantidad_afectados_por_incendios' => $validatedData['cantidad_afectados_por_incendios'][$index]
+                    ]
+                );
+            }
+
+            foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
+                foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
+                    try {
+                        Salud::create([
+                            'grupo_etario_id' => $grupoEtarioId,
+                            'detalle_enfermedad_id' => $detalleEnfermedadId,
+                            'formulario_id' => $formulario->id,
+                            'cantidad_grupo_enfermos' => $cantidad,
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Error saving salud data: ' . $e->getMessage());
+                        return redirect()->back()->with('error', 'An error occurred while saving the data.');
+                    }
+                }
+            }
+
 
             // Redirigir después de guardar
             return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');

@@ -186,6 +186,149 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                             {{-- PERSONAS AFECTADAS --}}
+                            <div class="row">
+                                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingOne">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                                    href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                    PERSONAS AFECTADAS
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                                            aria-labelledby="headingOne">
+                                            <div class="panel-body">
+
+                                                <div class="form-group col-md-7">
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading"><b>Personas</b></div>
+                                                        <div class="panel-body">
+                                                            <h4> PERSONAS AFECTADAS</h4>
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Grupo Etario</th>
+                                                                        <th>N° Afectados por Incendios</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($grupoEtarios as $grupoEtario)
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{ $grupoEtario->nombre_grupo_etario }}
+                                                                            <input type="hidden" name="grupo_etario_id[]"
+                                                                                value="{{ $grupoEtario->id }}">
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="number" name="cantidad_afectados_por_incendios[]"
+                                                                                class="form-control">
+                                                                        </td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- <div class="form-group col-md-5">
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading"><b>Personas</b></div>
+                                                        <div class="panel-body">
+                                                            <h4>INFORMACIÓN EN EDUCACIÓN</h4>
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Institución</th>
+                                                                        @foreach ($modalidadEducacions as $modalidadEducacion)
+                                                                            <th>{{ $modalidadEducacion->nombre_modalidad_educacion }}</th>
+                                                                        @endforeach
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($institucions as $institucion)
+                                                                        <tr>
+                                                                            <td>{{ $institucion->nombre_institucion }}
+                                                                                <input type="hidden" name="institucion_id[]" value="{{ $institucion->id }}">
+                                                                            </td>
+                                                                            @foreach ($modalidadEducacions as $modalidadEducacion)
+                                                                                <td>
+                                                                                    <input type="number" name="num_estudiantes[{{ $institucion->id }}][{{ $modalidadEducacion->id }}]" class="form-control">
+                                                                                </td>
+                                                                            @endforeach
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div> --}}
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-froup">
+                            {{-- INFORMACIÓN DE SALUD --}}
+                            <div class="row">
+                                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingOne">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                                    href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                    INFORMACIÓN DE SALUD
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                                            aria-labelledby="headingOne">
+                                            <div class="panel-body">
+                                                <div class="form-group col-md-10">
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading"><b>Salud</b></div>
+                                                        <div class="panel-body">
+                                                            <h4> INFORMACIÓN DE SALUD</h4>
+                                                            <table class="table">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Grupo Etario</th>
+                                                                        @foreach ($detalleEnfermedades as $detalleEnfermedad)
+                                                                            <th>{{ $detalleEnfermedad->nombre_detalle_enfermedad }}</th>
+                                                                        @endforeach
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($grupoEtarioSaluds as $grupoEtarioSalud)
+                                                                        <tr>
+                                                                            <td>{{ $grupoEtarioSalud->nombre_grupo_etario }}</td>
+                                                                            @foreach ($detalleEnfermedades as $detalleEnfermedad)
+                                                                                <td>
+                                                                                    <input type="number" name="cantidad_grupo_enfermos[{{ $grupoEtarioSalud->id }}][{{ $detalleEnfermedad->id }}]" class="form-control" min="0">
+                                                                                </td>
+                                                                            @endforeach
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
