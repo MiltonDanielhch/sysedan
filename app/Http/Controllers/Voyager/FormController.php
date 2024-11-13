@@ -9,16 +9,18 @@ use App\Models\Educacion;
 use App\Models\Formulario;
 use App\Models\GrupoEtario;
 use App\Models\Incendio;
+use App\Models\Infraestructura;
 use App\Models\Institucion;
 use App\Models\ModalidadEducacion;
 use App\Models\Municipio;
-use App\Models\persona_afectada_incendio;
 use App\Models\PersonaAfectadaIncendio;
 use App\Models\Provincia;
 use App\Models\Salud;
+use App\Models\TipoInfraestructura;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class FormController extends Controller
 {
@@ -62,7 +64,8 @@ class FormController extends Controller
         $detalleEnfermedades = DetalleEnfermedad::all();
         $modalidadEducacions = ModalidadEducacion::all();
         $institucions = Institucion::all();
-        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions'));
+        $tipoInfraestructuras = TipoInfraestructura::all();
+        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions', 'tipoInfraestructuras'));
     }
 
     public function buscar_municipio($id_provincia){
@@ -132,8 +135,14 @@ class FormController extends Controller
             // educacion
            'institucion_id.*' => 'required|integer',
             'num_estudiantes.*.*' => 'nullable|integer',
-        ]);
 
+            // Infraestructura
+            'tipo_infraestructura_id.*' => 'required|integer|exists:tipo_infraestructuras,id',
+            // 'numero_afectados.*' => 'required|integer',
+        ]);
+        // dd($request);
+        // dd($validatedData);
+        // dd($validatedData);
         return DB::transaction(function () use ($validatedData) {
 
             // Encontrar el municipio
@@ -210,9 +219,40 @@ class FormController extends Controller
                 }
             }
 
+            // foreach ($validatedData['tipo_infraestructura_id'] as $index => $tipoInfraestructuraId) {
+            //     $infraestructura = new Infraestructura();
+            //     $infraestructura->tipo_infraestructura_id = $tipoInfraestructuraId;
+            //     $infraestructura->numeros_infraestructuras_afectadas = $validatedData['numeros_infraestructuras_afectadas'][$index];
+            //     $infraestructura->formulario_id = $formulario->id;
+            //     // dd($infraestructura);
+            //     $infraestructura->save();
+            // }
+
+            $request = request();
+            // dd($request);
+            foreach ($validatedData['tipo_infraestructura_id'] as $index => $tipoInfraestructuraId) {
+                $data = [
+                    'tipo_infraestructura_id' => $tipoInfraestructuraId,
+                    'numero_afectados' => $request->numero_afectados[$index],
+                    'formulario_id' => $formulario->id,
+                ];
+
+                $validator = Validator::make($data, [
+                    'numero_afectados' => 'required|integer|min:0',
+                ]);
+
+                if ($validator->fails()) {
+                    // Manejar el error
+                    return back()->withErrors($validator);
+                } else {
+                    Infraestructura::create($data);
+                }
+            }
+
+
             // Redirigir después de guardar
             return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
-        }, 1);
+        }, 5);
 
     }
 }

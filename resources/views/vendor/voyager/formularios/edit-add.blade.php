@@ -329,6 +329,91 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            {{-- DAÑOS A INFRAESTRUCTURAS AFECTADAS --}}
+                          <div class="row">
+                              <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                  <div class="panel panel-default">
+                                      <div class="panel-heading" role="tab" id="headingOne">
+                                          <h4 class="panel-title">
+                                              <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                                  href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                  DAÑOS A INFRAESTRUCTURAS AFECTADAS
+                                              </a>
+                                          </h4>
+                                      </div>
+                                      <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                                          aria-labelledby="headingOne">
+                                          <div class="panel-body">
+
+                                              <div class="form-group col-md-6">
+                                                  <div class="panel panel-default">
+                                                      <div class="panel-heading"><b>Daños</b></div>
+                                                      <div class="panel-body">
+                                                          <h4>DAÑOS A INFRAESTRUCTURAS AFECTADAS</h4>
+                                                          <table class="table">
+                                                              <thead>
+                                                                  <tr>
+                                                                      <th>Tipo Infraestructura</th>
+                                                                      <th>N° de infraestructuras afectadas</th>
+                                                                  </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                                  @foreach ($tipoInfraestructuras as $tipoInfraestructura)
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{ $tipoInfraestructura->nombre_tipo_infraestructura }}
+                                                                            <input type="hidden" name="tipo_infraestructura_id[]" value="{{ $tipoInfraestructura->id }}">
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="number" name="numero_afectados[]" class="form-control">
+                                                                        </td>
+                                                                    </tr>
+                                                                  @endforeach
+                                                              </tbody>
+                                                          </table>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                              {{-- <div class="form-group col-md-6">
+                                                  <div class="panel panel-default">
+                                                      <div class="panel-heading"><b>Personas</b></div>
+                                                      <div class="panel-body">
+                                                          <h4>SERVICIOS BÁSICOS</h4>
+                                                          <table class="table">
+                                                              <thead>
+                                                                  <tr>
+                                                                      <th>Servicios Basicos</th>
+                                                                      <th>Información/Tipo de Daño</th>
+                                                                      <th>N° de Comunidades Afectadas</th>
+                                                                  </tr>
+                                                              </thead>
+                                                              <tbody>
+                                                                  @foreach ($tiposerviciobasicos as $tiposerviciobasico)
+                                                                      <tr>
+                                                                          <td>{{ $tiposerviciobasico->nombre_servicio_basico }}
+                                                                              <input type="hidden" name="tipo_servicio_basico_id[]" value="{{ $tiposerviciobasico->id }}">
+                                                                          </td>
+                                                                          <td>
+                                                                              <input type="text" name="informacion_tipo_dano[]" class="form-control">
+                                                                          </td>
+                                                                          <td>
+                                                                              <input type="number" name="numero_comunidades_afectadas[]" class="form-control">
+                                                                          </td>
+                                                                      </tr>
+                                                                  @endforeach
+                                                              </tbody>
+                                                          </table>
+                                                      </div>
+                                                  </div>
+                                              </div> --}}
+                                          </div>
+                                      </div>
+                                  </div>
+
+                              </div>
+                          </div>
+                      </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
