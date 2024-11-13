@@ -139,36 +139,10 @@ class FormController extends Controller
             'num_familias_afectadas' => 'required|integer',
             'num_familias_damnificadas' => 'required|integer',
 
-            // persona_afectada_incendios
-            'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
-            'cantidad_afectados_por_incendios.*' => 'required|integer',
-
-            // saluds
-            'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
-            'cantidad_grupo_enfermos.*.*' => 'nullable|integer|min:0',
-
-            // educacion
-           'institucion_id.*' => 'required|integer',
-            'num_estudiantes.*.*' => 'nullable|integer',
 
             // Infraestructura
             'tipo_infraestructura_id.*' => 'required|integer|exists:tipo_infraestructuras,id',
             'numeros_infraestructuras_afectadas.*' => 'nullable|integer|min:0',
-
-            //servicios basicos
-            'tipo_servicio_basico_id.*' => 'required|integer|exists:tipo_servicio_basicos,id',
-            'informacion_tipo_dano.*' => 'required|string|max:255',
-            'numero_comunidades_afectadas.*' => 'nullable|integer|min:0',
-
-            // sector pecuario
-            'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
-            'numero_animales_afectados.*' => 'nullable|integer',
-            'numero_animales_fallecidos.*' => 'nullable|integer',
-
-            // sector agricola
-            'tipo_cultivo_id.*' => 'required|integer',
-            'hectareas_afectadas.*' => 'nullable|numeric',
-            'hectareas_perdidas.*' => 'nullable|numeric',
         ]);
 
 
@@ -209,82 +183,14 @@ class FormController extends Controller
                     'incendio_id' => $incendio->id,
                 ]);
 
-                foreach ($validatedData['grupo_etario_id'] as $index => $grupoEtarioId) {
-                    // Crear o actualizar un registro en la tabla persona_afectada_incendios
-                    PersonaAfectadaIncendio::updateOrCreate(
-                        [
-                            'grupo_etario_id' => $grupoEtarioId,
-                            'formulario_id' => $formulario->id,
-                        ],
-                        [
-                            'cantidad_afectados_por_incendios' => $validatedData['cantidad_afectados_por_incendios'][$index]
-                        ]
-                    );
-                }
+                foreach ($validatedData['tipo_infraestructura_id'] as $index => $tipoInfraestructuraId) {
 
-                foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
-                    foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
-                        try {
-                            Salud::create([
-                                'grupo_etario_id' => $grupoEtarioId,
-                                'detalle_enfermedad_id' => $detalleEnfermedadId,
-                                'formulario_id' => $formulario->id,
-                                'cantidad_grupo_enfermos' => $cantidad,
-                            ]);
-                        } catch (\Exception $e) {
-                            Log::error('Error saving salud data: ' . $e->getMessage());
-                            return redirect()->back()->with('error', 'An error occurred while saving the data.');
-                        }
-                    }
-                }
-
-                foreach ($validatedData['institucion_id'] as $institucionId) {
-                    foreach ($validatedData['num_estudiantes'][$institucionId] as $modalidadId => $numEstudiantes) {
-                        Educacion::create([
-                            'institucion_id' => $institucionId,
-                            'modalidad_educacion_id' => $modalidadId,
-                            'numero_estudiantes' => $numEstudiantes,
-                            'formulario_id' => $formulario->id,
-                        ]);
-                    }
-                }
-
-                // foreach ($validatedData['tipo_infraestructura_id'] as $index => $tipoInfraestructuraId) {
-                //     Infraestructura::create(
-                //         [
-                //             'tipo_infraestructura_id' => $tipoInfraestructuraId,
-                //             'numeros_infraestructuras_afectadas' => $validatedData['numeros_infraestructuras_afectadas'][$index] ?? 0,
-                //             'formulario_id' => $formulario->id,
-                //         ]
-                //     );
-                // }
-
-                foreach ($validatedData['tipo_servicio_basico_id'] as $index => $tipoServicioBasicoId) {
-                    ServicioBasico::create([
-                        'tipo_servicio_basico_id' => $tipoServicioBasicoId,
-                        'informacion_tipo_dano' => $validatedData['informacion_tipo_dano'][$index],
-                        'numero_comunidades_afectadas' => $validatedData['numero_comunidades_afectadas'][$index],
+                    Infraestructura::create([
+                        'tipo_infraestructura_id' => $tipoInfraestructuraId,
+                        'numeros_infraestructuras_afectadas' => $validatedData['numeros_infraestructuras_afectadas'][$index],
                         'formulario_id' => $formulario->id,
                     ]);
                 }
-
-                // foreach ($validatedData['tipo_especie_id'] as $index => $tipoEspecieId) {
-                //     SectorPecuario::create([
-                //         'tipo_especie_id' => $tipoEspecieId,
-                //         'numero_animales_afectados' => $validatedData['numero_animales_afectados'][$index],
-                //         'numero_animales_fallecidos' => $validatedData['numero_animales_fallecidos'][$index],
-                //         'formulario_id' => $formulario->id,
-                //     ]);
-                // }
-
-                // foreach ($validatedData['tipo_cultivo_id'] as $index => $tipoCultivoId) {
-                //     SectorAgricola::create([
-                //         'tipo_cultivo_id' => $tipoCultivoId,
-                //         'hectareas_afectadas' => $validatedData['hectareas_afectadas'][$index],
-                //         'hectareas_perdidas' => $validatedData['hectareas_perdidas'][$index],
-                //         'formulario_id' => $formulario->id,
-                //     ]);
-                // }
 
                 // Redirigir después de guardar
                 return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
