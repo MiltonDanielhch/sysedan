@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class SectorPecuario extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'tipo_especie_id',
+        'numero_animales_afectados',
+        'numero_animales_fallecidos',
+        'formulario_id',
+    ];
 
     public function tipoEspecie()
     {

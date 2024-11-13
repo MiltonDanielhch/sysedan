@@ -161,13 +161,14 @@ class FormController extends Controller
              'numero_comunidades_afectadas.*' => 'nullable|integer',
 
              // sector pecuario
-            //  'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
-            //  'numero_animales_afectados.*' => 'nullable|integer',
-            //  'numero_animales_fallecidos.*' => 'nullable|integer',
+             'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
+             'numero_animales_afectados.*' => 'nullable|integer',
+             'numero_animales_fallecidos.*' => 'nullable|integer',
+
              // sector agricola
-            //  'tipo_cultivo_id.*' => 'required|integer',
-            //  'hectareas_afectadas.*' => 'nullable|numeric',
-            //  'hectareas_perdidas.*' => 'nullable|numeric',
+             'tipo_cultivo_id.*' => 'required|integer',
+             'hectareas_afectados.*' => 'nullable|numeric',
+             'hectareas_perdidas.*' => 'nullable|numeric',
         ]);
 
         // dd($validatedData);
@@ -280,24 +281,38 @@ class FormController extends Controller
                     // dd($data);
                 }
 
+                foreach ($validatedData['tipo_especie_id'] as $index => $tipoEspecieId) {
+                    $data = [
+                        'tipo_especie_id' => $tipoEspecieId,
+                        'numero_animales_afectados' => $validatedData['numero_animales_afectados'][$index],
+                        'numero_animales_fallecidos' => $validatedData['numero_animales_fallecidos'][$index],
+                        'formulario_id' => $formulario->id,
+                    ];
 
-                // foreach ($validatedData['tipo_especie_id'] as $index => $tipoEspecieId) {
-                //     SectorPecuario::create([
-                //         'tipo_especie_id' => $tipoEspecieId,
-                //         'numero_animales_afectados' => $validatedData['numero_animales_afectados'][$index],
-                //         'numero_animales_fallecidos' => $validatedData['numero_animales_fallecidos'][$index],
-                //         'formulario_id' => $formulario->id,
-                //     ]);
-                // }
+                    if ($data['numero_animales_afectados'] < 0 || $data['numero_animales_fallecidos'] < 0) {
+                        Log::error('Número de animales negativo para la especie ' . $tipoEspecieId);
+                        continue;
+                    }
 
-                // foreach ($validatedData['tipo_cultivo_id'] as $index => $tipoCultivoId) {
-                //     SectorAgricola::create([
-                //         'tipo_cultivo_id' => $tipoCultivoId,
-                //         'hectareas_afectadas' => $validatedData['hectareas_afectadas'][$index],
-                //         'hectareas_perdidas' => $validatedData['hectareas_perdidas'][$index],
-                //         'formulario_id' => $formulario->id,
-                //     ]);
-                // }
+                    SectorPecuario::create($data);
+                }
+
+                foreach ($validatedData['tipo_cultivo_id'] as $index => $tipoCultivoId) {
+                    $data = [
+                        'tipo_cultivo_id' => $tipoCultivoId,
+                        'hectareas_afectados' => $validatedData['hectareas_afectados'][$index],
+                        'hectareas_perdidas' => $validatedData['hectareas_perdidas'][$index],
+                        'formulario_id' => $formulario->id,
+                    ];
+
+                    // Validación adicional (opcional)
+
+                    if ($data['hectareas_afectados'] < 0 || $data['hectareas_afectados'] < 0) {
+                        Log::error('Número de hectáreas negativo para el cultivo ' . $tipoCultivoId);
+                        continue; // Saltar a la siguiente iteración
+                    }
+                    SectorAgricola::create($data);
+                }
 
                 // Redirigir después de guardar
                 return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');

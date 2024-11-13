@@ -418,7 +418,7 @@
                         </div>
                         <div class="form-group">
                             {{-- DAÑOS PECUARIOS POR INCENDIOS FORESTALES --}}
-                            {{-- <div class="row">
+                            <div class="row">
                                 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                     <div class="panel panel-default">
                                         <div class="panel-heading" role="tab" id="headingOne">
@@ -481,16 +481,16 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach ($tipoCultivos as $tipoCultivo)
-                                                                    <tr>
-                                                                        <td>{{ $tipoCultivo->nombre_tipo_cultivo }}
-                                                                            <input type="hidden" name="tipo_cultivo_id[]" value="{{ $tipoCultivo->id }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="hectareas_afectados[]" class="form-control">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="hectareas_perdidas[]" class="form-control">
-                                                                        </td>
+                                                                        <tr>
+                                                                            <td>{{ $tipoCultivo->nombre_tipo_cultivo }}
+                                                                                <input type="hidden" name="tipo_cultivo_id[]" value="{{ $tipoCultivo->id }}">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" name="hectareas_afectados[]" class="form-control">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" name="hectareas_perdidas[]" class="form-control">
+                                                                            </td>
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
@@ -503,7 +503,7 @@
                                     </div>
 
                                 </div>
-                            </div> --}}
+                            </div>
                         </div>
                         <div class="form-group">
                               {{-- ÁREAS FORESTALES PERDIDAS --}}
