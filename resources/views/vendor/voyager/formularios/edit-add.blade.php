@@ -366,7 +366,7 @@
                                                                                 <input type="hidden" name="tipo_infraestructura_id[]" value="{{ $tipoInfraestructura->id }}">
                                                                             </td>
                                                                             <td>
-                                                                                <input type="number" name="numeros_infraestructuras_afectadas[]" class="form-control" min="0" required>
+                                                                                <input type="number" name="numeros_infraestructuras_afectadas[]" class="form-control" >
                                                                             </td>
                                                                         </tr>
                                                                     @endforeach
