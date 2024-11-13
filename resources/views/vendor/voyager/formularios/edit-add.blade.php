@@ -376,7 +376,7 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- <div class="form-group col-md-6">
+                                                <div class="form-group col-md-6">
                                                     <div class="panel panel-default">
                                                         <div class="panel-heading"><b>Personas</b></div>
                                                         <div class="panel-body">
@@ -392,11 +392,12 @@
                                                                 <tbody>
                                                                     @foreach ($tiposerviciobasicos as $tiposerviciobasico)
                                                                         <tr>
-                                                                            <td>{{ $tiposerviciobasico->nombre_servicio_basico }}
+                                                                            <td>
+                                                                                {{ $tiposerviciobasico->nombre_servicio_basico }}
                                                                                 <input type="hidden" name="tipo_servicio_basico_id[]" value="{{ $tiposerviciobasico->id }}">
                                                                             </td>
                                                                             <td>
-                                                                                <input type="text" name="informacion_tipo_dano[]" class="form-control">
+                                                                                <input type="text" name="informacion_tipo_dano[]" class="form-control" placeholder="Describa el daño">
                                                                             </td>
                                                                             <td>
                                                                                 <input type="number" name="numero_comunidades_afectadas[]" class="form-control">
@@ -407,7 +408,7 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                </div> --}}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -15,7 +15,6 @@ use App\Models\Infraestructura;
 use App\Models\Institucion;
 use App\Models\ModalidadEducacion;
 use App\Models\Municipio;
-use App\Models\persona_afectada_incendio;
 use App\Models\PersonaAfectadaIncendio;
 use App\Models\Provincia;
 use App\Models\Salud;
@@ -152,13 +151,26 @@ class FormController extends Controller
             'institucion_id.*' => 'required|integer',
              'num_estudiantes.*.*' => 'nullable|integer',
 
-
             // Infraestructura
             'tipo_infraestructura_id.*' => 'required|integer|exists:tipo_infraestructuras,id',
             'numeros_infraestructuras_afectadas.*' => 'nullable|integer',
-        ]);
-        // dd($validatedData);
 
+             //servicios basicos
+             'tipo_servicio_basico_id.*' => 'required|integer|exists:tipo_servicio_basicos,id',
+             'informacion_tipo_dano.*' => 'nullable|string',
+             'numero_comunidades_afectadas.*' => 'nullable|integer',
+
+             // sector pecuario
+            //  'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
+            //  'numero_animales_afectados.*' => 'nullable|integer',
+            //  'numero_animales_fallecidos.*' => 'nullable|integer',
+             // sector agricola
+            //  'tipo_cultivo_id.*' => 'required|integer',
+            //  'hectareas_afectadas.*' => 'nullable|numeric',
+            //  'hectareas_perdidas.*' => 'nullable|numeric',
+        ]);
+
+        // dd($validatedData);
 
         return DB::transaction(function () use ($validatedData) {
             try {
@@ -255,14 +267,19 @@ class FormController extends Controller
                     }
                 }
 
-                // foreach ($validatedData['tipo_servicio_basico_id'] as $index => $tipoServicioBasicoId) {
-                //     ServicioBasico::create([
-                //         'tipo_servicio_basico_id' => $tipoServicioBasicoId,
-                //         'informacion_tipo_dano' => $validatedData['informacion_tipo_dano'][$index],
-                //         'numero_comunidades_afectadas' => $validatedData['numero_comunidades_afectadas'][$index],
-                //         'formulario_id' => $formulario->id,
-                //     ]);
-                // }
+                foreach ($validatedData['tipo_servicio_basico_id'] as $index => $tipoServicioBasicoId) {
+                    $data = [
+                        'tipo_servicio_basico_id' => $tipoServicioBasicoId,
+                        'informacion_tipo_dano' => $validatedData['informacion_tipo_dano'][$index],
+                        'numero_comunidades_afectadas' => $validatedData['numero_comunidades_afectadas'][$index],
+                        'formulario_id' => $formulario->id,
+                    ];
+
+                    // Crear un registro directamente sin validación duplicada
+                    ServicioBasico::create($data);
+                    // dd($data);
+                }
+
 
                 // foreach ($validatedData['tipo_especie_id'] as $index => $tipoEspecieId) {
                 //     SectorPecuario::create([
