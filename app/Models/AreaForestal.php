@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class AreaForestal extends Model
 {
-    use HasFactory;
+
+    protected $fillable = [
+        'detalle_area_forestal_id',
+        'hectareas_perdidas_forestales',
+        'formulario_id',
+    ];
+
     public function detalleAreaForestal()
     {
         return $this->belongsTo(DetalleAreaForestal::class);

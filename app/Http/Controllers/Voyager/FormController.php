@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
+use App\Models\AreaForestal;
 use App\Models\Comunidad;
 use App\Models\DetalleAreaForestal;
 use App\Models\DetalleEnfermedad;
 use App\Models\DetalleFaunaSilvestre;
 use App\Models\Educacion;
+use App\Models\FaunaSilvestre;
 use App\Models\Formulario;
 use App\Models\GrupoEtario;
 use App\Models\Incendio;
@@ -77,10 +79,10 @@ class FormController extends Controller
         $tiposerviciobasicos = TipoServicioBasico::all();
         $tipoEspecies = TipoEspecie::all();
         $tipoCultivos = TipoCultivo::all();
-        // $detalleAreaForestals = DetalleAreaForestal::all();
-        // $detalleFaunaSilvestres = DetalleFaunaSilvestre::all();
+        $detalleAreaForestals = DetalleAreaForestal::all();
+        $detalleFaunaSilvestres = DetalleFaunaSilvestre::all();
         $tipoFaunaEspecies = TipoEspecie::whereIn('nombre_tipo_especie', ['Mamíferos', 'Reptiles'])->get();
-        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions', 'tiposerviciobasicos', 'tipoInfraestructuras', 'tipoEspecies','tipoCultivos'));
+        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions', 'tiposerviciobasicos', 'tipoInfraestructuras', 'tipoEspecies','tipoCultivos', 'detalleAreaForestals', 'detalleFaunaSilvestres', 'tipoFaunaEspecies'));
     }
 
     public function buscar_municipio($id_provincia){
@@ -169,6 +171,14 @@ class FormController extends Controller
              'tipo_cultivo_id.*' => 'required|integer',
              'hectareas_afectados.*' => 'nullable|numeric',
              'hectareas_perdidas.*' => 'nullable|numeric',
+
+             // area forestal
+             'detalle_area_forestal_id.*' => 'required|integer',
+             'hectareas_perdidas_forestales.*' => 'required|numeric',
+
+            //  fauna silvestre
+            'detalle_fauna_silvestre_id.*' => 'required|integer',
+            'numero_fauna_silvestre.*.*' => 'required|integer',
         ]);
 
         // dd($validatedData);
@@ -199,6 +209,7 @@ class FormController extends Controller
                     'incendio_id' => $incendio->id,
                 ]);
 
+                // crear la comunidad del incendio
                 $comunidad->incendios()->attach($incendio, [
                     'incendios_registrados' => $validatedData['incendios_registrados'],
                     'incendios_activos' => $validatedData['incendios_activos'],
@@ -208,6 +219,7 @@ class FormController extends Controller
                     'comunidad_id' => $comunidad->id,
                     'incendio_id' => $incendio->id,
                 ]);
+
 
                 foreach ($validatedData['grupo_etario_id'] as $index => $grupoEtarioId) {
                     // Crear o actualizar un registro en la tabla persona_afectada_incendios
@@ -276,7 +288,6 @@ class FormController extends Controller
                         'formulario_id' => $formulario->id,
                     ];
 
-                    // Crear un registro directamente sin validación duplicada
                     ServicioBasico::create($data);
                     // dd($data);
                 }
@@ -305,14 +316,43 @@ class FormController extends Controller
                         'formulario_id' => $formulario->id,
                     ];
 
-                    // Validación adicional (opcional)
-
+                    // Validación adicional
                     if ($data['hectareas_afectados'] < 0 || $data['hectareas_afectados'] < 0) {
                         Log::error('Número de hectáreas negativo para el cultivo ' . $tipoCultivoId);
                         continue; // Saltar a la siguiente iteración
                     }
                     SectorAgricola::create($data);
                 }
+
+                foreach ($validatedData['detalle_area_forestal_id'] as $index => $detalleAreaForestalId){
+                    $data = [
+                        'detalle_area_forestal_id' => $detalleAreaForestalId,
+                        'hectareas_perdidas_forestales' => $validatedData['hectareas_perdidas_forestales'][$index],
+                        'formulario_id' => $formulario->id,
+                    ];
+
+                    AreaForestal::create($data);
+                }
+
+                foreach ($validatedData['detalle_fauna_silvestre_id'] as $detalleId) {
+                    foreach ($validatedData['numero_fauna_silvestre'][$detalleId] as $tipoEspecieId => $numero) {
+                        if (isset($tipoEspecieId)) { // Check if tipo_especie_id is present
+                            $data = [
+                                'detalle_fauna_silvestre_id' => $detalleId,
+                                'tipo_especie_id' => $tipoEspecieId,
+                                'numero_fauna_silvestre' => $numero,
+                                'formulario_id' => $formulario->id,
+                            ];
+
+                            FaunaSilvestre::create($data);
+                            // $allData[] = $data;
+                        } else {
+                            // Handle missing tipo_especie_id, e.g., log an error, skip the record, or use a default value
+                            Log::error("Missing tipo_especie_id for detalle_fauna_silvestre_id: $detalleId");
+                        }
+                    }
+                }
+                // dd($allData);
 
                 // Redirigir después de guardar
                 return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');

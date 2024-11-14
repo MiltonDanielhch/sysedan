@@ -507,7 +507,7 @@
                         </div>
                         <div class="form-group">
                               {{-- ÁREAS FORESTALES PERDIDAS --}}
-                            {{-- <div class="row">
+                            <div class="row">
                                 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                     <div class="panel panel-default">
                                         <div class="panel-heading" role="tab" id="headingOne">
@@ -542,7 +542,7 @@
                                                                                 value="{{ $detalleAreaForestal->id }}">
                                                                         </td>
                                                                         <td>
-                                                                            <input type="number" name="hectareas_perdidas[]"
+                                                                            <input type="number" name="hectareas_perdidas_forestales[]"
                                                                                 class="form-control">
                                                                         </td>
                                                                     </tr>
@@ -558,7 +558,7 @@
                                                         <div class="panel-heading"><b>Fauna Silvestre</b></div>
                                                         <div class="panel-body">
                                                             <h4>FAUNA SILVESTRE AFECTADA POR INCENDIOS FORESTALES</h4>
-                                                            <table class="table">
+                                                            <table class="table table-bordered table-striped">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Detalle</th>
@@ -575,8 +575,8 @@
                                                                             </td>
                                                                             @foreach ($tipoFaunaEspecies as $tipoFaunaEspecie)
                                                                                 <td>
-                                                                                    <label for="numero_fauna_silvestre_{{ $tipoFaunaEspecie->id }}">{{ $tipoFaunaEspecie->nombre_tipo_especie }}</label>
-                                                                                    <input type="number" name="numero_fauna_silvestre[{{ $tipoFaunaEspecie->id }}]" id="numero_fauna_silvestre_{{ $tipoFaunaEspecie->id }}" class="form-control">
+                                                                                    <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestre->id }}][{{ $tipoFaunaEspecie->id }}]"
+                                                                                           class="form-control">
                                                                                 </td>
                                                                             @endforeach
                                                                         </tr>
@@ -591,7 +591,7 @@
                                     </div>
 
                                 </div>
-                            </div> --}}
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
