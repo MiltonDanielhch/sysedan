@@ -47,11 +47,13 @@ class FormController extends Controller
         // $data = Provincia::all();
         // $data = $data->paginate($paginate);
         if($request->ajax()){
-            $provincias = DB::table('provincias')
-            ->where('nombre_provincia', 'like', '%' . $search . '%')
-            ->paginate($paginate);
-            // dd($provincias);
-            $html = view('voyager::formularios.list', compact('provincias'))->render();
+            $formularios = Formulario::where('id', 'like', '%' . $search . '%')->paginate($paginate);
+            // $personaAfectadas = PersonaAfectadaIncendio::all();
+            // $personaAfectadas = Formulario::with(['personaAfectadas' => function ($query) {
+            //     $query->where('grupo_etario_id', 1); // Filtrar por grupo etario 1
+            // }])->where('id', 'like', '%' . $search . '%')->paginate($paginate);
+
+            $html = view('voyager::formularios.list', compact( 'formularios'))->render();
             return response()->json([
                 'code' => 200,
                 'html' => $html,
@@ -363,5 +365,44 @@ class FormController extends Controller
             }
 
         }, 5);
+    }
+
+    public function show($id){
+        $form = Formulario::find($id); // Replace with your logic to retrieve the form data
+        // $form = Formulario::with('incendio')->find($id);
+
+        $personasAfectadas = PersonaAfectadaIncendio::where('formulario_id', $id)->get();
+
+        $educacions = Educacion::with('modalidadEducacion', 'institucion')->where('formulario_id', $id)->get();
+        $modalidadEducacions = ModalidadEducacion::all();
+        // $educacions = Educacion::where('formulario_id', $id)->get();
+        // $modalidadEducacions  = ModalidadEducacion::all();
+        // $institucions = Institucion::all();
+        $pecuarios = SectorPecuario::where('formulario_id', $id)->get();
+
+
+        $saluds = Salud::with('detalleEnfermedad', 'grupoEtario')->where('formulario_id', $id)->get();
+        $detalleEnfermedades = DetalleEnfermedad::all();
+        // $grupoEtarioSaluds = GrupoEtario::whereIn('nombre_grupo_etario', ['NNyA', 'Hombres', 'Mujeres', 'Tercera Edad'])->get();
+
+        $infraestructuras = Infraestructura::with('tipoInfraestructura')->where('formulario_id', $id)->get();
+
+        $servicioBasicos = ServicioBasico::with('tipoServicioBasico')->where('formulario_id', $id)->get();
+
+        $sectorPecuarios = SectorPecuario::with('tipoEspecie')->where('formulario_id', $id)->get();
+
+        $sectorAgricolas = SectorAgricola::with('tipoCultivo')->where('formulario_id', $id)->get();
+
+        $areaForestals = AreaForestal::with('detalleAreaForestal')->where('formulario_id', $id)->get();
+
+        $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
+
+        return view('vendor.voyager.formularios.show', compact('form', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'pecuarios', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres'));
+    }   
+
+    public function edit($formulario){
+        $comunidad = Comunidad::all();
+
+        return view('vendor.voyager.formularios.edit', compact('comunidad'));
     }
 }

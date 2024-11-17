@@ -3,18 +3,43 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Nombre</th>
+                    <th>formulario</th>
+                    <th>Lugar</th>
+                    <th>incendio</th>
+                    <th>Com-in</th>
+                    {{-- <th>Personas Afectadas</th> --}}
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($provincias as $row => $provincia)
+                @foreach($formularios as $row => $formulario)
                     <tr>
                         <td scope="row">{{ $row + 1 }}</td>
-                        <td>{{ $provincia->nombre_provincia }}</td>
-                            <td class="no-sort no-click bread-actions text-right">
+                        <td>{{ $formulario->id }} - {{ $formulario->fecha_llenado }}</td>
+                        <td>{{ $formulario->comunidad->municipio->provincia->nombre_provincia }} <br> {{ $formulario->comunidad->municipio->nombre_municipio }} <br> {{ $formulario->comunidad->nombre_comunidad }} <br> {{ $formulario->comunidad->tipo_comunidad }}</td>
+                        <td>{{ $formulario->incendio->estado }} </td>
+                        @foreach ($formulario->comunidad->incendios as $incendio)
+                            <td>{{ $incendio->incendios_registrados }}</td>
+                        @endforeach
+
+                        {{-- @foreach ($personaAfectadas as $personaAfectada)
+                            <h2>Formulario {{ $personaAfectada->id }}</h2>
+                            <ul>
+                                @foreach ($personaAfectadas->personaAfectadas as $personaAfectad)
+                                    <li>{{ $personaAfectad->nombre }} ({{ $personaAfectad->grupoEtario->nombre }})</li>
+                                @endforeach
+                            </ul>
+                        @endforeach --}}
+                        {{-- @foreach ($personasAfectadas as $personaAfectada)
+                            <td>{{ $personaAfectada->grupo_etario->nombre }}</td> <td>{{ $personaAfectada->cantidad_afectados_por_incendios }}</td>
+                        @endforeach --}}
+
+                        <td class="no-sort no-click bread-actions text-right">
+                                <a href="{{ route('formularios.show', $formulario->id) }}" title="Ver" class="btn btn-sm btn-warning view">
+                                    <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
+                                </a>
                                 @if (auth()->user()->hasPermission('browse_admin'))
-                                    <a href="" title="Editar" class="btn btn-sm btn-info">
+                                    <a href="{{ route('formularios.edit', $formulario->id) }}" title="Editar" class="btn btn-sm btn-info">
                                         <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
                                     </a>
                                 @endif

@@ -17,5 +17,8 @@ class Incendio extends Model
     {
         return $this->belongsToMany(Comunidad::class)->withPivot(['incendios_registrados', 'incendios_activos', 'necesidades', 'num_familias_afectadas', 'num_familias_damnificadas'])->withTimestamps();
     }
+    public function formularios(){
+        return $this->hasMany(Formulario::class);
+    }
 
 }

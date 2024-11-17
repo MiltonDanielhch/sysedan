@@ -16,4 +16,12 @@ class Formulario extends Model
     public function comunidad(){
         return $this->belongsTo(Comunidad::class);
     }
+    public function incendio(){
+        return $this->belongsTo(Incendio::class);
+    }
+    public function incendios()
+{
+    return $this->hasMany(Incendio::class);
+}
+
 }

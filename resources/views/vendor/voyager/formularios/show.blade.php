@@ -2,20 +2,20 @@
 @section('css')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @stop
-@section('page_title', isset($formulario) ? 'Editar formulario' : 'Crear formulario')
+{{-- @section('page_title', 'Vista formulario'); --}}
+@section('page_title', isset($form) ? 'Ver formulario' : 'Crear formulario')
 
 @section('page_header')
 <h1 class="page-title">
     <i class="voyager-people"></i>
-    {{ isset($formulario) ? 'Editar' : 'Crear' }} formulario
+    Ver formulario
 </h1>
 @stop
 
 @section('content')
 <div class="page-content edit-add container-fluid">
     <div class="row">
-        <form action="{{route('formularios.store')}}" method="POST">
-            {{ csrf_field() }}
+
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
@@ -43,38 +43,25 @@
                                                             {{-- Select Provincia --}}
                                                             <div class="form-group">
                                                                 <label for="provincia"><b>Provincia</b></label>
-                                                                <select name="provincia" id="select_provincia"
-                                                                    class="form-control" required>
-                                                                    <option value="" disabled selected>-- Selecciona
-                                                                        Provincia--</option>
-                                                                    @foreach ($provincias as $provincia)
-                                                                    <option value="{{ $provincia->id }}">{{
-                                                                        $provincia->nombre_provincia }}</option>
-                                                                    @endforeach
-                                                                </select>
+                                                                <p>{{ $form->comunidad->municipio->provincia->nombre_provincia }} </p>
                                                             </div>
 
                                                             {{-- Select Municipio --}}
                                                             <div class="form-group">
                                                                 <label for="municipio">Municipio</label>
-                                                                <div id="respuesta_provincia">
-                                                                    <div class="loading-indicator">Cargando...</div>
-                                                                </div>
+                                                                <p>{{ $form->comunidad->municipio->nombre_municipio }}</p>
                                                             </div>
 
                                                             {{-- Nombre del Alcalde --}}
                                                             <div class="form-group">
                                                                 <label for="nombre_alcalde">Nombre del Alcalde</label>
-                                                                <input type="text" id="nombre_alcalde" name="nombre_alcalde"
-                                                                    placeholder="Nombre Alcalde" class="form-control"
-                                                                    readonly>
+                                                                <p>{{ $form->comunidad->municipio->nombre_alcalde }}</p>
+
                                                             </div>
                                                             {{-- Población Total --}}
                                                             <div class="form-group">
                                                                 <label for="poblacion_total">Población Total</label>
-                                                                <input type="number" id="poblacion_total"
-                                                                    name="poblacion_total" placeholder="Población Total"
-                                                                    class="form-control" readonly>
+                                                                <p>{{ $form->comunidad->municipio->poblacion_total }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -87,19 +74,16 @@
                                                     <div class="panel-body">
                                                         <div class="form-group">
                                                             <label for="fecha_llenado">Fecha de Llenado</label>
-                                                            <input type="date" id="fecha_llenado" name="fecha_llenado" class="form-control" required>
+                                                            <p> {{ $form->fecha_llenado }}</p>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="nombre_comunidad">Nombre Comunidad</label>
-                                                            <input type="text" name="nombre_comunidad" class="form-control" required>
+                                                            <p> {{ $form->comunidad->nombre_comunidad }}</p>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="tipo_comunidad">Tipo de Comunidad</label>
-                                                            <select name="tipo_comunidad" id="tipo_comunidad" class="form-control" required>
-                                                                <option value="INDÍGENA">INDÍGENA</option>
-                                                                <option value="CAMPESINA">CAMPESINA</option>
-                                                                <option value="INTERCULTURAL">INTERCULTURAL</option>
-                                                            </select>
+                                                            <p> {{ $form->comunidad->tipo_comunidad }}</p>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -131,17 +115,16 @@
                                                         <div class="panel-body">
                                                             <div class="form-group">
                                                                 <label for="fecha_inicio">Fecha de Inicio</label>
-                                                                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+                                                                <p>{{ $form->incendio->fecha_inicio }}</p>
+
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="causas_probables">Causas Probables</label>
-                                                                <input type="text" id="causas_probables" name="causas_probables" placeholder="Introducir Probables"
-                                                                    class="form-control" required>
+                                                                <p>{{ $form->incendio->causas_probables }}</p>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="estado">Estado</label>
-                                                                <input type="text" id="estado" name="estado" placeholder="Introducir estado del incendio"
-                                                                    class="form-control" required>
+                                                                <p>{{ $form->incendio->estado }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -154,28 +137,33 @@
                                                         <div class="panel-body">
                                                             <div class="form-group">
                                                                 <label for="incendios_registrados">Incendios Registrados</label>
-                                                                <input type="number" id="incendios_registrados" name="incendios_registrados"
-                                                                    placeholder="Introducir Incendios Registrados" class="form-control" required>
+                                                                <p>
+                                                                    {{-- {{ $form->comunidad->incendios }} --}}
+                                                                    @php
+                                                                        $incendiosRegistrados = $form->comunidad->incendios->first()->pivot->incendios_registrados;
+                                                                    @endphp
+
+                                                                    <p>Número de incendios registrados: {{ $incendiosRegistrados }}</p>
+                                                                    {{-- @dump($incendiosRegistrados) --}}
+                                                                </p>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="incendios_activos">Incendios Activos</label>
-                                                                <input type="number" id="incendios_activos" name="incendios_activos"
-                                                                    placeholder="Introducir Incendios Activos" class="form-control" required>
+                                                                <p>{{ $form->comunidad->incendios->first()->pivot->incendios_activos  }}</p>
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="necesidades">Necesidades</label>
-                                                                <input type="text" id="necesidades" name="necesidades" placeholder="Introducir necesidades"
-                                                                    class="form-control">
+                                                                <p>{{ $form->comunidad->incendios->first()->pivot->necesidades  }}</p>
+
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="num_familias_afectadas">Familias Afectadas</label>
-                                                                <input type="number" id="num_familias_afectadas" name="num_familias_afectadas"
-                                                                    placeholder="Introducir Numero" class="form-control" required>
+                                                                <p>{{ $form->comunidad->incendios->first()->pivot->num_familias_afectadas  }}</p>
+
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="num_familias_damnificadas">Familias Damnificadas</label>
-                                                                <input type="number" id="num_familias_damnificadas" name="num_familias_damnificadas"
-                                                                    placeholder="Introducir Numero" class="form-control" required>
+                                                                <p>{{ $form->comunidad->incendios->first()->pivot->num_familias_damnificadas  }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -208,29 +196,27 @@
                                                         <div class="panel-heading"><b>Personas</b></div>
                                                         <div class="panel-body">
                                                             <h4> PERSONAS AFECTADAS</h4>
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Grupo Etario</th>
-                                                                        <th>N° Afectados por Incendios</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($grupoEtarios as $grupoEtario)
-                                                                    <tr>
-                                                                        <td>
-                                                                            {{ $grupoEtario->nombre_grupo_etario }}
-                                                                            <input type="hidden" name="grupo_etario_id[]"
-                                                                                value="{{ $grupoEtario->id }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="cantidad_afectados_por_incendios[]"
-                                                                                class="form-control">
-                                                                        </td>
-                                                                    </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                            @isset($personasAfectadas)
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Grupo Etario</th>
+                                                                            <th>Número de Afectados</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($personasAfectadas as $personaAfectada)
+                                                                            <tr>
+                                                                                <td>{{ $personaAfectada->grupoEtario->nombre_grupo_etario }}</td>
+                                                                                <td>{{ $personaAfectada->cantidad_afectados_por_incendios }}</td>
+                                                                            </tr>
+                                                                            {{-- @dump($personaAfectada); --}}
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            @else
+                                                                <p>No se encontraron personas afectadas para este formulario.</p>
+                                                            @endisset
                                                         </div>
                                                     </div>
                                                 </div>
@@ -240,6 +226,20 @@
                                                         <div class="panel-heading"><b>Personas</b></div>
                                                         <div class="panel-body">
                                                             <h4>INFORMACIÓN EN EDUCACIÓN</h4>
+                                                            @php
+                                                                // Eager load relationships to reduce queries
+                                                                // $educacions = Educacion::with('modalidadEducacion', 'institucion')->where('formulario_id', $id)->get();
+
+                                                                // Group educacions by institution and modality for efficient lookup
+                                                                $educacionData = [];
+                                                                foreach ($educacions as $educacion) {
+                                                                    $educacionData[$educacion->institucion_id][$educacion->modalidad_educacion_id] = $educacion->numero_estudiantes;
+                                                                }
+
+                                                                // Fetch all modalities once
+                                                                // $modalidadEducacions = ModalidadEducacion::all();
+                                                            @endphp
+
                                                             <table class="table">
                                                                 <thead>
                                                                     <tr>
@@ -250,17 +250,14 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($institucions as $institucion)
+                                                                    @foreach ($educacions->groupBy('institucion_id') as $institucionId => $institucionEducacions)
                                                                         <tr>
-                                                                            <td>{{ $institucion->nombre_institucion }}
-                                                                                <input type="hidden" name="institucion_id[]" value="{{ $institucion->id }}">
-                                                                            </td>
+                                                                            <td>{{ $institucionEducacions->first()->institucion->nombre_institucion }}</td>
                                                                             @foreach ($modalidadEducacions as $modalidadEducacion)
-                                                                                <td>
-                                                                                    <input type="number" name="num_estudiantes[{{ $institucion->id }}][{{ $modalidadEducacion->id }}]" class="form-control">
-                                                                                </td>
+                                                                                <td>{{ $educacionData[$institucionId][$modalidadEducacion->id] ?? 'N/A' }}</td>
                                                                             @endforeach
                                                                         </tr>
+                                                                        {{-- @dump($institucionEducacions); --}}
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
@@ -296,6 +293,12 @@
                                                         <div class="panel-heading"><b>Salud</b></div>
                                                         <div class="panel-body">
                                                             <h4> INFORMACIÓN DE SALUD</h4>
+                                                            @php
+                                                                $saludData = [];
+                                                                foreach ($saluds as $salud){
+                                                                    $saludData[$salud->detalle_enfermedad_id][$salud->grupo_etario_id] = $salud->cantidad_grupo_enfermos;
+                                                                }
+                                                            @endphp
                                                             <table class="table">
                                                                 <thead>
                                                                     <tr>
@@ -306,19 +309,21 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($grupoEtarioSaluds as $grupoEtarioSalud)
+                                                                    @foreach ($saluds->groupBy('grupo_etario_id') as $grupoEtarioId => $grupoEtarioSaluds)
                                                                         <tr>
-                                                                            <td>{{ $grupoEtarioSalud->nombre_grupo_etario }}</td>
+                                                                            <td>{{ $grupoEtarioSaluds->first()->grupoEtario->nombre_grupo_etario }}</td>
                                                                             @foreach ($detalleEnfermedades as $detalleEnfermedad)
                                                                                 <td>
-                                                                                    <input type="number" name="cantidad_grupo_enfermos[{{ $grupoEtarioSalud->id }}][{{ $detalleEnfermedad->id }}]" class="form-control" min="0">
+                                                                                    @if (isset($saludData[$detalleEnfermedad->id][$grupoEtarioId]))
+                                                                                        {{ $saludData[$detalleEnfermedad->id][$grupoEtarioId] }}
+                                                                                    @else
+                                                                                        0 @endif
                                                                                 </td>
                                                                             @endforeach
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
-
                                                         </div>
                                                     </div>
                                                 </div>
@@ -359,16 +364,12 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($tipoInfraestructuras as $tipoInfraestructura)
+                                                                    @foreach ($infraestructuras->groupBy('tipo_infraestructura_id') as $tipoInfraestructuraId => $infraestructura)
                                                                         <tr>
-                                                                            <td>
-                                                                                {{ $tipoInfraestructura->nombre_tipo_infraestructura }}
-                                                                                <input type="hidden" name="tipo_infraestructura_id[]" value="{{ $tipoInfraestructura->id }}">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" name="numeros_infraestructuras_afectadas[]" class="form-control" >
-                                                                            </td>
+                                                                            <td>{{ $infraestructura->first()->tipoInfraestructura->nombre_tipo_infraestructura }}</td>
+                                                                            <td>{{ $infraestructura->first()->numeros_infraestructuras_afectadas }}</td>
                                                                         </tr>
+                                                                        {{-- @dump($infraestructura) --}}
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
@@ -390,17 +391,16 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($tiposerviciobasicos as $tiposerviciobasico)
+                                                                    @foreach ($servicioBasicos->groupBy('tipo_servicio_basico_id') as $tipoServicioBasicoId => $servicioBasico)
                                                                         <tr>
                                                                             <td>
-                                                                                {{ $tiposerviciobasico->nombre_servicio_basico }}
-                                                                                <input type="hidden" name="tipo_servicio_basico_id[]" value="{{ $tiposerviciobasico->id }}">
+                                                                                {{ $servicioBasico->first()->tipoServicioBasico->nombre_servicio_basico }}
                                                                             </td>
                                                                             <td>
-                                                                                <input type="text" name="informacion_tipo_dano[]" class="form-control" placeholder="Describa el daño">
+                                                                                {{ $servicioBasico->first()->informacion_tipo_dano }}
                                                                             </td>
                                                                             <td>
-                                                                                <input type="number" name="numero_comunidades_afectadas[]" class="form-control">
+                                                                                {{ $servicioBasico->first()->numero_comunidades_afectadas }}
                                                                             </td>
                                                                         </tr>
                                                                     @endforeach
@@ -447,17 +447,12 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($tipoEspecies as $tipoEspecie)
+                                                                    @foreach ($sectorPecuarios->groupBy('tipo_especie_id') as $tipoEspecieId => $SectorPecuario)
                                                                     <tr>
-                                                                        <td>{{ $tipoEspecie->nombre_tipo_especie }}
-                                                                            <input type="hidden" name="tipo_especie_id[]" value="{{ $tipoEspecie->id }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="numero_animales_afectados[]" class="form-control">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="numero_animales_fallecidos[]" class="form-control">
-                                                                        </td>
+                                                                        <td>{{ $SectorPecuario->first()->tipoEspecie->nombre_tipo_especie }}</td>
+                                                                        <td>{{ $SectorPecuario->first()->numero_animales_afectados }}</td>
+                                                                        <td>{{ $SectorPecuario->first()->numero_animales_fallecidos }}</td>
+
                                                                     </tr>
                                                                     @endforeach
                                                                 </tbody>
@@ -480,17 +475,11 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($tipoCultivos as $tipoCultivo)
+                                                                    @foreach ($sectorAgricolas->groupBy('tipo_cultivo_id') as $tipoCultivoId => $sectorAgricola)
                                                                         <tr>
-                                                                            <td>{{ $tipoCultivo->nombre_tipo_cultivo }}
-                                                                                <input type="hidden" name="tipo_cultivo_id[]" value="{{ $tipoCultivo->id }}">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" name="hectareas_afectados[]" class="form-control">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" name="hectareas_perdidas[]" class="form-control">
-                                                                            </td>
+                                                                            <td>{{ $sectorAgricola->first()->tipoCultivo->nombre_tipo_cultivo }}</td>
+                                                                            <td>{{ $sectorAgricola->first()->hectareas_afectados }}</td>
+                                                                            <td>{{ $sectorAgricola->first()->hectareas_perdidas }}</td>
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
@@ -534,18 +523,15 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($detalleAreaForestals as $detalleAreaForestal)
+                                                                    @foreach ($areaForestals->groupBy('detalle_area_forestal_id') as $detalleAreaForestalId => $areaForestal)
                                                                     <tr>
                                                                         <td>
-                                                                            {{ $detalleAreaForestal->nombre_detalle_area_forestal }}
-                                                                            <input type="hidden" name="detalle_area_forestal_id[]"
-                                                                                value="{{ $detalleAreaForestal->id }}">
+                                                                            {{ $areaForestal->first()->detalleAreaForestal->nombre_detalle_area_forestal }}
                                                                         </td>
                                                                         <td>
-                                                                            <input type="number" name="hectareas_perdidas_forestales[]"
-                                                                                class="form-control">
+                                                                            {{ $areaForestal->first()->hectareas_perdidas_forestales }}
                                                                         </td>
-                                                                    </tr>
+                                                                     </tr>
                                                                     @endforeach
                                                                 </tbody>
                                                             </table>
@@ -558,27 +544,30 @@
                                                         <div class="panel-heading"><b>Fauna Silvestre</b></div>
                                                         <div class="panel-body">
                                                             <h4>FAUNA SILVESTRE AFECTADA POR INCENDIOS FORESTALES</h4>
+                                                            @php
+                                                            $faunaSilvestreData = [];
+                                                            foreach ($faunaSilvestres as $faunaSilvestre) {
+                                                                $faunaSilvestreData[$faunaSilvestre->detalle_fauna_silvestre_id][$faunaSilvestre->tipo_especie_id] = $faunaSilvestre->numero_fauna_silvestre;
+                                                            }
+                                                            @endphp
+                                                            
                                                             <table class="table table-bordered table-striped">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Detalle</th>
-                                                                        @foreach ($tipoFaunaEspecies as $tipoFaunaEspecie)
-                                                                            <th>{{ $tipoFaunaEspecie->nombre_tipo_especie }}</th>
+                                                                        @foreach ($faunaSilvestres->groupBy('tipo_especie_id') as $detalleFaunaSilvestre => $faunaSilvestre)
+                                                                            <th>{{ $faunaSilvestre->first()->tipoEspecie->nombre_tipo_especie }}</th>
                                                                         @endforeach
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @foreach ($detalleFaunaSilvestres as $detalleFaunaSilvestre)
+                                                                    @foreach ($faunaSilvestres->groupBy('detalle_fauna_silvestre_id') as $detalleFaunaSilvestreId => $faunaSilvestre)
                                                                         <tr>
-                                                                            <td>{{ $detalleFaunaSilvestre->nombre_detalle_fauna_silvestre }}
-                                                                                <input type="hidden" name="detalle_fauna_silvestre_id[]" value="{{ $detalleFaunaSilvestre->id }}">
-                                                                            </td>
-                                                                            @foreach ($tipoFaunaEspecies as $tipoFaunaEspecie)
-                                                                                <td>
-                                                                                    <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestre->id }}][{{ $tipoFaunaEspecie->id }}]"
-                                                                                           class="form-control">
-                                                                                </td>
+                                                                            <td>{{ $faunaSilvestre->first()->detalleFaunaSilvestre->nombre_detalle_fauna_silvestre }}</td>
+                                                                            @foreach ($faunaSilvestre as $fauna)
+                                                                                <td>{{ $faunaSilvestreData[$detalleFaunaSilvestreId][$fauna->tipo_especie_id] }}</td>
                                                                             @endforeach
+                                                                            {{-- @dump($fauna); --}}
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
@@ -594,82 +583,10 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
-        </form>
+
     </div>
 
 </div>
-@stop
-
-@section('javascript')
-<script>
-$('#select_provincia').on('change', function() {
-    var id_provincia = $(this).val();
-    $('#respuesta_provincia').html('<div class="loading-indicator">Loading...</div>');
-    $.ajax({
-        url: "{{ url('/admin/formularios/create/provincia/') }}/" + id_provincia,
-        type: "GET",
-        success: function(data) {
-            $('#respuesta_provincia').html(data);
-        },
-        error: function() {
-            $('#respuesta_provincia').html('<div class="error-message">An error occurred. Please try again later.</div>');
-        }
-    });
-});
-</script>
-<script>
-    $(document).on('change', '#select_municipio', function(){
-        var id_municipio = $(this).val();
-        // alert(id_municipio);
-        if(id_municipio){
-            $.ajax({
-                url:"{{ url('/admin/formularios/create/get-alcalde') }}/" + id_municipio,
-                type: "GET",
-                        success: function(response) {
-                            // Si la respuesta es exitosa, carga el nombre del alcalde en el campo
-                            if (response.nombre_alcalde) {
-                                $('#nombre_alcalde').val(response.nombre_alcalde);
-                            } else {
-                                $('#nombre_alcalde').val('');
-                            }
-                        },
-                        error: function() {
-                            alert('Error al cargar el nombre del alcalde');
-                        }
-                    });
-                } else {
-                    $('#nombre_alcalde').val('');
-            }
-    });
-</script>
-
-<script>
-    $(document).on('change', '#select_municipio', function(){
-        var id_municipio = $(this).val();
-        // alert(id_municipio);
-        if(id_municipio){
-            $.ajax({
-                url:"{{ url('/admin/formularios/create/get-poblacion') }}/" + id_municipio,
-                type: "GET",
-                        success: function(response) {
-                            // Si la respuesta es exitosa, carga el nombre del alcalde en el campo
-                            if (response.poblacion_total) {
-                                $('#poblacion_total').val(response.poblacion_total);
-                            } else {
-                                $('#poblacion_total').val('');
-                            }
-                        },
-                        error: function() {
-                            alert('Error al cargar el nombre del alcalde');
-                        }
-                    });
-                } else {
-                    $('#nombre_alcalde').val('');
-            }
-    });
-</script>
-
 @stop
