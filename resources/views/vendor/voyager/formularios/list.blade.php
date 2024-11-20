@@ -43,11 +43,11 @@
                                         <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
                                     </a>
                                 @endif
-                                @if (auth()->user()->hasPermission('browse_admin'))
-                                    <button title="Anular" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('{{route('')">
-                                        <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                                    </button>
-                                @endif
+                                <form action="{{ route('formularios.destroy', $formulario) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
                             </td>
                         </td>
                     </tr>

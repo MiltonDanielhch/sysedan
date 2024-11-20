@@ -13,6 +13,10 @@ class Formulario extends Model
         'comunidad_id',
         'incendio_id',
     ];
+    public function delete()
+    {
+        $this->delete();
+    }
     public function comunidad(){
         return $this->belongsTo(Comunidad::class);
     }

@@ -61,7 +61,7 @@
                                                             <div class="form-group">
                                                                 <label for="municipio">Municipio</label>
                                                                 <div id="respuesta_provincia">
-                                                                    <select name="municipio_id" id="select_municipio" class="form-control" required>
+                                                                    <select name="municipio_id" id="select_municipio" class="form-control" required readonly>
                                                                         <option value="" disabled selected>-- Selecciona un Municipio --</option>
                                                                         @foreach ($municipios as $municipio)
                                                                         <option value="{{ $municipio->id }}" {{ $municipio->id === $municipioId ? 'selected' : '' }}>{{ $municipio->nombre_municipio }}</option>
@@ -75,7 +75,7 @@
                                                             <div class="form-group">
                                                                 <label for="nombre_alcalde">Nombre del Alcalde</label>
                                                                 <input type="text" id="nombre_alcalde" name="nombre_alcalde"
-                                                                    placeholder="Nombre Alcalde" class="form-control"
+                                                                    placeholder="Nombre Alcalde" class="form-control" value="{{ $formulario->comunidad->municipio->nombre_alcalde }}"
                                                                     readonly>
                                                             </div>
                                                             {{-- Población Total --}}
@@ -83,7 +83,7 @@
                                                                 <label for="poblacion_total">Población Total</label>
                                                                 <input type="number" id="poblacion_total"
                                                                     name="poblacion_total" placeholder="Población Total"
-                                                                    class="form-control" readonly>
+                                                                    class="form-control" value="{{ $formulario->comunidad->municipio->poblacion_total }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -96,18 +96,26 @@
                                                     <div class="panel-body">
                                                         <div class="form-group">
                                                             <label for="fecha_llenado">Fecha de Llenado</label>
-                                                            <input type="date" id="fecha_llenado" name="fecha_llenado" class="form-control" required>
+                                                            <input type="date" id="fecha_llenado" name="fecha_llenado" class="form-control" value="{{ $formulario->fecha_llenado }}" required>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="nombre_comunidad">Nombre Comunidad</label>
-                                                            <input type="text" name="nombre_comunidad" class="form-control" required>
+                                                            <input type="text" name="nombre_comunidad" class="form-control" value="{{ $formulario->comunidad->nombre_comunidad }}" required>
                                                         </div>
+
+                                                        @php
+                                                            $tipo_comunidades = [
+                                                                'INDÍGENA' => 'INDÍGENA',
+                                                                'CAMPESINA' => 'CAMPESINA',
+                                                                'INTERCULTURAL' => 'INTERCULTURAL',
+                                                            ];
+                                                        @endphp
                                                         <div class="form-group">
                                                             <label for="tipo_comunidad">Tipo de Comunidad</label>
                                                             <select name="tipo_comunidad" id="tipo_comunidad" class="form-control" required>
-                                                                <option value="INDÍGENA">INDÍGENA</option>
-                                                                <option value="CAMPESINA">CAMPESINA</option>
-                                                                <option value="INTERCULTURAL">INTERCULTURAL</option>
+                                                                @foreach ($tipo_comunidades as $key => $value)
+                                                                    <option value="{{ $key }}" {{$key == $formulario->comunidad->tipo_comunidad ? 'selected' : ''}}>{{ $value }}</option>
+                                                                @endforeach
                                                             </select>
                                                         </div>
                                                       </div>
@@ -428,8 +436,8 @@
                                                                                 {{ $servicioBasico->first()->informacion_tipo_dano }}
                                                                             </td>
                                                                             <td>
-                                                                                <input type="number" 
-                                                                                       name="numero_comunidades_afectadas" 
+                                                                                <input type="number"
+                                                                                       name="numero_comunidades_afectadas"
                                                                                        value="{{ $servicioBasico->first()->numero_comunidades_afectadas }}"
                                                                                        class="form-control"
                                                                                        min="0"
@@ -481,7 +489,7 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     @foreach ($sectorPecuarios->groupBy('tipo_especie_id') as $tipoEspecieId => $SectorPecuario)
-                                                                    <tr>    
+                                                                    <tr>
                                                                         <td>{{ $SectorPecuario->first()->tipoEspecie->nombre_tipo_especie }}</td>
                                                                         <td>
                                                                             <input type="number" name="numero_animales_afectados" value="{{ $SectorPecuario->first()->numero_animales_afectados }}" class="form-control">
@@ -572,7 +580,7 @@
                                                                         <td>
                                                                             <input type="number" name="hectareas_perdidas_forestales[]"
                                                                             class="form-control" value="{{ $areaForestal->first()->hectareas_perdidas_forestales }}">
-                                                                            
+
                                                                         </td>
                                                                      </tr>
                                                                     @endforeach
