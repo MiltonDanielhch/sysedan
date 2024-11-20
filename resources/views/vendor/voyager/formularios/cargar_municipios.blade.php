@@ -4,3 +4,5 @@
     <option value="{{ $municipio->id }}">{{ $municipio->nombre_municipio }}</option>
     @endforeach
 </select>
+
+

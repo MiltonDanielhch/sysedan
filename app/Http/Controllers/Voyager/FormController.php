@@ -398,11 +398,42 @@ class FormController extends Controller
         $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
 
         return view('vendor.voyager.formularios.show', compact('form', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'pecuarios', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres'));
-    }   
+    }
 
-    public function edit($formulario){
-        $comunidad = Comunidad::all();
 
-        return view('vendor.voyager.formularios.edit', compact('comunidad'));
+
+    public function edit($id)
+    {
+        $formulario = Formulario::findOrFail($id);
+        $provinciaId = $formulario->comunidad->municipio->provincia->id ?? null;
+        // dd($formularios);
+        $provincias = Provincia::all();
+
+        $municipioId = $formulario->comunidad->municipio->id ?? null;
+        $municipios = Municipio::all();
+
+        $grupoEtarios = GrupoEtario::all();
+
+        $personasAfectadas = PersonaAfectadaIncendio::with('grupoEtario')->where('formulario_id', $id)->get();
+
+        $educacions = Educacion::with('modalidadEducacion', 'institucion')->where('formulario_id', $id)->get();
+        $modalidadEducacions = ModalidadEducacion::all();
+
+        $saluds = Salud::with('detalleEnfermedad', 'grupoEtario')->where('formulario_id', $id)->get();
+        $detalleEnfermedades = DetalleEnfermedad::all();
+
+        $infraestructuras = Infraestructura::with('tipoInfraestructura')->where('formulario_id', $id)->get();
+
+        $servicioBasicos = ServicioBasico::with('tipoServicioBasico')->where('formulario_id', $id)->get();
+
+        $sectorPecuarios = SectorPecuario::with('tipoEspecie')->where('formulario_id', $id)->get();
+
+        $sectorAgricolas = SectorAgricola::with('tipoCultivo')->where('formulario_id', $id)->get();
+
+        $areaForestals = AreaForestal::with('detalleAreaForestal')->where('formulario_id', $id)->get();
+
+        $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
+
+        return view('vendor.voyager.formularios.edit', compact('formulario', 'provinciaId', 'provincias', 'municipioId', 'municipios', 'grupoEtarios', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres'));
     }
 }
