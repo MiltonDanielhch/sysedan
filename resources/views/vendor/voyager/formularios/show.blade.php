@@ -309,9 +309,12 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
+
+
                                                                     @foreach ($saluds->groupBy('grupo_etario_id') as $grupoEtarioId => $grupoEtarioSaluds)
-                                                                        <tr>
-                                                                            <td>{{ $grupoEtarioSaluds->first()->grupoEtario->nombre_grupo_etario }}</td>
+                                                                    <tr>
+                                                                        <td>{{ $grupoEtarioSaluds->first()->grupoEtario->nombre_grupo_etario }}</td>
+                                                                        {{-- @dump($grupoEtarioSaluds); --}}
                                                                             @foreach ($detalleEnfermedades as $detalleEnfermedad)
                                                                                 <td>
                                                                                     @if (isset($saludData[$detalleEnfermedad->id][$grupoEtarioId]))
@@ -550,7 +553,7 @@
                                                                 $faunaSilvestreData[$faunaSilvestre->detalle_fauna_silvestre_id][$faunaSilvestre->tipo_especie_id] = $faunaSilvestre->numero_fauna_silvestre;
                                                             }
                                                             @endphp
-                                                            
+
                                                             <table class="table table-bordered table-striped">
                                                                 <thead>
                                                                     <tr>
