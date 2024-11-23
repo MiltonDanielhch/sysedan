@@ -83,6 +83,7 @@ class FormController extends Controller
         $detalleAreaForestals = DetalleAreaForestal::all();
         $detalleFaunaSilvestres = DetalleFaunaSilvestre::all();
         $tipoFaunaEspecies = TipoEspecie::whereIn('nombre_tipo_especie', ['Mamíferos', 'Reptiles'])->get();
+
         return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions', 'tiposerviciobasicos', 'tipoInfraestructuras', 'tipoEspecies','tipoCultivos', 'detalleAreaForestals', 'detalleFaunaSilvestres', 'tipoFaunaEspecies'));
     }
 
@@ -497,7 +498,9 @@ class FormController extends Controller
 
         // dd($validatedData);
 
+        DB::beginTransaction();
 
+        try {
             // Encontrar el formulario a actualizar
             $formulario = Formulario::findOrFail($id);
 
@@ -649,10 +652,14 @@ class FormController extends Controller
                 ]);
             }
 
-
+            DB::commit();
 
             return redirect()->route('formularios.index')->with('success', 'Formulario actualizado correctamente');
-
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+            return redirect()->back()->withErrors(['error' => 'Ocurrió un error al actualizar el formulario.']);
+        }
     }
 
     public function destroy($id) {
