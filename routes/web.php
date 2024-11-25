@@ -36,6 +36,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], funct
     Route::get('formularios/create/get-alcalde/{municipioId}', [FormController::class, 'getAlcalde'])->name('admin.formulario.getAlcalde');
     Route::get('formularios/create/get-poblacion/{municipioId}', [FormController::class, 'getPoblacion'])->name('admin.formulario.getPoblacion');
 
+    // Rutas para actualizar el formulario
+    Route::get('formularios/edit/provincia/{provinciaId}', [FormController::class, 'getMunicipiosForEdit'])->name('get.municipios.edit');
+    Route::get('formularios/edit/get-alcalde/{municipioId}', [FormController::class, 'getAlcaldeForEdit'])->name('get.alcalde.edit');
+    Route::get('formularios/edit/get-poblacion/{municipioId}', [FormController::class, 'getPoblacionForEdit'])->name('get.poblacion.edit');
 
 });
 

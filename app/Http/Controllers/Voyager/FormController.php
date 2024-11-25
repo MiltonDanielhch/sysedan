@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Voyager;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateFormularioRequest;
+use App\Http\Requests\UpdateFormularioRequest;
 use App\Models\AreaForestal;
 use App\Models\Comunidad;
 use App\Models\DetalleAreaForestal;
@@ -30,7 +32,6 @@ use App\Models\TipoServicioBasico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 class FormController extends Controller
 {
@@ -41,37 +42,66 @@ class FormController extends Controller
 
     public function list(Request $request)
     {
-        $paginate = request('paginate') ?? 10;
-        $search = request('search');
-        // $data = Provincia::all();
-        // $data = $data->paginate($paginate);
-        if($request->ajax()){
-            $formularios = Formulario::where('id', 'like', '%' . $search . '%')->paginate($paginate);
-            // $personaAfectadas = PersonaAfectadaIncendio::all();
-            // $personaAfectadas = Formulario::with(['personaAfectadas' => function ($query) {
-            //     $query->where('grupo_etario_id', 1); // Filtrar por grupo etario 1
-            // }])->where('id', 'like', '%' . $search . '%')->paginate($paginate);
+        $paginate = $request->get('paginate', 10);
+        $search = $request->get('search', '');
 
-            $html = view('voyager::formularios.list', compact( 'formularios'))->render();
+        $data = Formulario::with(['comunidad.municipio.provincia', 'incendio'])
+            ->where('id', 'like', '%' . $search . '%')
+            ->orderBy('id', 'asc')
+            ->paginate($paginate);
+
+        if ($request->ajax()) {
+            $html = view('voyager::formularios.list', compact('data'))->render();
             return response()->json([
                 'code' => 200,
                 'html' => $html,
                 'msg' => 'success',
-            ],200);
-        }else{
+            ]);
+        } else {
             return response()->json([
                 'code' => 404,
                 'msg' => 'error',
-                'message' => 'Error, no se puede acceder a la pagina'
+                'message' => 'No se pudo cargar la página.',
             ], 404);
         }
     }
+
+
+    // public function list(Request $request)
+    // {
+    //     $paginate = request('paginate') ?? 10;
+    //     $paginate = is_numeric($paginate) ? $paginate : 10;
+    //     $search = request('search');
+    //     $data = Formulario::where('id', 'like', '%' . $search . '%')
+    //     ->orderBy('id', 'asc');
+    //     if($request->ajax()){
+    //         $formularios = Formulario::where('id', 'like', '%' . $search . '%')->paginate($paginate);
+
+
+    //         $data = $data->paginate($paginate);
+
+    //         $html = view('voyager::formularios.list', compact( 'formularios', 'personasAfectadas', 'data'))->render();
+    //         return response()->json([
+    //             'code' => 200,
+    //             'html' => $html,
+    //             'msg' => 'success',
+    //         ],200);
+    //     }else{
+    //         return response()->json([
+    //             'code' => 404,
+    //             'msg' => 'error',
+    //             'message' => 'Error, no se puede acceder a la pagina'
+    //         ], 404);
+    //     }
+    // }
 
     public function create()
     {
         $provincias = Provincia::all();
         $municipios = Municipio::all();
-        $grupoEtarios = GrupoEtario::all();
+        $grupoEtarios = cache()->remember('grupo_etarios', 60, function() {
+            return GrupoEtario::all();
+        });
         $grupoEtarioSaluds = GrupoEtario::whereIn('nombre_grupo_etario', ['NNyA', 'Hombres', 'Mujeres', 'Tercera Edad'])->get();
         $detalleEnfermedades = DetalleEnfermedad::all();
         $modalidadEducacions = ModalidadEducacion::all();
@@ -84,7 +114,23 @@ class FormController extends Controller
         $detalleFaunaSilvestres = DetalleFaunaSilvestre::all();
         $tipoFaunaEspecies = TipoEspecie::whereIn('nombre_tipo_especie', ['Mamíferos', 'Reptiles'])->get();
 
-        return view('vendor.voyager.formularios.edit-add', compact('provincias', 'municipios', 'grupoEtarios', 'detalleEnfermedades', 'grupoEtarioSaluds', 'modalidadEducacions', 'institucions', 'tiposerviciobasicos', 'tipoInfraestructuras', 'tipoEspecies','tipoCultivos', 'detalleAreaForestals', 'detalleFaunaSilvestres', 'tipoFaunaEspecies'));
+        return view('vendor.voyager.formularios.edit-add',
+            [
+                'provincias' => $provincias,
+                'municipios' => $municipios,
+                'grupoEtarios' => $grupoEtarios,
+                'detalleEnfermedades' => $detalleEnfermedades,
+                'grupoEtarioSaluds' => $grupoEtarioSaluds,
+                'modalidadEducacions' => $modalidadEducacions,
+                'institucions' => $institucions,
+                'tiposerviciobasicos' => $tiposerviciobasicos,
+                'tipoInfraestructuras' => $tipoInfraestructuras,
+                'tipoEspecies' => $tipoEspecies,
+                'tipoCultivos' => $tipoCultivos,
+                'detalleAreaForestals' => $detalleAreaForestals,
+                'detalleFaunaSilvestres' => $detalleFaunaSilvestres,
+                'tipoFaunaEspecies' => $tipoFaunaEspecies,
+            ]);
     }
 
     public function buscar_municipio($id_provincia){
@@ -121,68 +167,34 @@ class FormController extends Controller
     }
 
 
-    public function store(Request $request){
+    public function getMunicipiosForEdit($provinciaId)
+    {
+        $municipios = Municipio::where('provincia_id', $provinciaId)->get();
+        return response()->json($municipios);
+    }
+
+    public function getAlcaldeForEdit($municipioId)
+    {
+        $municipio = Municipio::find($municipioId);
+        return response()->json([
+            'nombre_alcalde' => $municipio ? $municipio->nombre_alcalde : null
+        ]);
+    }
+
+    public function getPoblacionForEdit($municipioId)
+    {
+        $municipio = Municipio::find($municipioId);
+        return response()->json([
+            'poblacion_total' => $municipio ? $municipio->poblacion_total : null
+        ]);
+    }
+
+
+    public function store(CreateFormularioRequest $request){
         // dd($request);
 
         // Validación de datos
-        $validatedData = $request->validate([
-            // formulario
-            'fecha_llenado' => 'required|date',
-            //comunidad
-            'nombre_comunidad' => 'required|string',
-            'tipo_comunidad' => 'required|string',
-            'municipio_id' => 'required|integer|exists:municipios,id',
-            //incendio
-            'fecha_inicio' => 'required|date',
-            'causas_probables' => 'nullable|string',
-            'estado' => 'nullable|string',
-            // comunidad_incendios
-            'incendios_registrados' => 'required|integer',
-            'incendios_activos' => 'required|integer',
-            'necesidades' => 'nullable|string',
-            'num_familias_afectadas' => 'required|integer',
-            'num_familias_damnificadas' => 'required|integer',
-
-             // persona_afectada_incendios
-             'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
-             'cantidad_afectados_por_incendios.*' => 'required|integer',
-
-             // saluds
-             'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
-             'cantidad_grupo_enfermos.*.*' => 'nullable|integer|min:0',
-
-             // educacion
-            'institucion_id.*' => 'required|integer',
-             'num_estudiantes.*.*' => 'nullable|integer',
-
-            // Infraestructura
-            'tipo_infraestructura_id.*' => 'required|integer|exists:tipo_infraestructuras,id',
-            'numeros_infraestructuras_afectadas.*' => 'nullable|integer',
-
-             //servicios basicos
-             'tipo_servicio_basico_id.*' => 'required|integer|exists:tipo_servicio_basicos,id',
-             'informacion_tipo_dano.*' => 'nullable|string',
-             'numero_comunidades_afectadas.*' => 'nullable|integer',
-
-             // sector pecuario
-             'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
-             'numero_animales_afectados.*' => 'nullable|integer',
-             'numero_animales_fallecidos.*' => 'nullable|integer',
-
-             // sector agricola
-             'tipo_cultivo_id.*' => 'required|integer',
-             'hectareas_afectados.*' => 'nullable|numeric',
-             'hectareas_perdidas.*' => 'nullable|numeric',
-
-             // area forestal
-             'detalle_area_forestal_id.*' => 'required|integer',
-             'hectareas_perdidas_forestales.*' => 'required|numeric',
-
-            //  fauna silvestre
-            'detalle_fauna_silvestre_id.*' => 'required|integer',
-            'numero_fauna_silvestre.*.*' => 'required|integer',
-        ]);
-
+        $validatedData = $request->validated();
         // dd($validatedData);
 
         return DB::transaction(function () use ($validatedData) {
@@ -263,24 +275,16 @@ class FormController extends Controller
                     }
                 }
 
-                // $request = request();
-
+                $infraestructuras = [];
                 foreach ($validatedData['tipo_infraestructura_id'] as $index => $tipoInfraestructuraId) {
-                    $data = [
+                    $infraestructuras[] = [
                         'tipo_infraestructura_id' => $tipoInfraestructuraId,
                         'numeros_infraestructuras_afectadas' => $validatedData['numeros_infraestructuras_afectadas'][$index],
                         'formulario_id' => $formulario->id,
                     ];
-                    $validator = Validator::make($data, [
-                        'numeros_infraestructuras_afectadas' => 'required|integer|min:0',
-                    ]);
-                    if ($validator->fails()) {
-                        // Manejar el error
-                        return back()->withErrors($validator);
-                    } else {
-                        Infraestructura::create($data);
-                    }
                 }
+                Infraestructura::insert($infraestructuras);
+
 
                 foreach ($validatedData['tipo_servicio_basico_id'] as $index => $tipoServicioBasicoId) {
                     $data = [
@@ -349,7 +353,6 @@ class FormController extends Controller
                             FaunaSilvestre::create($data);
                             // $allData[] = $data;
                         } else {
-                            // Handle missing tipo_especie_id, e.g., log an error, skip the record, or use a default value
                             Log::error("Missing tipo_especie_id for detalle_fauna_silvestre_id: $detalleId");
                         }
                     }
@@ -364,35 +367,41 @@ class FormController extends Controller
                 return redirect()->back()->with('error', 'Ocurrió un error al guardar el formulario.');
             }
 
-        }, 5);
+        }, 3);
     }
 
     public function show($id){
-        $form = Formulario::find($id); // Replace with your logic to retrieve the form data
-        // $form = Formulario::with('incendio')->find($id);
+        try {
 
-        $personasAfectadas = PersonaAfectadaIncendio::where('formulario_id', $id)->get();
+            $form = Formulario::findOrFail($id);
 
-        $educacions = Educacion::with('modalidadEducacion', 'institucion')->where('formulario_id', $id)->get();
-        $modalidadEducacions = ModalidadEducacion::all();
+            $personasAfectadas = PersonaAfectadaIncendio::where('formulario_id', $id)->get();
 
-        $pecuarios = SectorPecuario::where('formulario_id', $id)->get();
+            $educacions = Educacion::with('modalidadEducacion', 'institucion')->where('formulario_id', $id)->get();
+            $modalidadEducacions = ModalidadEducacion::all();
+
+            $pecuarios = SectorPecuario::where('formulario_id', $id)->get();
 
 
-        $saluds = Salud::with('detalleEnfermedad', 'grupoEtario')->where('formulario_id', $id)->get();
-        $detalleEnfermedades = DetalleEnfermedad::all();
+            $saluds = Salud::with('detalleEnfermedad', 'grupoEtario')->where('formulario_id', $id)->get();
+            $detalleEnfermedades = DetalleEnfermedad::all();
 
-        $infraestructuras = Infraestructura::with('tipoInfraestructura')->where('formulario_id', $id)->get();
+            $infraestructuras = Infraestructura::with('tipoInfraestructura')->where('formulario_id', $id)->get();
 
-        $servicioBasicos = ServicioBasico::with('tipoServicioBasico')->where('formulario_id', $id)->get();
+            $servicioBasicos = ServicioBasico::with('tipoServicioBasico')->where('formulario_id', $id)->get();
 
-        $sectorPecuarios = SectorPecuario::with('tipoEspecie')->where('formulario_id', $id)->get();
+            $sectorPecuarios = SectorPecuario::with('tipoEspecie')->where('formulario_id', $id)->get();
 
-        $sectorAgricolas = SectorAgricola::with('tipoCultivo')->where('formulario_id', $id)->get();
+            $sectorAgricolas = SectorAgricola::with('tipoCultivo')->where('formulario_id', $id)->get();
 
-        $areaForestals = AreaForestal::with('detalleAreaForestal')->where('formulario_id', $id)->get();
+            $areaForestals = AreaForestal::with('detalleAreaForestal')->where('formulario_id', $id)->get();
 
-        $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
+            $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
+
+        } catch (\Exception $e) {
+            Log::error('Error al cargar formulario: ' . $e->getMessage());
+            return redirect()->route('formularios.index')->with('error', 'Hubo un problema al cargar el formulario.');
+        }
 
         return view('vendor.voyager.formularios.show', compact('form', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'pecuarios', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres'));
     }
@@ -421,10 +430,7 @@ class FormController extends Controller
 
         $infraestructuras = Infraestructura::with('tipoInfraestructura')->where('formulario_id', $id)->get();
 
-
-
         $servicioBasicos = ServicioBasico::with('tipoServicioBasico')->where('formulario_id', $id)->get();
-
 
         $sectorPecuarios = SectorPecuario::with('tipoEspecie')->where('formulario_id', $id)->get();
 
@@ -437,67 +443,10 @@ class FormController extends Controller
         return view('vendor.voyager.formularios.edit', compact('formulario', 'provinciaId', 'provincias', 'municipioId', 'municipios', 'grupoEtarios', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateFormularioRequest $request, $id)
     {
-
-        // Validación de datos (similar a la función store)
-        $validatedData = $request->validate([
-            // formulario
-            'fecha_llenado' => 'required|date',
-            //comunidad
-            'nombre_comunidad' => 'required|string',
-            'tipo_comunidad' => 'required|string',
-            'municipio_id' => 'required|integer|exists:municipios,id',
-            //incendio
-            'fecha_inicio' => 'required|date',
-            'causas_probables' => 'nullable|string',
-            'estado' => 'nullable|string',
-            // comunidad_incendios
-            'incendios_registrados' => 'required|integer',
-            'incendios_activos' => 'required|integer',
-            'necesidades' => 'nullable|string',
-            'num_familias_afectadas' => 'required|integer',
-            'num_familias_damnificadas' => 'required|integer',
-            // persona_afectada_incendios
-            // 'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
-            'cantidad_afectados_por_incendios.*' => 'required|integer',
-            // educacion
-            'institucion_id.*' => 'required|integer',
-            'num_estudiantes.*.*' => 'nullable|integer',
-            // saluds
-            'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
-            'cantidad_grupo_enfermos.*.*' => 'nullable|integer|min:0',
-            // Infraestructura
-            'tipo_infraestructura_id.*' => 'required|integer|exists:tipo_infraestructuras,id',
-            'numeros_infraestructuras_afectadas.*' => 'nullable|integer',
-
-            //servicios basicos
-            'tipo_servicio_basico_id.*' => 'required|integer|exists:tipo_servicio_basicos,id',
-            'informacion_tipo_dano.*' => 'nullable|string',
-            'numero_comunidades_afectadas.*' => 'nullable|integer',
-
-
-             // sector pecuario
-             'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
-             'numero_animales_afectados.*' => 'nullable|integer',
-             'numero_animales_fallecidos.*' => 'nullable|integer',
-
-             // sector agricola
-             'tipo_cultivo_id.*' => 'required|integer',
-             'hectareas_afectados.*' => 'nullable|numeric',
-             'hectareas_perdidas.*' => 'nullable|numeric',
-
-             // area forestal
-             'detalle_area_forestal_id.*' => 'required|integer',
-             'hectareas_perdidas_forestales.*' => 'required|numeric',
-
-            //  fauna silvestre
-            'detalle_fauna_silvestre_id.*' => 'required|integer',
-            'numero_fauna_silvestre.*.*' => 'required|integer',
-        ]);
-
+        $validatedData = $request->validated();
         // dd($validatedData);
-
         DB::beginTransaction();
 
         try {
@@ -535,34 +484,21 @@ class FormController extends Controller
                 'incendio_id' => $incendio->id,
             ]);
 
-             // Obtener los datos del formulario
+          // Obtener los datos del formulario
             $gruposEtarios = $request->input('cantidad_afectados_por_incendios');
-
-
           // Iterar sobre los grupos etarios y actualizar los registros correspondientes
             foreach ($gruposEtarios as $grupoEtarioId => $cantidadAfectados) {
                 // Buscar el registro por formulario y grupo etario
-                $personaAfectadaIncendio = PersonaAfectadaIncendio::where('formulario_id', $formulario->id)
-                    ->where('grupo_etario_id', $grupoEtarioId)
-                    ->first();
-
-                if ($personaAfectadaIncendio) {
-                    // Actualizar el registro existente
-                    $personaAfectadaIncendio->update([
-                        'cantidad_afectados_por_incendios' => $cantidadAfectados,
-                    ]);
-                } else {
-                    // Crear un nuevo registro si no existe
-                    PersonaAfectadaIncendio::create([
+                PersonaAfectadaIncendio::updateOrCreate(
+                    [
                         'formulario_id' => $formulario->id,
                         'grupo_etario_id' => $grupoEtarioId,
+                    ],
+                    [
                         'cantidad_afectados_por_incendios' => $cantidadAfectados,
-                    ]);
-                }
+                    ]
+                );
             }
-
-            // $institucions = $request->input('numero_estudiantes');
-
 
             $educacions = Educacion::with('institucion', 'modalidadEducacion')
              ->where('formulario_id', $formulario->id)
@@ -572,7 +508,6 @@ class FormController extends Controller
                     'numero_estudiantes' => $validatedData['num_estudiantes'][$educacion->institucion_id][$educacion->modalidadEducacion->id] ?? 0,
                 ]);
             }
-
 
             foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
                 foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
@@ -589,6 +524,20 @@ class FormController extends Controller
                 }
             }
 
+            // foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
+            //     foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
+            //         Salud::updateOrCreate(
+            //             [
+            //                 'grupo_etario_id' => $grupoEtarioId,
+            //                 'detalle_enfermedad_id' => $detalleEnfermedadId,
+            //                 'formulario_id' => $formulario->id,
+            //             ],
+            //             [
+            //                 'cantidad_grupo_enfermos' => $cantidad,
+            //             ]
+            //         );
+            //     }
+            // }
 
             $saluds = Salud::with( 'detalleEnfermedad', 'grupoEtario')->where('formulario_id', $formulario->id)->get();
             foreach ($saluds as $salud){
@@ -628,11 +577,8 @@ class FormController extends Controller
 
             $sectorAgricolas = SectorAgricola::with('tipoCultivo')->where('formulario_id', $id)->get();
 
-            foreach ($sectorAgricolas as $sectorAgricola){
-                $sectorAgricola->update([
-                    'hectareas_afectados' => $validatedData['hectareas_afectados'][$sectorAgricola->tipo_cultivo_id] ?? 0,
-                    'hectareas_perdidas' => $validatedData['hectareas_perdidas'][$sectorAgricola->tipo_cultivo_id] ?? 0,
-                ]);
+            foreach ($sectorAgricolas as $sectorAgricola) {
+                $sectorAgricola->updateSectorAgricola($validatedData, $sectorAgricola);
             }
 
             $areasForestales = AreaForestal::with('detalleAreaForestal')->where('formulario_id', $id)->get();
@@ -662,18 +608,33 @@ class FormController extends Controller
         }
     }
 
-    public function destroy($id) {
-        $formulario = Formulario::find($id);
-
-        if (!$formulario) {
-            return redirect()->back()->with('error', 'Formulario no encontrado');
-        }
-
+    public function destroy(Formulario $formulario)
+    {
         try {
-            $formulario->delete();
+            DB::transaction(function () use ($formulario) {
+                // Eliminar las relaciones
+                $formulario->personaAfectadaIncendios()->delete();
+                $formulario->salud()->delete();
+                $formulario->educacion()->delete();
+                $formulario->infraestructura()->delete();
+                $formulario->servicioBasico()->delete();
+                $formulario->sectorPecuario()->delete();
+                $formulario->sectorAgricola()->delete();
+                $formulario->areaForestal()->delete();
+
+                // Eliminar la relación entre Comunidad e Incendio
+                $formulario->comunidad->incendios()->detach($formulario->incendio->id);
+
+                // Eliminar el Incendio
+                $incendio = $formulario->incendio;
+                $incendio->delete();
+                // Eliminar el Formulario
+                $formulario->delete();
+            });
             return redirect()->route('formularios.index')->with('success', 'Formulario eliminado correctamente');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al eliminar el formulario: ' . $e->getMessage());
+            Log::error('Error al eliminar el formulario: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error al eliminar el formulario.');
         }
     }
 }

@@ -24,4 +24,12 @@ class SectorAgricola extends Model
     {
         return $this->belongsTo(Formulario::class);
     }
+
+    public function updateSectorAgricola($validatedData, $sectorAgricola)
+    {
+        $sectorAgricola->update([
+            'hectareas_afectados' => $validatedData['hectareas_afectados'][$sectorAgricola->tipo_cultivo_id] ?? 0,
+            'hectareas_perdidas' => $validatedData['hectareas_perdidas'][$sectorAgricola->tipo_cultivo_id] ?? 0,
+        ]);
+    }
 }

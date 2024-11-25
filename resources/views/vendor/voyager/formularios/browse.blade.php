@@ -51,7 +51,6 @@
                     </div>
                     <div class="row" id="tabla_contenido" style="min-height: 120px">
                         <h1>hi</h1>
-
                     </div>
                 </div>
             </div>
@@ -75,7 +74,6 @@
         $(document).ready(function() {
             list();
             // $("#tabla_contenido").html("<h1>tabla</h1>");
-
 
             $('#input-search').on('keyup', function(e){
                 if(e.keyCode == 13) {

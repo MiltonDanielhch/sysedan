@@ -58,29 +58,27 @@
                                                             <div class="form-group">
                                                                 <label for="municipio">Municipio</label>
                                                                 <div id="respuesta_provincia">
-                                                                    <select name="municipio_id" id="select_municipio" class="form-control" required readonly>
+                                                                    <select name="municipio_id" id="select_municipio" class="form-control" required>
                                                                         <option value="" disabled selected>-- Selecciona un Municipio --</option>
                                                                         @foreach ($municipios as $municipio)
-                                                                        <option value="{{ $municipio->id }}" {{ $municipio->id === $municipioId ? 'selected' : '' }}>{{ $municipio->nombre_municipio }}</option>
+                                                                            <option value="{{ $municipio->id }}" {{ $municipio->id === $municipioId ? 'selected' : '' }}>
+                                                                                {{ $municipio->nombre_municipio }}
+                                                                            </option>
                                                                         @endforeach
                                                                     </select>
-
                                                                 </div>
                                                             </div>
 
 
                                                             <div class="form-group">
                                                                 <label for="nombre_alcalde">Nombre del Alcalde</label>
-                                                                <input type="text" id="nombre_alcalde" name="nombre_alcalde"
-                                                                    placeholder="Nombre Alcalde" class="form-control" value="{{ $formulario->comunidad->municipio->nombre_alcalde }}"
-                                                                    readonly>
+                                                                <input type="text" id="nombre_alcalde" name="nombre_alcalde" placeholder="Nombre Alcalde" class="form-control" value="{{ $formulario->comunidad->municipio->nombre_alcalde }}" readonly>
                                                             </div>
+
 
                                                             <div class="form-group">
                                                                 <label for="poblacion_total">Población Total</label>
-                                                                <input type="number" id="poblacion_total"
-                                                                    name="poblacion_total" placeholder="Población Total"
-                                                                    class="form-control" value="{{ $formulario->comunidad->municipio->poblacion_total }}" readonly>
+                                                                <input type="number" id="poblacion_total" name="poblacion_total" placeholder="Población Total" class="form-control" value="{{ $formulario->comunidad->municipio->poblacion_total }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -637,4 +635,66 @@
     </div>
 
 </div>
+@stop
+@section('javascript')
+<script>
+$('#select_provincia').on('change', function() {
+    var id_provincia = $(this).val();
+    $('#respuesta_provincia').html('<div class="loading-indicator">Loading...</div>');
+    $.ajax({
+        url: "{{ url('/admin/formularios/edit/provincia/') }}/" + id_provincia, // Cambié a 'edit' para indicar que es para actualización
+        type: "GET",
+        success: function(data) {
+            $('#respuesta_provincia').html(data);
+        },
+        error: function() {
+            $('#respuesta_provincia').html('<div class="error-message">An error occurred. Please try again later.</div>');
+        }
+    });
+});
+
+</script>
+<script>
+$(document).on('change', '#select_municipio', function(){
+    var id_municipio = $(this).val();
+
+    if(id_municipio){
+        // Obtener el nombre del alcalde para actualización
+        $.ajax({
+            url: "{{ url('/admin/formularios/edit/get-alcalde') }}/" + id_municipio,
+            type: "GET",
+            success: function(response) {
+                if (response.nombre_alcalde) {
+                    $('#nombre_alcalde').val(response.nombre_alcalde);
+                } else {
+                    $('#nombre_alcalde').val('');
+                }
+            },
+            error: function() {
+                alert('Error al cargar el nombre del alcalde');
+            }
+        });
+
+        // Obtener la población total para actualización
+        $.ajax({
+            url: "{{ url('/admin/formularios/edit/get-poblacion') }}/" + id_municipio,
+            type: "GET",
+            success: function(response) {
+                if (response.poblacion_total) {
+                    $('#poblacion_total').val(response.poblacion_total);
+                } else {
+                    $('#poblacion_total').val('');
+                }
+            },
+            error: function() {
+                alert('Error al cargar la población total');
+            }
+        });
+    } else {
+        // Limpiar los campos si no se selecciona municipio
+        $('#nombre_alcalde').val('');
+        $('#poblacion_total').val('');
+    }
+});
+</script>
 @stop
