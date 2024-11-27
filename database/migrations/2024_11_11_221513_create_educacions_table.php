@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('educacions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institucion_id')->constrained('institucions');
-            $table->foreignId('modalidad_educacion_id')->constrained('modalidad_educacions');
+            $table->foreignId('institucion_id')->constrained('institucions')->onDelete('cascade');
+            $table->foreignId('modalidad_educacion_id')->constrained('modalidad_educacions')->onDelete('cascade');
             $table->integer('numero_estudiantes')->nullable();
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->timestamps();
         });
     }

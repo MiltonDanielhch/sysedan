@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('sector_agricolas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tipo_cultivo_id')->constrained('tipo_cultivos');
+            $table->foreignId('tipo_cultivo_id')->constrained('tipo_cultivos')->onDelete('cascade');
             $table->integer('hectareas_afectados')->nullable();
             $table->integer('hectareas_perdidas')->nullable();
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->timestamps();
         });
     }

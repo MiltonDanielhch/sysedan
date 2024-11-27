@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('area_forestals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('detalle_area_forestal_id')->constrained('detalle_area_forestals');
+            $table->foreignId('detalle_area_forestal_id')->constrained('detalle_area_forestals')->onDelete('cascade');
             $table->decimal('hectareas_perdidas_forestales',10,3)->nullable();
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->timestamps();
         });
     }

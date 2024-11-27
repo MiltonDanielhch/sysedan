@@ -21,8 +21,27 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <link rel="stylesheet" href="{{ asset('css/dataTable.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/h.css') }}">
+
+
+    <style>
+        .form-control, .select2-selection, .mce-tinymce {
+            border: 1px solid #272727 !important;
+            /* color: #f40202; */
+            color:rgb(0, 0, 0) !important;
+            font-weight: 300 !important;
+        }
+        label
+        {
+            color: rgb(0, 0, 0) !important;
+        }
+    </style>
+
+
     <!-- App CSS -->
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">
+
 
     @yield('css')
     @if(__('voyager::generic.is_rtl') == 'true')

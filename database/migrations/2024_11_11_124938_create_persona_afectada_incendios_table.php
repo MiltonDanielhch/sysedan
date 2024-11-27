@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('persona_afectada_incendios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('grupo_etario_id')->constrained('grupo_etarios');
+            $table->foreignId('grupo_etario_id')->constrained('grupo_etarios')->onDelete('cascade');
             $table->integer('cantidad_afectados_por_incendios')->nullable();
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->timestamps();
         });
     }

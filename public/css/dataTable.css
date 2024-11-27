@@ -1,0 +1,45 @@
+:root {
+    --primary-color: #2ecc71;
+    --hover-color: #ddd;
+    --bg-color-light: #f2f2f2;
+    --border-color: #ddd;
+    --font-color: black;
+}
+
+#dataTable {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#dataTable td, #dataTable th {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    color: var(--font-color);
+}
+
+#dataTable tr:nth-child(even) {
+    background-color: var(--bg-color-light);
+}
+
+#dataTable tr:hover {
+    background-color: var(--hover-color);
+}
+
+#dataTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+#dataTable th {
+    text-align: left; 
+}
+
+#dataTable td {
+    text-align: center; 
+}
+#dataTable {
+    border-spacing: 2px;
+}

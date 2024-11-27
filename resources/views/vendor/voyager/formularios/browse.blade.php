@@ -25,7 +25,27 @@
             </div>
         </div>
     </div>
+    {{-- Single delete modal --}}
+    <div class="modal modal-danger fade" tabindex="-1" id="delete_modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="voyager-trash"></i> Desea eliminar el siguiente registro?</h4>
+                </div>
+                <div class="modal-footer">
+                    <form action="#" id="delete_form" method="POST">
+                        {{ method_field('DELETE') }}
+                        {{ csrf_field() }}
+                        <input type="submit" class="btn btn-danger pull-right delete-confirm" value="Sí, eliminar">
+                    </form>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @stop
+
 
 @section('content')
 <div class="page-content browse container-fluid">
@@ -49,15 +69,14 @@
                             <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br>
                         </div>
                     </div>
-                    <div class="row" id="tabla_contenido" style="min-height: 120px">
-                        <h1>hi</h1>
-                    </div>
+                    <div class="row" id="div-results" style="min-height: 120px"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 @stop
+
 
 @section('css')
     <style>
@@ -73,8 +92,6 @@
         var countPage = 10;
         $(document).ready(function() {
             list();
-            // $("#tabla_contenido").html("<h1>tabla</h1>");
-
             $('#input-search').on('keyup', function(e){
                 if(e.keyCode == 13) {
                     list();
@@ -86,28 +103,19 @@
             });
         });
         function list(page = 1){
-            // console.log("HOLA");
-            // peticion ajax
+            let url =  '{{ url("admin/formularios/ajax/list") }}';
+            let search = $('#input-search').val() ? $('#input-search').val() : '';
             $.ajax({
-                type: 'POST',
-                url: "{{ route('formularios.list') }}",
-                dataType: 'json',
-                beforeSend: function(){
-                    $('#tabla_contenido').html('<div class="cargando"><i class="fa-solid fa-spinner fa-5x"></i></div>');
+                url: `${url}?search=${search}&paginate=${countPage}&page=${page}`,
+                type: 'get',
+                success: function(response){
+                    $('#div-results').html(response);
                 },
-                error: function(data){
-                    let errorJson = JSON.parse(data.responseText);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: errorJson.message,
-                        footer: '<a href="#">Vuelva a intentarlo</a>'
-                    });
-                },
-                success: function(data){
-                    $("#tabla_contenido").html(data.html);
-                }
             });
+        }
+        function deleteItem(url){
+            $('#delete_form').attr('action', url);
         }
     </script>
 @endpush
+

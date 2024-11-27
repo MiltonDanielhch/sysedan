@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('fauna_silvestres', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('detalle_fauna_silvestre_id')->constrained('detalle_fauna_silvestres');
-            $table->foreignId('tipo_especie_id')->constrained('tipo_especies');
+            $table->foreignId('detalle_fauna_silvestre_id')->constrained('detalle_fauna_silvestres')->onDelete('cascade');
+            $table->foreignId('tipo_especie_id')->constrained('tipo_especies')->onDelete('cascade');
             $table->integer('numero_fauna_silvestre')->nullable();
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->timestamps();
         });
     }

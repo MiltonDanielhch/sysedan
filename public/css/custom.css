@@ -2,9 +2,9 @@
     border: 1px solid #c3c5c7 !important;
     color: #555555
 }
-.form-group label, .control-label{
+/* .form-group label, .control-label{
     color: #555555 !important
-}
+} */
 .container-fluid, .app-container{
     /* background-image: linear-gradient(#D5D8DC, #FFF) !important; */
     background-color: #F4F6F9;

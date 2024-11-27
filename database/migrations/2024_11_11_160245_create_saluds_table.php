@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('saluds', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('grupo_etario_id')->constrained('grupo_etarios');
-            $table->foreignId('detalle_enfermedad_id')->constrained('detalle_enfermedads');
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('grupo_etario_id')->constrained('grupo_etarios')->onDelete('cascade');
+            $table->foreignId('detalle_enfermedad_id')->constrained('detalle_enfermedads')->onDelete('cascade');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->integer('cantidad_grupo_enfermos')->nullable();
             $table->timestamps();
         });

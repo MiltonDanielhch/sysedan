@@ -31,7 +31,7 @@ Route::get('maintenance', function () {
 Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], function () {
     Voyager::routes();
     Route::resource('formularios', FormController::class)->middleware('auth');
-    Route::post('formularios/list', [FormController::class, 'list'])->name('formularios.list');
+    Route::get('formularios/ajax/list', [FormController::class, 'list'])->name('formularios.list');
     Route::get('formularios/create/provincia/{id_provincia}', [FormController::class, 'buscar_municipio'])->name('admin.formulario.buscar_municipio');
     Route::get('formularios/create/get-alcalde/{municipioId}', [FormController::class, 'getAlcalde'])->name('admin.formulario.getAlcalde');
     Route::get('formularios/create/get-poblacion/{municipioId}', [FormController::class, 'getPoblacion'])->name('admin.formulario.getPoblacion');
@@ -40,6 +40,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], funct
     Route::get('formularios/edit/provincia/{provinciaId}', [FormController::class, 'getMunicipiosForEdit'])->name('get.municipios.edit');
     Route::get('formularios/edit/get-alcalde/{municipioId}', [FormController::class, 'getAlcaldeForEdit'])->name('get.alcalde.edit');
     Route::get('formularios/edit/get-poblacion/{municipioId}', [FormController::class, 'getPoblacionForEdit'])->name('get.poblacion.edit');
+
+
+    Route::post('/actualizar-total-afectados', [FormController::class, 'actualizarTotalAfectados'])->name('actualizarTotalAfectados');
 
 });
 

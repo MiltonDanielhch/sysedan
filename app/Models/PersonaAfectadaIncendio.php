@@ -13,14 +13,14 @@ class PersonaAfectadaIncendio extends Model
         'cantidad_afectados_por_incendios',
         'formulario_id',
     ];
-
+    public function formulario()
+    {
+        return $this->belongsTo(Formulario::class);
+    }
     public function grupoEtario()
     {
         return $this->belongsTo(GrupoEtario::class);
     }
 
-    public function formulario()
-    {
-        return $this->belongsTo(Formulario::class);
-    }
+
 }

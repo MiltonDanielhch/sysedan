@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('sector_pecuarios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tipo_especie_id')->constrained('tipo_especies');
+            $table->foreignId('tipo_especie_id')->constrained('tipo_especies')->onDelete('cascade');
             $table->integer('numero_animales_afectados')->nullable();
             $table->integer('numero_animales_fallecidos')->nullable();
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->timestamps();
         });
     }

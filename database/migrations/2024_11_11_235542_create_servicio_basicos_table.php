@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('servicio_basicos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tipo_servicio_basico_id')->constrained('tipo_servicio_basicos');
+            $table->foreignId('tipo_servicio_basico_id')->constrained('tipo_servicio_basicos')->onDelete('cascade');
             $table->string('informacion_tipo_dano')->nullable();
             $table->integer('numero_comunidades_afectadas')->nullable();
-            $table->foreignId('formulario_id')->constrained('formularios');
+            $table->foreignId('formulario_id')->constrained('formularios')->onDelete('cascade');
             $table->timestamps();
         });
     }

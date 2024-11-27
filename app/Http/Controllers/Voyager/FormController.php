@@ -40,61 +40,18 @@ class FormController extends Controller
         return view('vendor.voyager.formularios.browse');
     }
 
-    public function list(Request $request)
+    public function list()
     {
-        $paginate = $request->get('paginate', 10);
-        $search = $request->get('search', '');
+        $paginate = request('paginate') ?? 10;
+        $search = request('search');
 
         $data = Formulario::with(['comunidad.municipio.provincia', 'incendio'])
             ->where('id', 'like', '%' . $search . '%')
             ->orderBy('id', 'asc')
             ->paginate($paginate);
 
-        if ($request->ajax()) {
-            $html = view('voyager::formularios.list', compact('data'))->render();
-            return response()->json([
-                'code' => 200,
-                'html' => $html,
-                'msg' => 'success',
-            ]);
-        } else {
-            return response()->json([
-                'code' => 404,
-                'msg' => 'error',
-                'message' => 'No se pudo cargar la página.',
-            ], 404);
-        }
+            return view('voyager::formularios.list', compact('data'));
     }
-
-
-    // public function list(Request $request)
-    // {
-    //     $paginate = request('paginate') ?? 10;
-    //     $paginate = is_numeric($paginate) ? $paginate : 10;
-    //     $search = request('search');
-    //     $data = Formulario::where('id', 'like', '%' . $search . '%')
-    //     ->orderBy('id', 'asc');
-    //     if($request->ajax()){
-    //         $formularios = Formulario::where('id', 'like', '%' . $search . '%')->paginate($paginate);
-
-
-    //         $data = $data->paginate($paginate);
-
-    //         $html = view('voyager::formularios.list', compact( 'formularios', 'personasAfectadas', 'data'))->render();
-    //         return response()->json([
-    //             'code' => 200,
-    //             'html' => $html,
-    //             'msg' => 'success',
-    //         ],200);
-    //     }else{
-    //         return response()->json([
-    //             'code' => 404,
-    //             'msg' => 'error',
-    //             'message' => 'Error, no se puede acceder a la pagina'
-    //         ], 404);
-    //     }
-    // }
-
     public function create()
     {
         $provincias = Provincia::all();
@@ -188,6 +145,27 @@ class FormController extends Controller
             'poblacion_total' => $municipio ? $municipio->poblacion_total : null
         ]);
     }
+
+    public function actualizarTotalAfectados(Request $request)
+    {
+        // Validar que la data venga correctamente
+        $validated = $request->validate([
+            'cantidad_afectados_por_incendios' => 'array',
+            'cantidad_afectados_por_incendios.*' => 'nullable|numeric',
+        ]);
+
+        // Obtener los valores de cantidad_afectados_por_incendios
+        $cantidadAfectados = $validated['cantidad_afectados_por_incendios'];
+
+        // Calcular el total de afectados
+        $totalAfectados = array_sum($cantidadAfectados);
+
+        // Devolver la respuesta como JSON con el total calculado
+        return response()->json([
+            'totalAfectados' => $totalAfectados
+        ]);
+    }
+
 
 
     public function store(CreateFormularioRequest $request){
@@ -440,6 +418,7 @@ class FormController extends Controller
 
         $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
 
+
         return view('vendor.voyager.formularios.edit', compact('formulario', 'provinciaId', 'provincias', 'municipioId', 'municipios', 'grupoEtarios', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres'));
     }
 
@@ -611,30 +590,16 @@ class FormController extends Controller
     public function destroy(Formulario $formulario)
     {
         try {
-            DB::transaction(function () use ($formulario) {
-                // Eliminar las relaciones
-                $formulario->personaAfectadaIncendios()->delete();
-                $formulario->salud()->delete();
-                $formulario->educacion()->delete();
-                $formulario->infraestructura()->delete();
-                $formulario->servicioBasico()->delete();
-                $formulario->sectorPecuario()->delete();
-                $formulario->sectorAgricola()->delete();
-                $formulario->areaForestal()->delete();
+            // Llamamos a safeDelete() para eliminar el formulario y sus relaciones de forma segura
+            $formulario->safeDelete();
 
-                // Eliminar la relación entre Comunidad e Incendio
-                $formulario->comunidad->incendios()->detach($formulario->incendio->id);
-
-                // Eliminar el Incendio
-                $incendio = $formulario->incendio;
-                $incendio->delete();
-                // Eliminar el Formulario
-                $formulario->delete();
-            });
             return redirect()->route('formularios.index')->with('success', 'Formulario eliminado correctamente');
+
         } catch (\Exception $e) {
-            Log::error('Error al eliminar el formulario: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Ocurrió un error al eliminar el formulario.');
+            // En caso de error, devolver al usuario con el error
+            return redirect()->back()->withErrors(['error' => 'Ocurrió un error al eliminar el formulario.']);
         }
     }
+
+
 }

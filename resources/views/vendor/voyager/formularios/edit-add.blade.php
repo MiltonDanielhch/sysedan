@@ -111,8 +111,8 @@
 
                         </div>
                         <div class="form-group">
-                              {{-- INCENDIOS FORESTALES --}}
-                              <div class="row">
+                            {{-- INCENDIOS FORESTALES --}}
+                            <div class="row">
                                 <div class="panel-group" id="accordionIncendio" role="tablist" aria-multiselectable="true">
                                     <div class="panel panel-default">
                                         <div class="panel-heading" role="tab" id="headingIncendio">
@@ -140,8 +140,11 @@
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="estado">Estado</label>
-                                                                <input type="text" id="estado" name="estado" placeholder="Introducir estado del incendio"
-                                                                    class="form-control" required>
+                                                                <select id="estado" name="estado" class="form-control" required>
+                                                                    <option value="Activo">Activo</option>
+                                                                    <option value="Controlado">Controlado</option>
+                                                                    <option value="Apagado">Apagado</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -186,8 +189,9 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group">
-                             {{-- PERSONAS AFECTADAS --}}
+                            {{-- PERSONAS AFECTADAS --}}
                             <div class="row">
                                 <div class="panel-group" id="accordionPersonaAfectada" role="tablist" aria-multiselectable="true">
                                     <div class="panel panel-default">
@@ -208,7 +212,7 @@
                                                         <div class="panel-heading"><b>Personas</b></div>
                                                         <div class="panel-body">
                                                             <h4> PERSONAS AFECTADAS</h4>
-                                                            <table class="table">
+                                                            <table class="table" role="table" aria-labelledby="personaAfectadaTable">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Grupo Etario</th>
@@ -225,7 +229,7 @@
                                                                         </td>
                                                                         <td>
                                                                             <input type="number" name="cantidad_afectados_por_incendios[]"
-                                                                                class="form-control">
+                                                                                class="form-control" min="0" required>
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach
@@ -240,7 +244,7 @@
                                                         <div class="panel-heading"><b>Personas</b></div>
                                                         <div class="panel-body">
                                                             <h4>INFORMACIÓN EN EDUCACIÓN</h4>
-                                                            <table class="table">
+                                                            <table class="table" role="table" aria-labelledby="educacionTable">
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Institución</th>
@@ -257,7 +261,7 @@
                                                                             </td>
                                                                             @foreach ($modalidadEducacions as $modalidadEducacion)
                                                                                 <td>
-                                                                                    <input type="number" name="num_estudiantes[{{ $institucion->id }}][{{ $modalidadEducacion->id }}]" class="form-control">
+                                                                                    <input type="number" name="num_estudiantes[{{ $institucion->id }}][{{ $modalidadEducacion->id }}]" class="form-control" min="0" required>
                                                                                 </td>
                                                                             @endforeach
                                                                         </tr>
@@ -275,6 +279,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             {{-- INFORMACIÓN DE SALUD --}}
                             <div class="row">
@@ -296,29 +301,32 @@
                                                         <div class="panel-heading"><b>Salud</b></div>
                                                         <div class="panel-body">
                                                             <h4> INFORMACIÓN DE SALUD</h4>
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Grupo Etario</th>
-                                                                        @foreach ($detalleEnfermedades as $detalleEnfermedad)
-                                                                            <th>{{ $detalleEnfermedad->nombre_detalle_enfermedad }}</th>
-                                                                        @endforeach
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($grupoEtarioSaluds as $grupoEtarioSalud)
+                                                            <div class="table-responsive">
+                                                                <table class="table" role="table" aria-labelledby="saludTable">
+                                                                    <caption>Información de Salud por Grupo Etario y Enfermedad</caption>
+                                                                    <thead>
                                                                         <tr>
-                                                                            <td>{{ $grupoEtarioSalud->nombre_grupo_etario }}</td>
+                                                                            <th>Grupo Etario</th>
                                                                             @foreach ($detalleEnfermedades as $detalleEnfermedad)
-                                                                                <td>
-                                                                                    <input type="number" name="cantidad_grupo_enfermos[{{ $grupoEtarioSalud->id }}][{{ $detalleEnfermedad->id }}]" class="form-control" min="0">
-                                                                                </td>
+                                                                                <th>{{ $detalleEnfermedad->nombre_detalle_enfermedad }}</th>
                                                                             @endforeach
                                                                         </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($grupoEtarioSaluds as $grupoEtarioSalud)
+                                                                            <tr>
+                                                                                <td>{{ $grupoEtarioSalud->nombre_grupo_etario }}</td>
+                                                                                @foreach ($detalleEnfermedades as $detalleEnfermedad)
+                                                                                    <td>
+                                                                                        <input type="number" name="cantidad_grupo_enfermos[{{ $grupoEtarioSalud->id }}][{{ $detalleEnfermedad->id }}]"
+                                                                                            class="form-control" min="0" required>
+                                                                                    </td>
+                                                                                @endforeach
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -329,8 +337,9 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group">
-                              {{-- DAÑOS A INFRAESTRUCTURAS AFECTADAS --}}
+                            {{-- DAÑOS A INFRAESTRUCTURAS AFECTADAS --}}
                             <div class="row">
                                 <div class="panel-group" id="accordionInfraestructura" role="tablist" aria-multiselectable="true">
                                     <div class="panel panel-default">
@@ -351,27 +360,32 @@
                                                         <div class="panel-heading"><b>Daños</b></div>
                                                         <div class="panel-body">
                                                             <h4>DAÑOS A INFRAESTRUCTURAS AFECTADAS</h4>
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Tipo Infraestructura</th>
-                                                                        <th>N° de infraestructuras afectadas</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($tipoInfraestructuras as $tipoInfraestructura)
+                                                            <div class="table-responsive">
+                                                                <table class="table" role="table" aria-labelledby="infraestructuraTable">
+                                                                    <caption>Información sobre Daños a Infraestructura</caption>
+                                                                    <thead>
                                                                         <tr>
-                                                                            <td>
-                                                                                {{ $tipoInfraestructura->nombre_tipo_infraestructura }}
-                                                                                <input type="hidden" name="tipo_infraestructura_id[]" value="{{ $tipoInfraestructura->id }}">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" name="numeros_infraestructuras_afectadas[]" class="form-control" >
-                                                                            </td>
+                                                                            <th>Tipo Infraestructura</th>
+                                                                            <th>N° de infraestructuras afectadas</th>
                                                                         </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($tipoInfraestructuras as $tipoInfraestructura)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    {{ $tipoInfraestructura->nombre_tipo_infraestructura }}
+                                                                                    <input type="hidden" name="tipo_infraestructura_id[]"
+                                                                                        value="{{ $tipoInfraestructura->id }}">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="numeros_infraestructuras_afectadas[]"
+                                                                                        class="form-control" required>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -381,34 +395,41 @@
                                                         <div class="panel-heading"><b>Personas</b></div>
                                                         <div class="panel-body">
                                                             <h4>SERVICIOS BÁSICOS</h4>
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Servicios Basicos</th>
-                                                                        <th>Información/Tipo de Daño</th>
-                                                                        <th>N° de Comunidades Afectadas</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($tiposerviciobasicos as $tiposerviciobasico)
+                                                            <div class="table-responsive">
+                                                                <table class="table" role="table" aria-labelledby="serviciosBasicosTable">
+                                                                    <caption>Daños a Servicios Básicos</caption>
+                                                                    <thead>
                                                                         <tr>
-                                                                            <td>
-                                                                                {{ $tiposerviciobasico->nombre_servicio_basico }}
-                                                                                <input type="hidden" name="tipo_servicio_basico_id[]" value="{{ $tiposerviciobasico->id }}">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="text" name="informacion_tipo_dano[]" class="form-control" placeholder="Describa el daño">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" name="numero_comunidades_afectadas[]" class="form-control">
-                                                                            </td>
+                                                                            <th>Servicios Básicos</th>
+                                                                            <th>Descripción del Daño</th>
+                                                                            <th>N° de Comunidades Afectadas</th>
                                                                         </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($tiposerviciobasicos as $tiposerviciobasico)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    {{ $tiposerviciobasico->nombre_servicio_basico }}
+                                                                                    <input type="hidden" name="tipo_servicio_basico_id[]"
+                                                                                        value="{{ $tiposerviciobasico->id }}">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="text" name="informacion_tipo_dano[]"
+                                                                                        class="form-control" placeholder="Describa el daño" required>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="numero_comunidades_afectadas[]"
+                                                                                        class="form-control" required>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -416,6 +437,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             {{-- DAÑOS PECUARIOS POR INCENDIOS FORESTALES --}}
                             <div class="row">
@@ -438,30 +460,36 @@
                                                         <div class="panel-heading"><b>Daños</b></div>
                                                         <div class="panel-body">
                                                             <h4>DAÑOS PECUARIOS</h4>
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Especies</th>
-                                                                        <th>Nro de animales Afectados</th>
-                                                                        <th>Nro de Animales Fallecidos</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($tipoEspecies as $tipoEspecie)
-                                                                    <tr>
-                                                                        <td>{{ $tipoEspecie->nombre_tipo_especie }}
-                                                                            <input type="hidden" name="tipo_especie_id[]" value="{{ $tipoEspecie->id }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="numero_animales_afectados[]" class="form-control">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="numero_animales_fallecidos[]" class="form-control">
-                                                                        </td>
-                                                                    </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                            <div class="table-responsive">
+                                                                <table class="table" aria-labelledby="damagesLivestockTable">
+                                                                    <caption>Información sobre Daños Pecuarios</caption>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Especies</th>
+                                                                            <th>Nro de animales Afectados</th>
+                                                                            <th>Nro de Animales Fallecidos</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($tipoEspecies as $tipoEspecie)
+                                                                            <tr>
+                                                                                <td>{{ $tipoEspecie->nombre_tipo_especie }}
+                                                                                    <input type="hidden" name="tipo_especie_id[]"
+                                                                                        value="{{ $tipoEspecie->id }}">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="numero_animales_afectados[]"
+                                                                                        class="form-control" min="0" required>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="numero_animales_fallecidos[]"
+                                                                                        class="form-control" min="0" required>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -471,33 +499,40 @@
                                                         <div class="panel-heading"><b>Daños</b></div>
                                                         <div class="panel-body">
                                                             <h4>DAÑOS AGRÍCOLAS POR INCENDIOS FORESTALES</h4>
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Agricola</th>
-                                                                        <th>Hectáreas Afectadas</th>
-                                                                        <th>Hectáreas Perdidas</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($tipoCultivos as $tipoCultivo)
+                                                            <div class="table-responsive">
+                                                                <table class="table" aria-labelledby="damagesAgriculturalTable">
+                                                                    <caption>Información sobre Daños Agrícolas</caption>
+                                                                    <thead>
                                                                         <tr>
-                                                                            <td>{{ $tipoCultivo->nombre_tipo_cultivo }}
-                                                                                <input type="hidden" name="tipo_cultivo_id[]" value="{{ $tipoCultivo->id }}">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" name="hectareas_afectados[]" class="form-control">
-                                                                            </td>
-                                                                            <td>
-                                                                                <input type="number" name="hectareas_perdidas[]" class="form-control">
-                                                                            </td>
+                                                                            <th>Agrícola</th>
+                                                                            <th>Hectáreas Afectadas</th>
+                                                                            <th>Hectáreas Perdidas</th>
                                                                         </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($tipoCultivos as $tipoCultivo)
+                                                                            <tr>
+                                                                                <td>{{ $tipoCultivo->nombre_tipo_cultivo }}
+                                                                                    <input type="hidden" name="tipo_cultivo_id[]"
+                                                                                        value="{{ $tipoCultivo->id }}">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="hectareas_afectados[]"
+                                                                                        class="form-control" min="0" required>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="hectareas_perdidas[]"
+                                                                                        class="form-control" min="0" required>
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -505,8 +540,9 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="form-group">
-                              {{-- ÁREAS FORESTALES PERDIDAS --}}
+                            {{-- ÁREAS FORESTALES PERDIDAS --}}
                             <div class="row">
                                 <div class="panel-group" id="accordionForestales" role="tablist" aria-multiselectable="true">
                                     <div class="panel panel-default">
@@ -521,34 +557,37 @@
                                         <div id="collapseForestales" class="panel-collapse collapse in" role="tabpanel"
                                             aria-labelledby="headingForestales">
                                             <div class="panel-body">
+
                                                 <div class="form-group col-md-6">
                                                     <div class="panel panel-default">
                                                         <div class="panel-heading"><b>Areas</b></div>
                                                         <div class="panel-body">
                                                             <h4> ÁREAS FORESTALES PERDIDAS</h4>
-                                                            <table class="table">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Areas Forestales</th>
-                                                                        <th>Hectáreas Perdidas</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($detalleAreaForestals as $detalleAreaForestal)
-                                                                    <tr>
-                                                                        <td>
-                                                                            {{ $detalleAreaForestal->nombre_detalle_area_forestal }}
-                                                                            <input type="hidden" name="detalle_area_forestal_id[]"
-                                                                                value="{{ $detalleAreaForestal->id }}">
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="number" name="hectareas_perdidas_forestales[]"
-                                                                                class="form-control">
-                                                                        </td>
-                                                                    </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                            <div class="table-responsive">
+                                                                <table class="table" aria-labelledby="forestAreasLostTable">
+                                                                    <caption>Áreas Forestales Perdidas por Incendio</caption>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Áreas Forestales</th>
+                                                                            <th>Hectáreas Perdidas</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($detalleAreaForestals as $detalleAreaForestal)
+                                                                            <tr>
+                                                                                <td>{{ $detalleAreaForestal->nombre_detalle_area_forestal }}
+                                                                                    <input type="hidden" name="detalle_area_forestal_id[]"
+                                                                                        value="{{ $detalleAreaForestal->id }}">
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="hectareas_perdidas_forestales[]"
+                                                                                        class="form-control" min="0" required placeholder="Número de hectáreas">
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -558,41 +597,46 @@
                                                         <div class="panel-heading"><b>Fauna Silvestre</b></div>
                                                         <div class="panel-body">
                                                             <h4>FAUNA SILVESTRE AFECTADA POR INCENDIOS FORESTALES</h4>
-                                                            <table class="table table-bordered table-striped">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Detalle</th>
-                                                                        @foreach ($tipoFaunaEspecies as $tipoFaunaEspecie)
-                                                                            <th>{{ $tipoFaunaEspecie->nombre_tipo_especie }}</th>
-                                                                        @endforeach
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @foreach ($detalleFaunaSilvestres as $detalleFaunaSilvestre)
+                                                            <div class="table-responsive">
+                                                                <table class="table table-bordered table-striped" aria-labelledby="wildlifeAffectedTable">
+                                                                    <caption>Fauna Silvestre Afectada</caption>
+                                                                    <thead>
                                                                         <tr>
-                                                                            <td>{{ $detalleFaunaSilvestre->nombre_detalle_fauna_silvestre }}
-                                                                                <input type="hidden" name="detalle_fauna_silvestre_id[]" value="{{ $detalleFaunaSilvestre->id }}">
-                                                                            </td>
+                                                                            <th>Detalle</th>
                                                                             @foreach ($tipoFaunaEspecies as $tipoFaunaEspecie)
-                                                                                <td>
-                                                                                    <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestre->id }}][{{ $tipoFaunaEspecie->id }}]"
-                                                                                           class="form-control">
-                                                                                </td>
+                                                                                <th>{{ $tipoFaunaEspecie->nombre_tipo_especie }}</th>
                                                                             @endforeach
                                                                         </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($detalleFaunaSilvestres as $detalleFaunaSilvestre)
+                                                                            <tr>
+                                                                                <td>{{ $detalleFaunaSilvestre->nombre_detalle_fauna_silvestre }}
+                                                                                    <input type="hidden" name="detalle_fauna_silvestre_id[]"
+                                                                                        value="{{ $detalleFaunaSilvestre->id }}">
+                                                                                </td>
+                                                                                @foreach ($tipoFaunaEspecies as $tipoFaunaEspecie)
+                                                                                    <td>
+                                                                                        <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestre->id }}][{{ $tipoFaunaEspecie->id }}]"
+                                                                                               class="form-control" min="0" required placeholder="Número de animales afectados">
+                                                                                    </td>
+                                                                                @endforeach
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
