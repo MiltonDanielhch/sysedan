@@ -353,10 +353,19 @@
 
                                                                 @php
                                                                     $saludData = [];
-                                                                    foreach ($saluds as $salud){
+                                                                    $totales = []; // Array para guardar los totales
+                                                                    foreach ($saluds as $salud) {
+                                                                        // Guardamos los datos de salud
                                                                         $saludData[$salud->detalle_enfermedad_id][$salud->grupo_etario_id] = $salud->cantidad_grupo_enfermos;
+
+                                                                        // Calculamos los totales por enfermedad y grupo etario
+                                                                        if (!isset($totales[$salud->detalle_enfermedad_id])) {
+                                                                            $totales[$salud->detalle_enfermedad_id] = array_fill_keys(array_keys($grupoEtarios->pluck('id')->toArray()), 0);
+                                                                        }
+                                                                        $totales[$salud->detalle_enfermedad_id][$salud->grupo_etario_id] += $salud->cantidad_grupo_enfermos;
                                                                     }
                                                                 @endphp
+
                                                                 <div class="table-responsive">
                                                                     <table class="table">
                                                                         <thead>
@@ -365,23 +374,45 @@
                                                                                 @foreach ($detalleEnfermedades as $detalleEnfermedad)
                                                                                     <th>{{ $detalleEnfermedad->nombre_detalle_enfermedad }}</th>
                                                                                 @endforeach
+                                                                                <th>Total</th> <!-- Columna para el total -->
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
                                                                             @foreach ($saluds->groupBy('grupo_etario_id') as $grupoEtarioId => $Salud)
-                                                                                <tr>
+                                                                                <tr class="grupo-etario-row" data-grupo-etario-id="{{ $grupoEtarioId }}">
                                                                                     <td>{{ $Salud->first()->grupoEtario->nombre_grupo_etario }}</td>
                                                                                     @foreach ($Salud as $salu)
                                                                                         <td>
-                                                                                            <input type="number" name="cantidad_grupo_enfermos[{{ $salu->detalleEnfermedad->id }}][{{ $grupoEtarioId }}]" class="form-control"
-                                                                                                value="{{ old('cantidad_grupo_enfermos.' . $grupoEtarioId, $saludData[$salu->detalleEnfermedad->id][$grupoEtarioId] ?? $salu->cantidad_grupo_enfermos) }}">
+                                                                                            <input type="number" class="form-control cantidad_grupo_enfermos"
+                                                                                            name="cantidad_grupo_enfermos[{{ $salu->detalleEnfermedad->id }}][{{ $grupoEtarioId }}]"
+                                                                                            value="{{ old('cantidad_grupo_enfermos.' . $grupoEtarioId, $saludData[$salu->detalleEnfermedad->id][$grupoEtarioId] ?? $salu->cantidad_grupo_enfermos) }}">
+
+
                                                                                         </td>
                                                                                     @endforeach
+                                                                                    <!-- Mostrar el total de cada grupo etario para todas las enfermedades -->
+                                                                                    <td class="row-total">
+                                                                                        {{ array_sum(array_column($Salud->toArray(), 'cantidad_grupo_enfermos')) }}
+                                                                                    </td>
                                                                                 </tr>
                                                                             @endforeach
                                                                         </tbody>
+                                                                        <tfoot>
+                                                                            <tr>
+                                                                                <th>Total</th> <!-- Fila de totales -->
+                                                                                @foreach ($detalleEnfermedades as $detalleEnfermedad)
+                                                                                    <th class="total-enfermedad" data-enfermedad-id="{{ $detalleEnfermedad->id }}">
+                                                                                        {{ array_sum(array_column($totales[$detalleEnfermedad->id], 'cantidad_grupo_enfermos')) }}
+                                                                                    </th>
+                                                                                @endforeach
+                                                                                <th id="cantidad_grupo_enfermos_total-global">
+                                                                                    {{ array_sum(array_map('array_sum', $totales)) }}
+                                                                                </th>
+                                                                            </tr>
+                                                                        </tfoot>
                                                                     </table>
                                                                 </div>
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -414,26 +445,40 @@
                                                     <div class="panel-heading"><b>Daños</b></div>
                                                     <div class="panel-body">
                                                         <h4>DAÑOS A INFRAESTRUCTURAS AFECTADAS</h4>
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Tipo Infraestructura</th>
-                                                                    <th>N° de infraestructuras afectadas</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($infraestructuras->groupBy('tipo_infraestructura_id') as $tipoInfraestructuraId => $infraestructura)
+                                                        @php
+                                                            $totalAfectados = 0; // Variable para guardar el total de infraestructuras afectadas
+                                                        @endphp
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
                                                                     <tr>
-                                                                        <td>{{ $infraestructura->first()->tipoInfraestructura->nombre_tipo_infraestructura }}</td>
-                                                                        @foreach ($infraestructura as $infra)
-                                                                        <td>
-                                                                            <input type="number" name="numeros_infraestructuras_afectadas[{{ $tipoInfraestructuraId }}]" class="form-control" value="{{ old('numeros_infraestructuras_afectadas.' . $tipoInfraestructuraId, $infraestructuraData[$tipoInfraestructuraId] ?? $infra->numeros_infraestructuras_afectadas) }}">
-                                                                        </td>
-                                                                        @endforeach
+                                                                        <th>Tipo Infraestructura</th>
+                                                                        <th>N° de infraestructuras afectadas</th>
                                                                     </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($infraestructuras->groupBy('tipo_infraestructura_id') as $tipoInfraestructuraId => $infraestructura)
+                                                                        <tr>
+                                                                            <td>{{ $infraestructura->first()->tipoInfraestructura->nombre_tipo_infraestructura }}</td>
+                                                                            @foreach ($infraestructura as $infra)
+                                                                                <td>
+                                                                                    <input type="number" name="numeros_infraestructuras_afectadas[{{ $tipoInfraestructuraId }}]" class="form-control affected-number" value="{{ old('numeros_infraestructuras_afectadas.' . $tipoInfraestructuraId, $infraestructuraData[$tipoInfraestructuraId] ?? $infra->numeros_infraestructuras_afectadas) }}">
+                                                                                </td>
+                                                                            @endforeach
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td><strong>Total Infraestructuras Afectadas</strong></td>
+                                                                        <td>
+                                                                            <span id="total-affected">0</span> <!-- Mostrar el total -->
+                                                                        </td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -447,24 +492,40 @@
                                                         <table class="table">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Servicios Basicos</th>
+                                                                    <th>Servicios Básicos</th>
                                                                     <th>Información/Tipo de Daño</th>
                                                                     <th>N° de Comunidades Afectadas</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                                @php
+                                                                    $totalComunidadAfectada = 0; // Inicializamos el total
+                                                                @endphp
+
                                                                 @foreach ($servicioBasicos->groupBy('tipo_servicio_basico_id') as $tipoServicioBasicoId => $servicioBasicoGroup)
                                                                     <tr>
                                                                         <td>{{ $servicioBasicoGroup->first()->tipoServicioBasico->nombre_servicio_basico ?? 'N/A' }}</td>
                                                                         <td>{{ $servicioBasicoGroup->first()->informacion_tipo_dano }}</td>
                                                                         <td>
                                                                             <input type="number" name="numero_comunidades_afectadas[{{ $tipoServicioBasicoId }}]"
-                                                                                   class="form-control" min="0"
+                                                                                   class="form-control numero_comunidades_afectadas" min="0"
                                                                                    value="{{ old('numero_comunidades_afectadas.' . $tipoServicioBasicoId, $servicioBasicoGroup->first()->numero_comunidades_afectadas ?? 0) }}">
+
                                                                         </td>
+                                                                        @php
+                                                                            // Sumar el número de comunidades afectadas por cada tipo de servicio básico
+                                                                            $totalComunidadAfectada += $servicioBasicoGroup->first()->numero_comunidades_afectadas ?? 0;
+
+                                                                        @endphp
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td><strong>Total Comunidades Afectadas</strong></td>
+                                                                    <td colspan="2" id="total-comunidades-afectadas">{{ $totalComunidadAfectada }}</td> <!-- Muestra el total -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
                                                     </div>
                                                 </div>
@@ -509,18 +570,32 @@
                                                             </thead>
                                                             <tbody>
                                                                 @foreach ($sectorPecuarios->groupBy('tipo_especie_id') as $tipoEspecieId => $SectorPecuario)
-                                                                <tr>
-                                                                    <td>{{ $SectorPecuario->first()->tipoEspecie->nombre_tipo_especie }}</td>
-                                                                    <td>
-                                                                        <input type="number" name="numero_animales_afectados[{{ $tipoEspecieId }}]" value="{{ old('numero_animales_afectados.' . $tipoEspecieId, $SectorPecuario->first()->numero_animales_afectados ?? 0) }}" class="form-control" min="0">
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="number" name="numero_animales_fallecidos[{{ $tipoEspecieId }}]" class="form-control" value="{{ old('numero_animales_fallecidos.' . $tipoEspecieId, $SectorPecuario->first()->numero_animales_fallecidos ?? 0) }}">
-                                                                    </td>
-                                                                </tr>
+                                                                    <tr>
+                                                                        <td>{{ $SectorPecuario->first()->tipoEspecie->nombre_tipo_especie }}</td>
+                                                                        <td>
+                                                                            <input type="number" name="numero_animales_afectados[{{ $tipoEspecieId }}]"
+                                                                                   value="{{ old('numero_animales_afectados.' . $tipoEspecieId, $SectorPecuario->first()->numero_animales_afectados ?? 0) }}"
+                                                                                   class="form-control affected-number" min="0">
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="number" name="numero_animales_fallecidos[{{ $tipoEspecieId }}]"
+                                                                                   value="{{ old('numero_animales_fallecidos.' . $tipoEspecieId, $SectorPecuario->first()->numero_animales_fallecidos ?? 0) }}"
+                                                                                   class="form-control deceased-number">
+                                                                        </td>
+                                                                    </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td></td>
+                                                                    {{-- <td><strong>Total Animales Afectados</strong></td> --}}
+                                                                    <td><span id="total-animales-afectados">0</span></td> <!-- Mostrar el total de animales afectados -->
+                                                                    {{-- <td><strong>Total Animales Fallecidos</strong></td> --}}
+                                                                    <td><span id="total-animales-fallecidos">0</span></td> <!-- Mostrar el total de animales fallecidos -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -533,7 +608,7 @@
                                                         <table class="table">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Agricola</th>
+                                                                    <th>Agrícola</th>
                                                                     <th>Hectáreas Afectadas</th>
                                                                     <th>Hectáreas Perdidas</th>
                                                                 </tr>
@@ -543,15 +618,29 @@
                                                                     <tr>
                                                                         <td>{{ $sectorAgricola->first()->tipoCultivo->nombre_tipo_cultivo }}</td>
                                                                         <td>
-                                                                            <input type="number" name="hectareas_afectados[{{ $tipoCultivoId }}]" class="form-control" value="{{ old('hectareas_afectados.' . $tipoCultivoId, $sectorAgricola->first()->hectareas_afectados ?? 0) }}">
+                                                                            <input type="number" name="hectareas_afectados[{{ $tipoCultivoId }}]"
+                                                                                   value="{{ old('hectareas_afectados.' . $tipoCultivoId, $sectorAgricola->first()->hectareas_afectados ?? 0) }}"
+                                                                                   class="form-control affected-hectares">
                                                                         </td>
                                                                         <td>
-                                                                            <input type="number" name="hectareas_perdidas[{{ $tipoCultivoId }}]" class="form-control" value="{{ old('hectareas_perdidas.' . $tipoCultivoId, $sectorAgricola->first()->hectareas_perdidas ?? 0) }}">
+                                                                            <input type="number" name="hectareas_perdidas[{{ $tipoCultivoId }}]"
+                                                                                   value="{{ old('hectareas_perdidas.' . $tipoCultivoId, $sectorAgricola->first()->hectareas_perdidas ?? 0) }}"
+                                                                                   class="form-control lost-hectares">
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td></td>
+                                                                    {{-- <td><strong>Total Hectáreas Afectadas</strong></td> --}}
+                                                                    <td><span id="total-hectareas-afectadas">0</span></td> <!-- Total de hectáreas afectadas -->
+                                                                    {{-- <td><strong>Total Hectáreas Perdidas</strong></td> --}}
+                                                                    <td><span id="total-hectareas-perdidas">0</span></td> <!-- Total de hectáreas perdidas -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -587,7 +676,7 @@
                                                         <table class="table">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Areas Forestales</th>
+                                                                    <th>Áreas Forestales</th>
                                                                     <th>Hectáreas Perdidas</th>
                                                                 </tr>
                                                             </thead>
@@ -597,12 +686,43 @@
                                                                         <td>{{ $areaForestal->first()->detalleAreaForestal->nombre_detalle_area_forestal }}</td>
                                                                         <td>
                                                                             <input type="number" name="hectareas_perdidas_forestales[{{ $detalleAreaForestalId }}]"
-                                                                            class="form-control" value="{{ old('hectareas_perdidas_forestales.' . $detalleAreaForestalId, $areaForestal->first()->hectareas_perdidas_forestales ?? 0) }}">
+                                                                                   value="{{ old('hectareas_perdidas_forestales.' . $detalleAreaForestalId, $areaForestal->first()->hectareas_perdidas_forestales ?? 0) }}"
+                                                                                   class="form-control hectareas-perdidas-forestales">
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td><strong>Total Hectáreas Perdidas Forestales</strong></td>
+                                                                    <td><span id="total-hectareas-perdidas-forestales">0</span></td> <!-- Mostrar el total -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
+
+                                                        <script>
+                                                            // Función para actualizar el total de hectáreas perdidas forestales
+                                                            function updateTotalHectareasPerdidas() {
+                                                                let totalHectareasPerdidas = 0;
+
+                                                                // Sumar los valores de los inputs con la clase 'hectareas-perdidas-forestales'
+                                                                document.querySelectorAll('.hectareas-perdidas-forestales').forEach(function(input) {
+                                                                    totalHectareasPerdidas += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+                                                                });
+
+                                                                // Actualizar el total en el elemento correspondiente
+                                                                document.getElementById('total-hectareas-perdidas-forestales').textContent = totalHectareasPerdidas;
+                                                            }
+
+                                                            // Llamar a la función para establecer el total inicial
+                                                            updateTotalHectareasPerdidas();
+
+                                                            // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+                                                            document.querySelectorAll('.hectareas-perdidas-forestales').forEach(function(input) {
+                                                                input.addEventListener('input', updateTotalHectareasPerdidas);
+                                                            });
+                                                        </script>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -612,12 +732,6 @@
                                                     <div class="panel-heading"><b>Fauna Silvestre</b></div>
                                                     <div class="panel-body">
                                                         <h4>FAUNA SILVESTRE AFECTADA POR INCENDIOS FORESTALES</h4>
-                                                        @php
-                                                            $faunaSilvestreData = [];
-                                                            foreach ($faunaSilvestres as $faunaSilvestre) {
-                                                                $faunaSilvestreData[$faunaSilvestre->detalle_fauna_silvestre_id][$faunaSilvestre->tipo_especie_id] = $faunaSilvestre->numero_fauna_silvestre;
-                                                            }
-                                                        @endphp
                                                         <table class="table table-bordered table-striped">
                                                             <thead>
                                                                 <tr>
@@ -633,14 +747,44 @@
                                                                         <td>{{ $faunaSilvestre->first()->detalleFaunaSilvestre->nombre_detalle_fauna_silvestre }}</td>
                                                                         @foreach ($faunaSilvestre as $fauna)
                                                                             <td>
-                                                                                <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestreId }}][{{ $fauna->tipoEspecie->id }}]" class="form-control" value="{{ old('numero_fauna_silvestre.' . $detalleFaunaSilvestreId, $faunaSilvestreData[$detalleFaunaSilvestreId][$fauna->tipo_especie_id] ?? $fauna->numero_fauna_silvestre) }}">
+                                                                                <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestreId }}][{{ $fauna->tipoEspecie->id }}]"
+                                                                                       class="form-control fauna-silvestre" value="{{ old('numero_fauna_silvestre.' . $detalleFaunaSilvestreId, $fauna->numero_fauna_silvestre) }}">
                                                                             </td>
                                                                         @endforeach
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td><strong>Total Fauna Silvestre Afectada</strong></td>
+                                                                    <td><span id="total-fauna-silvestre">0</span></td>
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
-                                                    </div>
+
+                                                        <script>
+                                                            // Función para actualizar el total de fauna silvestre
+                                                            function updateTotalFaunaSilvestre() {
+                                                                let totalFaunaSilvestre = 0;
+
+                                                                // Sumar los valores de los inputs con la clase 'fauna-silvestre'
+                                                                document.querySelectorAll('.fauna-silvestre').forEach(function(input) {
+                                                                    totalFaunaSilvestre += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+                                                                });
+
+                                                                // Actualizar el total en el elemento correspondiente
+                                                                document.getElementById('total-fauna-silvestre').textContent = totalFaunaSilvestre;
+                                                            }
+
+                                                            // Llamar a la función para establecer el total inicial
+                                                            updateTotalFaunaSilvestre();
+
+                                                            // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+                                                            document.querySelectorAll('.fauna-silvestre').forEach(function(input) {
+                                                                input.addEventListener('input', updateTotalFaunaSilvestre);
+                                                            });
+                                                        </script>
+                                                                                                            </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -674,8 +818,8 @@ $('#select_provincia').on('change', function() {
         }
     });
 });
-
 </script>
+
 <script>
     function actualizarTotal() {
         // Obtener todos los valores de los inputs
@@ -710,7 +854,7 @@ $('#select_provincia').on('change', function() {
         input.addEventListener('input', function() {
             const modalidadId = input.dataset.modalidadId;
             const institucionId = input.dataset.institucionId;
-            
+
             // Actualizamos el total de la modalidad
             let totalModalidad = 0;
             document.querySelectorAll(`input[data-modalidad-id="${modalidadId}"]`).forEach(i => {
@@ -730,6 +874,180 @@ $('#select_provincia').on('change', function() {
         });
     });
 </script>
+
+
+<script>
+    document.querySelectorAll('.cantidad_grupo_enfermos').forEach(function(input) {
+        input.addEventListener('change', function() {
+            // Obtener los valores de los datos
+            const detalleEnfermedadId = this.getAttribute('data-detalle-enfermedad-id');
+            const grupoEtarioId = this.getAttribute('data-grupo-etario-id');
+            const newValue = parseInt(this.value) || 0;
+
+            console.log(`Cambio en Enfermedad: ${detalleEnfermedadId}, Grupo Etario: ${grupoEtarioId}, Nuevo valor: ${newValue}`);
+
+            // Actualizar el valor en el array de saludData
+            updateRowTotal(grupoEtarioId);
+            updateTotalEnfermedad(detalleEnfermedadId);
+            updateGlobalTotal();
+        });
+
+    });
+
+    function updateRowTotal(grupoEtarioId) {
+        let rowTotal = 0;
+        // Recalcular el total de la fila
+        document.querySelectorAll(`.grupo-etario-row[data-grupo-etario-id="${grupoEtarioId}"] .cantidad_grupo_enfermos`).forEach(function(input) {
+            rowTotal += parseInt(input.value) || 0;
+        });
+
+        console.log(`Nuevo total de fila para Grupo Etario ${grupoEtarioId}: ${rowTotal}`);
+
+        // Actualizar el total en la celda correspondiente de la fila
+        const rowTotalCell = document.querySelector(`.grupo-etario-row[data-grupo-etario-id="${grupoEtarioId}"] .row-total`);
+        rowTotalCell.textContent = rowTotal;
+    }
+
+
+    function updateTotalEnfermedad(detalleEnfermedadId) {
+        let totalEnfermedad = 0;
+        // Recalcular el total por enfermedad
+        document.querySelectorAll(`.cantidad-input[data-detalle-enfermedad-id="${detalleEnfermedadId}"]`).forEach(function(input) {
+            totalEnfermedad += parseInt(input.value) || 0;
+        });
+
+        console.log(`Nuevo total por enfermedad ${detalleEnfermedadId}: ${totalEnfermedad}`);
+
+        // Actualizar el total en la celda correspondiente de la columna
+        const totalEnfermedadCell = document.querySelector(`.total-enfermedad[data-enfermedad-id="${detalleEnfermedadId}"]`);
+        totalEnfermedadCell.textContent = totalEnfermedad;
+    }
+
+
+    function updateGlobalTotal() {
+        let globalTotal = 0;
+        // Recalcular el total global
+        document.querySelectorAll('.total-enfermedad').forEach(function(cell) {
+            globalTotal += parseInt(cell.textContent) || 0;
+        });
+
+        console.log(`Nuevo total global: ${globalTotal}`);
+
+        // Actualizar el total global
+        document.getElementById('cantidad_grupo_enfermos_total-global').textContent = globalTotal;
+    }
+
+</script>
+
+<script>
+    // infraestructura
+    // Función para actualizar el total cuando se cambia un valor en los inputs
+    function updateTotal() {
+        let total = 0;
+
+        // Sumar los valores de todos los inputs con la clase 'affected-number'
+        document.querySelectorAll('.affected-number').forEach(function(input) {
+            total += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+        });
+
+        // Actualizar el valor total en la celda correspondiente
+        document.getElementById('total-affected').textContent = total;
+    }
+
+    // Llamar a la función para establecer el total inicial
+    updateTotal();
+
+    // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+    document.querySelectorAll('.affected-number').forEach(function(input) {
+        input.addEventListener('input', updateTotal);
+    });
+</script>
+
+
+<script>
+    // Función para actualizar el total cuando se cambia un valor en los inputs
+    function updateTotal() {
+        let total = 0;
+
+        // Sumar los valores de todos los inputs con la clase 'affected-number'
+        document.querySelectorAll('.numero_comunidades_afectadas').forEach(function(input) {
+            total += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+        });
+
+        // Actualizar el valor total en la celda correspondiente
+        document.getElementById('total-comunidades-afectadas').textContent = total;
+    }
+
+    // Llamar a la función para establecer el total inicial
+    updateTotal();
+
+    // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+    document.querySelectorAll('.numero_comunidades_afectadas').forEach(function(input) {
+        input.addEventListener('input', updateTotal);
+    });
+</script>
+
+<script>
+    // Función para actualizar los totales de afectados y fallecidos
+    function updateTotals() {
+        let totalAfectados = 0;
+        let totalFallecidos = 0;
+
+        // Sumar los valores de los inputs de 'affected-number' (animales afectados)
+        document.querySelectorAll('.affected-number').forEach(function(input) {
+            totalAfectados += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+        });
+
+        // Sumar los valores de los inputs de 'deceased-number' (animales fallecidos)
+        document.querySelectorAll('.deceased-number').forEach(function(input) {
+            totalFallecidos += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+        });
+
+        // Actualizar los valores totales en los elementos correspondientes
+        document.getElementById('total-animales-afectados').textContent = totalAfectados;
+        document.getElementById('total-animales-fallecidos').textContent = totalFallecidos;
+    }
+
+    // Llamar a la función para establecer los totales iniciales
+    updateTotals();
+
+    // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+    document.querySelectorAll('.affected-number, .deceased-number').forEach(function(input) {
+        input.addEventListener('input', updateTotals);
+    });
+</script>
+
+
+<script>
+    // Función para actualizar los totales de hectáreas afectadas y perdidas
+    function updateTotals() {
+        let totalAfectadas = 0;
+        let totalPerdidas = 0;
+
+        // Sumar los valores de los inputs con la clase 'affected-hectares'
+        document.querySelectorAll('.affected-hectares').forEach(function(input) {
+            totalAfectadas += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+        });
+
+        // Sumar los valores de los inputs con la clase 'lost-hectares'
+        document.querySelectorAll('.lost-hectares').forEach(function(input) {
+            totalPerdidas += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+        });
+
+        // Actualizar los totales en los elementos correspondientes
+        document.getElementById('total-hectareas-afectadas').textContent = totalAfectadas;
+        document.getElementById('total-hectareas-perdidas').textContent = totalPerdidas;
+    }
+
+    // Llamar a la función para establecer los totales iniciales
+    updateTotals();
+
+    // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+    document.querySelectorAll('.affected-hectares, .lost-hectares').forEach(function(input) {
+        input.addEventListener('input', updateTotals);
+    });
+</script>
+
 
 <script>
 $(document).on('change', '#select_municipio', function(){

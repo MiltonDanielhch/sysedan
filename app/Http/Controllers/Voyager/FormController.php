@@ -426,9 +426,10 @@ class FormController extends Controller
     {
         $validatedData = $request->validated();
         // dd($validatedData);
-        DB::beginTransaction();
+        // DB::beginTransaction();
 
-        try {
+        // dd($validatedData);
+        // try {
             // Encontrar el formulario a actualizar
             $formulario = Formulario::findOrFail($id);
 
@@ -488,43 +489,27 @@ class FormController extends Controller
                 ]);
             }
 
-            foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
-                foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
-                    Salud::updateOrCreate(
-                        [
-                            'grupo_etario_id' => $grupoEtarioId,
-                            'detalle_enfermedad_id' => $detalleEnfermedadId,
-                            'formulario_id' => $formulario->id,
-                        ],
-                        [
-                            'cantidad_grupo_enfermos' => $cantidad,
-                        ]
-                    );
+            $saluds = Salud::where('formulario_id', $id)->get();
+
+            foreach ($saluds as $salud) {
+                // Obtener el grupo_etario_id directamente del registro actual de Salud
+                $grupoEtarioId = $salud->grupo_etario_id;
+                $detalleEnfermedadId = $salud->detalle_enfermedad_id;
+
+                // Verificar que el grupo_etario_id esté dentro de los valores válidos
+                if (in_array($grupoEtarioId, [1, 2, 3, 4])) {
+                    // Verificar que existe el valor de cantidad_grupo_enfermos para este grupo y enfermedad
+                    if (isset($validatedData['cantidad_grupo_enfermos'][$detalleEnfermedadId][$grupoEtarioId])) {
+                        // Actualizar el valor de cantidad_grupo_enfermos
+                        $salud->cantidad_grupo_enfermos = $validatedData['cantidad_grupo_enfermos'][$detalleEnfermedadId][$grupoEtarioId];
+                        $salud->save();
+                    }
+                } else {
+                    // Si el grupo_etario_id es inválido, registrar un error
+                    Log::error("Grupo Etario no válido: {$grupoEtarioId}");
                 }
             }
 
-            // foreach ($validatedData['cantidad_grupo_enfermos'] as $grupoEtarioId => $enfermedades) {
-            //     foreach ($enfermedades as $detalleEnfermedadId => $cantidad) {
-            //         Salud::updateOrCreate(
-            //             [
-            //                 'grupo_etario_id' => $grupoEtarioId,
-            //                 'detalle_enfermedad_id' => $detalleEnfermedadId,
-            //                 'formulario_id' => $formulario->id,
-            //             ],
-            //             [
-            //                 'cantidad_grupo_enfermos' => $cantidad,
-            //             ]
-            //         );
-            //     }
-            // }
-
-            $saluds = Salud::with( 'detalleEnfermedad', 'grupoEtario')->where('formulario_id', $formulario->id)->get();
-            foreach ($saluds as $salud){
-                // dd($salud);
-                $salud->update([
-                    'cantidad_grupo_enfermos' => $validatedData['cantidad_grupo_enfermos'][$salud->detalle_enfermedad_id][$salud->grupo_etario_id] ?? 0,
-                ]);
-            }
 
             $infraestructuras = Infraestructura::with('tipoInfraestructura')->where('formulario_id', $formulario->id)->get();
 
@@ -577,14 +562,14 @@ class FormController extends Controller
                 ]);
             }
 
-            DB::commit();
+            // DB::commit();
 
             return redirect()->route('formularios.index')->with('success', 'Formulario actualizado correctamente');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            // Manejar el error, por ejemplo, mostrar un mensaje al usuario
-            return redirect()->back()->withErrors(['error' => 'Ocurrió un error al actualizar el formulario.']);
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+        //     return redirect()->back()->withErrors(['error' => 'Ocurrió un error al actualizar el formulario.']);
+        // }
     }
 
     public function destroy(Formulario $formulario)

@@ -18,7 +18,7 @@
         <div class="col-md-12">
             <div class="panel panel-bordered">
                 <div class="panel-body">
-                    
+
                     <div class="form-group">
                         {{-- INCENDIOS FORESTALES --}}
                         <div class="row">
@@ -124,57 +124,87 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
+                                                                    @php
+                                                                        $totalAfectados = 0;  // Inicializamos la variable para el total
+                                                                    @endphp
                                                                     @foreach ($personasAfectadas as $personaAfectada)
                                                                         <tr>
                                                                             <td>{{ $personaAfectada->grupoEtario->nombre_grupo_etario }}</td>
                                                                             <td>{{ $personaAfectada->cantidad_afectados_por_incendios }}</td>
+                                                                            @php
+                                                                                // Sumar al total de afectados
+                                                                                $totalAfectados += $personaAfectada->cantidad_afectados_por_incendios;
+                                                                            @endphp
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <th><strong>Total Afectados</strong></th>
+                                                                        <th><strong>{{ $totalAfectados }}</strong></th>
+                                                                    </tr>
+                                                                </tfoot>
                                                             </table>
                                                         @else
                                                             <p>No se encontraron personas afectadas para este formulario.</p>
                                                         @endisset
+
                                                     </div>
                                                 </div>
-                                            </div>                                                
+                                            </div>
 
                                             <div class="form-group col-md-5">
                                                 <div class="panel panel-default">
                                                     <div class="panel-heading"><b>Personas</b></div>
                                                     <div class="panel-body">
                                                         <h4>INFORMACIÓN EN EDUCACIÓN</h4>
-                                                        @php
-                                                            $educacionData = [];
-                                                            foreach ($educacions as $educacion) {
-                                                                $educacionData[$educacion->institucion_id][$educacion->modalidad_educacion_id] = $educacion->numero_estudiantes;
-                                                            }
-                                                        @endphp
-                                            
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Institución</th>
-                                                                    @foreach ($modalidadEducacions as $modalidadEducacion)
-                                                                        <th>{{ $modalidadEducacion->nombre_modalidad_educacion }}</th>
-                                                                    @endforeach
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($educacions->groupBy('institucion_id') as $institucionId => $institucionEducacions)
+                                                            @php
+                                                                $educacionData = [];
+                                                                $totalesModalidades = []; // Inicializamos un array para los totales por modalidad
+                                                                foreach ($educacions as $educacion) {
+                                                                    $educacionData[$educacion->institucion_id][$educacion->modalidad_educacion_id] = $educacion->numero_estudiantes;
+
+                                                                    // Sumar el total de estudiantes por modalidad
+                                                                    if (!isset($totalesModalidades[$educacion->modalidad_educacion_id])) {
+                                                                        $totalesModalidades[$educacion->modalidad_educacion_id] = 0;
+                                                                    }
+                                                                    $totalesModalidades[$educacion->modalidad_educacion_id] += $educacion->numero_estudiantes;
+                                                                }
+                                                            @endphp
+
+                                                            <table class="table">
+                                                                <thead>
                                                                     <tr>
-                                                                        <td>{{ $institucionEducacions->first()->institucion->nombre_institucion }}</td>
+                                                                        <th>Institución</th>
                                                                         @foreach ($modalidadEducacions as $modalidadEducacion)
-                                                                            <td>{{ $educacionData[$institucionId][$modalidadEducacion->id] ?? 'N/A' }}</td>
+                                                                            <th>{{ $modalidadEducacion->nombre_modalidad_educacion }}</th>
                                                                         @endforeach
                                                                     </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($educacions->groupBy('institucion_id') as $institucionId => $institucionEducacions)
+                                                                        <tr>
+                                                                            <td>{{ $institucionEducacions->first()->institucion->nombre_institucion }}</td>
+                                                                            @foreach ($modalidadEducacions as $modalidadEducacion)
+                                                                                <td>{{ $educacionData[$institucionId][$modalidadEducacion->id] ?? 0 }}</td>
+                                                                            @endforeach
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <th><strong>Total Estudiantes</strong></th>
+                                                                        @foreach ($modalidadEducacions as $modalidadEducacion)
+                                                                            <th><strong>{{ $totalesModalidades[$modalidadEducacion->id] ?? 0 }}</strong></th>
+                                                                        @endforeach
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -189,60 +219,89 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingSalud">
                                         <h4 class="panel-title">
-                                            <a role="button" data-toggle="collapse" data-parent="#accordionSalud"
-                                                href="#collapseSalud" aria-expanded="true" aria-controls="collapseSalud">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordionSalud" href="#collapseSalud"
+                                               aria-expanded="true" aria-controls="collapseSalud">
                                                 INFORMACIÓN DE SALUD
                                             </a>
                                         </h4>
                                     </div>
-                                    <div id="collapseSalud" class="panel-collapse collapse in" role="tabpanel"
-                                        aria-labelledby="headingSalud">
+                                    <div id="collapseSalud" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingSalud">
                                         <div class="panel-body">
                                             <div class="form-group col-md-10">
                                                 <div class="panel panel-default">
                                                     <div class="panel-heading"><b>Salud</b></div>
-                                                    <div class="panel-body">
-                                                        <h4>INFORMACIÓN DE SALUD</h4>
-                                                        @php
+                                                        <div class="panel-body">
+                                                            <h4> INFORMACIÓN DE SALUD</h4>
+
+                                                            @php
                                                             $saludData = [];
-                                                            foreach ($saluds as $salud){
+                                                            $totales = [];
+                                                            foreach ($saluds as $salud) {
                                                                 $saludData[$salud->detalle_enfermedad_id][$salud->grupo_etario_id] = $salud->cantidad_grupo_enfermos;
+
+                                                                // Sumar la cantidad de enfermos por enfermedad
+                                                                if (!isset($totales[$salud->detalle_enfermedad_id])) {
+                                                                    $totales[$salud->detalle_enfermedad_id] = [];
+                                                                }
+                                                                if (!isset($totales[$salud->detalle_enfermedad_id][$salud->grupo_etario_id])) {
+                                                                    $totales[$salud->detalle_enfermedad_id][$salud->grupo_etario_id] = 0;
+                                                                }
+                                                                $totales[$salud->detalle_enfermedad_id][$salud->grupo_etario_id] += $salud->cantidad_grupo_enfermos;
                                                             }
                                                         @endphp
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Grupo Etario</th>
-                                                                    @foreach ($detalleEnfermedades as $detalleEnfermedad)
-                                                                        <th>{{ $detalleEnfermedad->nombre_detalle_enfermedad }}</th>
-                                                                    @endforeach
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach ($saluds->groupBy('grupo_etario_id') as $grupoEtarioId => $grupoEtarioSaluds)
+                                                        <div class="table-responsive">
+                                                            <table class="table">
+                                                                <thead>
                                                                     <tr>
-                                                                        <td>{{ $grupoEtarioSaluds->first()->grupoEtario->nombre_grupo_etario }}</td>
+                                                                        <th>Grupo Etario</th>
                                                                         @foreach ($detalleEnfermedades as $detalleEnfermedad)
-                                                                            <td>
-                                                                                @if (isset($saludData[$detalleEnfermedad->id][$grupoEtarioId]))
-                                                                                    {{ $saludData[$detalleEnfermedad->id][$grupoEtarioId] }}
-                                                                                @else
-                                                                                    0
-                                                                                @endif
-                                                                            </td>
+                                                                            <th>{{ $detalleEnfermedad->nombre_detalle_enfermedad }}</th>
                                                                         @endforeach
+                                                                        <th>Total</th>
                                                                     </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($saluds->groupBy('grupo_etario_id') as $grupoEtarioId => $grupoEtarioSaluds)
+                                                                        <tr>
+                                                                            <td>{{ $grupoEtarioSaluds->first()->grupoEtario->nombre_grupo_etario }}</td>
+                                                                            @foreach ($detalleEnfermedades as $detalleEnfermedad)
+                                                                                <td>
+                                                                                    @if (isset($saludData[$detalleEnfermedad->id][$grupoEtarioId]))
+                                                                                        {{ $saludData[$detalleEnfermedad->id][$grupoEtarioId] }}
+                                                                                    @else
+                                                                                        0
+                                                                                    @endif
+                                                                                </td>
+                                                                            @endforeach
+                                                                            <td class="row-total">
+                                                                                {{ array_sum(array_column($grupoEtarioSaluds->toArray(), 'cantidad_grupo_enfermos')) }}
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <th>Total</th>
+                                                                        @foreach ($detalleEnfermedades as $detalleEnfermedad)
+                                                                            <th class="total-enfermedad" data-enfermedad-id="{{ $detalleEnfermedad->id }}">
+                                                                                {{ array_sum(array_column($totales[$detalleEnfermedad->id], null)) }}
+                                                                            </th>
+                                                                        @endforeach
+                                                                        <th id="total-global">
+                                                                            {{ array_sum(array_map('array_sum', $totales)) }}
+                                                                        </th>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -276,18 +335,31 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                                @php
+                                                                    $totalInfraestructurasAfectadas = 0; // Inicializamos la variable para el total
+                                                                @endphp
                                                                 @foreach ($infraestructuras->groupBy('tipo_infraestructura_id') as $tipoInfraestructuraId => $infraestructura)
+                                                                    @php
+                                                                        // Sumar las infraestructuras afectadas
+                                                                        $totalInfraestructurasAfectadas += $infraestructura->first()->numeros_infraestructuras_afectadas;
+                                                                    @endphp
                                                                     <tr>
                                                                         <td>{{ $infraestructura->first()->tipoInfraestructura->nombre_tipo_infraestructura }}</td>
                                                                         <td>{{ $infraestructura->first()->numeros_infraestructuras_afectadas }}</td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th>Total</th>
+                                                                    <th>{{ $totalInfraestructurasAfectadas }}</th> <!-- Mostrar el total -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
 
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
@@ -303,7 +375,14 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                                @php
+                                                                    $totalComunidadesAfectadas = 0; // Inicializamos la variable para el total
+                                                                @endphp
                                                                 @foreach ($servicioBasicos->groupBy('tipo_servicio_basico_id') as $tipoServicioBasicoId => $servicioBasico)
+                                                                    @php
+                                                                        // Sumar las comunidades afectadas
+                                                                        $totalComunidadesAfectadas += $servicioBasico->first()->numero_comunidades_afectadas;
+                                                                    @endphp
                                                                     <tr>
                                                                         <td>{{ $servicioBasico->first()->tipoServicioBasico->nombre_servicio_basico }}</td>
                                                                         <td>{{ $servicioBasico->first()->informacion_tipo_dano }}</td>
@@ -311,11 +390,18 @@
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th>Total</th>
+                                                                    <th></th> <!-- Dejar en blanco o colocar un texto si es necesario -->
+                                                                    <th>{{ $totalComunidadesAfectadas }}</th> <!-- Mostrar el total de comunidades afectadas -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -354,7 +440,16 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                                @php
+                                                                    $totalAnimalesAfectados = 0;  // Inicializamos el total de animales afectados
+                                                                    $totalAnimalesFallecidos = 0; // Inicializamos el total de animales fallecidos
+                                                                @endphp
                                                                 @foreach ($sectorPecuarios->groupBy('tipo_especie_id') as $tipoEspecieId => $SectorPecuario)
+                                                                    @php
+                                                                        // Sumar los valores de los animales afectados y fallecidos
+                                                                        $totalAnimalesAfectados += $SectorPecuario->first()->numero_animales_afectados;
+                                                                        $totalAnimalesFallecidos += $SectorPecuario->first()->numero_animales_fallecidos;
+                                                                    @endphp
                                                                     <tr>
                                                                         <td>{{ $SectorPecuario->first()->tipoEspecie->nombre_tipo_especie }}</td>
                                                                         <td>{{ $SectorPecuario->first()->numero_animales_afectados }}</td>
@@ -362,11 +457,19 @@
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th>Total</th>
+                                                                    <th>{{ $totalAnimalesAfectados }}</th> <!-- Mostrar el total de animales afectados -->
+                                                                    <th>{{ $totalAnimalesFallecidos }}</th> <!-- Mostrar el total de animales fallecidos -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
+
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
 
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
@@ -382,7 +485,16 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                                @php
+                                                                    $totalHectareasAfectadas = 0;  // Inicializamos el total de hectáreas afectadas
+                                                                    $totalHectareasPerdidas = 0;   // Inicializamos el total de hectáreas perdidas
+                                                                @endphp
                                                                 @foreach ($sectorAgricolas->groupBy('tipo_cultivo_id') as $tipoCultivoId => $sectorAgricola)
+                                                                    @php
+                                                                        // Sumar los valores de hectáreas afectadas y hectáreas perdidas
+                                                                        $totalHectareasAfectadas += $sectorAgricola->first()->hectareas_afectados;
+                                                                        $totalHectareasPerdidas += $sectorAgricola->first()->hectareas_perdidas;
+                                                                    @endphp
                                                                     <tr>
                                                                         <td>{{ $sectorAgricola->first()->tipoCultivo->nombre_tipo_cultivo }}</td>
                                                                         <td>{{ $sectorAgricola->first()->hectareas_afectados }}</td>
@@ -390,10 +502,18 @@
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th>Total</th>
+                                                                    <th>{{ $totalHectareasAfectadas }}</th> <!-- Mostrar el total de hectáreas afectadas -->
+                                                                    <th>{{ $totalHectareasPerdidas }}</th> <!-- Mostrar el total de hectáreas perdidas -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
+
                                                     </div>
                                                 </div>
-                                            </div>              
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -424,35 +544,52 @@
                                                         <table class="table">
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Areas Forestales</th>
+                                                                    <th>Áreas Forestales</th>
                                                                     <th>Hectáreas Perdidas</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                                @php
+                                                                    $totalHectareasPerdidasForestales = 0;  // Inicializamos el total de hectáreas perdidas forestales
+                                                                @endphp
                                                                 @foreach ($areaForestals->groupBy('detalle_area_forestal_id') as $detalleAreaForestalId => $areaForestal)
+                                                                    @php
+                                                                        // Sumar las hectáreas perdidas forestales de cada área forestal
+                                                                        $totalHectareasPerdidasForestales += $areaForestal->first()->hectareas_perdidas_forestales;
+                                                                    @endphp
                                                                     <tr>
                                                                         <td>{{ $areaForestal->first()->detalleAreaForestal->nombre_detalle_area_forestal }}</td>
                                                                         <td>{{ $areaForestal->first()->hectareas_perdidas_forestales }}</td>
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th>Total</th>
+                                                                    <th>{{ $totalHectareasPerdidasForestales }}</th> <!-- Mostrar el total de hectáreas perdidas forestales -->
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
+
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
                                                     <div class="panel-heading"><b>Fauna Silvestre</b></div>
                                                     <div class="panel-body">
                                                         <h4>FAUNA SILVESTRE AFECTADA POR INCENDIOS FORESTALES</h4>
                                                         @php
-                                                        $faunaSilvestreData = [];
-                                                        foreach ($faunaSilvestres as $faunaSilvestre) {
-                                                            $faunaSilvestreData[$faunaSilvestre->detalle_fauna_silvestre_id][$faunaSilvestre->tipo_especie_id] = $faunaSilvestre->numero_fauna_silvestre;
-                                                        }
+                                                            $faunaSilvestreData = [];
+                                                            $totalFaunaSilvestre = 0;  // Variable para almacenar el total de fauna silvestre
+                                                            foreach ($faunaSilvestres as $faunaSilvestre) {
+                                                                $faunaSilvestreData[$faunaSilvestre->detalle_fauna_silvestre_id][$faunaSilvestre->tipo_especie_id] = $faunaSilvestre->numero_fauna_silvestre;
+                                                                // Sumar el número de fauna silvestre al total
+                                                                $totalFaunaSilvestre += $faunaSilvestre->numero_fauna_silvestre;
+                                                            }
                                                         @endphp
-                                            
+
                                                         <table class="table table-bordered table-striped">
                                                             <thead>
                                                                 <tr>
@@ -472,11 +609,20 @@
                                                                     </tr>
                                                                 @endforeach
                                                             </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <th>Total</th>
+                                                                    <th colspan="{{ $faunaSilvestres->groupBy('tipo_especie_id')->count() }}">
+                                                                        {{ $totalFaunaSilvestre }} <!-- Mostrar el total de fauna silvestre -->
+                                                                    </th>
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
+
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
