@@ -1,20 +1,10 @@
 <?php
 
+use App\Http\Controllers\ComunidadController;
 use App\Http\Controllers\Voyager\FormController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use TCG\Voyager\Facades\Voyager;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('login', function () {
     return redirect('admin/login');
@@ -33,6 +23,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], funct
     Route::resource('formularios', FormController::class)->middleware('auth');
     Route::get('formularios/ajax/list', [FormController::class, 'list'])->name('formularios.list');
     Route::get('formularios/create/provincia/{id_provincia}', [FormController::class, 'buscar_municipio'])->name('admin.formulario.buscar_municipio');
+    Route::get('formularios/create/municipio/{id_municipio}', [FormController::class, 'buscar_comunidad'])->name('admin.formulario.buscar_comunidad');
     Route::get('formularios/create/get-alcalde/{municipioId}', [FormController::class, 'getAlcalde'])->name('admin.formulario.getAlcalde');
     Route::get('formularios/create/get-poblacion/{municipioId}', [FormController::class, 'getPoblacion'])->name('admin.formulario.getPoblacion');
 
@@ -43,6 +34,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], funct
 
 
     Route::post('/actualizar-total-afectados', [FormController::class, 'actualizarTotalAfectados'])->name('actualizarTotalAfectados');
+
+    Route::post('/comunidad', [ComunidadController::class, 'store'])->name('comunidad.store');
 
 });
 

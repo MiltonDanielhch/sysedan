@@ -25,9 +25,10 @@ class CreateFormularioRequest extends FormRequest
             // formulario
             'fecha_llenado' => 'required|date',
             //comunidad
-            'nombre_comunidad' => 'required|string',
-            'tipo_comunidad' => 'required|string',
+            // 'nombre_comunidad' => 'required|string',
+            // 'tipo_comunidad' => 'required|string',
             'municipio_id' => 'required|integer|exists:municipios,id',
+            'comunidad_id' => 'required|integer|exists:comunidads,id',
             //incendio
             'fecha_inicio' => 'required|date',
             'causas_probables' => 'nullable|string',
@@ -39,40 +40,40 @@ class CreateFormularioRequest extends FormRequest
             'num_familias_afectadas' => 'required|integer',
             'num_familias_damnificadas' => 'required|integer',
 
-                // persona_afectada_incendios
-                'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
-                'cantidad_afectados_por_incendios.*' => 'required|integer',
+            // persona_afectada_incendios
+            'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
+            'cantidad_afectados_por_incendios.*' => 'required|integer',
 
-                // saluds
-                'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
-                'cantidad_grupo_enfermos.*.*' => 'nullable|integer|min:0',
+            // saluds
+            'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
+            'cantidad_grupo_enfermos.*.*' => 'nullable|integer|min:0',
 
-                // educacion
+            // educacion
             'institucion_id.*' => 'required|integer',
-                'num_estudiantes.*.*' => 'nullable|integer',
+            'num_estudiantes.*.*' => 'nullable|integer',
 
             // Infraestructura
             'tipo_infraestructura_id.*' => 'required|integer|exists:tipo_infraestructuras,id',
             'numeros_infraestructuras_afectadas.*' => 'nullable|integer',
 
-                //servicios basicos
-                'tipo_servicio_basico_id.*' => 'required|integer|exists:tipo_servicio_basicos,id',
-                'informacion_tipo_dano.*' => 'nullable|string',
-                'numero_comunidades_afectadas.*' => 'nullable|integer',
+            //servicios basicos
+            'tipo_servicio_basico_id.*' => 'required|integer|exists:tipo_servicio_basicos,id',
+            'informacion_tipo_dano.*' => 'nullable|string',
+            'numero_comunidades_afectadas.*' => 'nullable|integer',
 
-                // sector pecuario
-                'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
-                'numero_animales_afectados.*' => 'nullable|integer',
-                'numero_animales_fallecidos.*' => 'nullable|integer',
+            // sector pecuario
+            'tipo_especie_id.*' => 'required|integer|exists:tipo_especies,id',
+            'numero_animales_afectados.*' => 'nullable|integer',
+            'numero_animales_fallecidos.*' => 'nullable|integer',
 
-                // sector agricola
-                'tipo_cultivo_id.*' => 'required|integer',
-                'hectareas_afectados.*' => 'nullable|numeric',
-                'hectareas_perdidas.*' => 'nullable|numeric',
+            // sector agricola
+            'tipo_cultivo_id.*' => 'required|integer',
+            'hectareas_afectados.*' => 'nullable|numeric',
+            'hectareas_perdidas.*' => 'nullable|numeric',
 
-                // area forestal
-                'detalle_area_forestal_id.*' => 'required|integer',
-                'hectareas_perdidas_forestales.*' => 'required|numeric',
+            // area forestal
+            'detalle_area_forestal_id.*' => 'required|integer',
+            'hectareas_perdidas_forestales.*' => 'required|numeric',
 
             //  fauna silvestre
             'detalle_fauna_silvestre_id.*' => 'required|integer',

@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="{{ asset('css/h.css') }}">
 
 
+
     <style>
         .form-control, .select2-selection, .mce-tinymce {
             border: 1px solid #272727 !important;
@@ -136,6 +137,7 @@ if (\Illuminate\Support\Str::startsWith(Auth::user()->avatar, 'http://') || \Ill
 @include('voyager::partials.app-footer')
 
 <!-- Javascript Libs -->
+
 
 
 <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>

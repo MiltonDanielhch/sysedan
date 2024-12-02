@@ -14,6 +14,11 @@
 @section('content')
 <div class="page-content edit-add container-fluid">
     <div class="row">
+
+
+    <!-- Incluir el archivo del modal -->
+    @include('vendor.voyager.formularios.modal_comunidad');
+
         <form action="{{route('formularios.store')}}" method="POST">
             {{ csrf_field() }}
             <div class="col-md-12">
@@ -91,16 +96,29 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="nombre_comunidad">Nombre Comunidad</label>
-                                                            <input type="text" name="nombre_comunidad" class="form-control" required>
+                                                            <div id="respuesta_municipio">
+                                                                <div class="loading-indicator">Cargando...</div>
+                                                            </div>
                                                         </div>
-                                                        <div class="form-group">
+
+                                                           <!-- Botón que abre el modal -->
+                                                        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                                                            Añadir Comunidad
+                                                        </button>
+
+
+                                                        {{-- <div class="form-group">
+                                                            <label for="nombre_comunidad">Nombre Comunidad</label>
+                                                            <input type="text" name="nombre_comunidad" class="form-control" required>
+                                                        </div> --}}
+                                                        {{-- <div class="form-group">
                                                             <label for="tipo_comunidad">Tipo de Comunidad</label>
                                                             <select name="tipo_comunidad" id="tipo_comunidad" class="form-control" required>
                                                                 <option value="INDÍGENA">INDÍGENA</option>
                                                                 <option value="CAMPESINA">CAMPESINA</option>
                                                                 <option value="INTERCULTURAL">INTERCULTURAL</option>
                                                             </select>
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -150,7 +168,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Incendios en la comunidad --}}
                                                 <div class="form-group col-md-6">
                                                     <div class="panel panel-default">
                                                         <div class="panel-heading"><b>Incendios en la Comunidad</b></div>
@@ -648,72 +665,5 @@
 @stop
 
 @section('javascript')
-<script>
-$('#select_provincia').on('change', function() {
-    var id_provincia = $(this).val();
-    $('#respuesta_provincia').html('<div class="loading-indicator">Loading...</div>');
-    $.ajax({
-        url: "{{ url('/admin/formularios/create/provincia/') }}/" + id_provincia,
-        type: "GET",
-        success: function(data) {
-            $('#respuesta_provincia').html(data);
-        },
-        error: function() {
-            $('#respuesta_provincia').html('<div class="error-message">An error occurred. Please try again later.</div>');
-        }
-    });
-});
-</script>
-<script>
-    $(document).on('change', '#select_municipio', function(){
-        var id_municipio = $(this).val();
-        // alert(id_municipio);
-        if(id_municipio){
-            $.ajax({
-                url:"{{ url('/admin/formularios/create/get-alcalde') }}/" + id_municipio,
-                type: "GET",
-                        success: function(response) {
-                            // Si la respuesta es exitosa, carga el nombre del alcalde en el campo
-                            if (response.nombre_alcalde) {
-                                $('#nombre_alcalde').val(response.nombre_alcalde);
-                            } else {
-                                $('#nombre_alcalde').val('');
-                            }
-                        },
-                        error: function() {
-                            alert('Error al cargar el nombre del alcalde');
-                        }
-                    });
-                } else {
-                    $('#nombre_alcalde').val('');
-            }
-    });
-</script>
-
-<script>
-    $(document).on('change', '#select_municipio', function(){
-        var id_municipio = $(this).val();
-        // alert(id_municipio);
-        if(id_municipio){
-            $.ajax({
-                url:"{{ url('/admin/formularios/create/get-poblacion') }}/" + id_municipio,
-                type: "GET",
-                        success: function(response) {
-                            // Si la respuesta es exitosa, carga el nombre del alcalde en el campo
-                            if (response.poblacion_total) {
-                                $('#poblacion_total').val(response.poblacion_total);
-                            } else {
-                                $('#poblacion_total').val('');
-                            }
-                        },
-                        error: function() {
-                            alert('Error al cargar el nombre del alcalde');
-                        }
-                    });
-                } else {
-                    $('#nombre_alcalde').val('');
-            }
-    });
-</script>
-
+<script src="{{ asset('js/formulario-add.js') }}"></script>
 @stop
