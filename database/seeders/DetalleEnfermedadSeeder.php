@@ -17,7 +17,8 @@ class DetalleEnfermedadSeeder extends Seeder
             'Conjuntivitis' => 'Inflamación de la conjuntiva del ojo.',
             'Respiratorias Agudas' => 'Infección del sistema respiratorio superior.',
             'Neumonías' => 'Infección de los pulmones.',
-            'Otro' => 'Otras enfermedades no especificadas.',
+            'EDAs' => 'Enfermedades Diarreicas Agudas',
+            'IRAs' => 'Infecciones Respiratorias Agudas.',
             'Fallecimientos' => 'Número de muertes relacionadas con las enfermedades mencionadas.',
 
         ];

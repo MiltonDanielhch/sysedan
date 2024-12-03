@@ -106,19 +106,23 @@
                                                             Añadir Comunidad
                                                         </button>
 
+                                                        {{-- Actividad --}}
+                                                        <div class="form-group">
+                                                            <label for="actividades">Actividades</label>
+                                                            <textarea id="actividades" name="actividades" placeholder="Actividades" class="form-control"></textarea>
+                                                        </div>
 
-                                                        {{-- <div class="form-group">
-                                                            <label for="nombre_comunidad">Nombre Comunidad</label>
-                                                            <input type="text" name="nombre_comunidad" class="form-control" required>
-                                                        </div> --}}
-                                                        {{-- <div class="form-group">
-                                                            <label for="tipo_comunidad">Tipo de Comunidad</label>
-                                                            <select name="tipo_comunidad" id="tipo_comunidad" class="form-control" required>
-                                                                <option value="INDÍGENA">INDÍGENA</option>
-                                                                <option value="CAMPESINA">CAMPESINA</option>
-                                                                <option value="INTERCULTURAL">INTERCULTURAL</option>
-                                                            </select>
-                                                        </div> --}}
+
+                                                        <div class="form-group">
+                                                            <label for="cantidad_beneficiarios">cantidad beneficiarios</label>
+                                                            <input type="number" id="cantidad_beneficiarios" name="cantidad_beneficiarios"
+                                                                placeholder="Introducir Cantidad Beneficiarios" class="form-control">
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="fecha_asistencia">Fecha de la Actividad</label>
+                                                            <input type="date" id="fecha_asistencia" name="fecha_asistencia" class="form-control" required>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -154,7 +158,7 @@
                                                             <div class="form-group">
                                                                 <label for="causas_probables">Causas Probables</label>
                                                                 <input type="text" id="causas_probables" name="causas_probables" placeholder="Introducir Probables"
-                                                                    class="form-control" required>
+                                                                    class="form-control">
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="estado">Estado</label>
@@ -175,27 +179,27 @@
                                                             <div class="form-group">
                                                                 <label for="incendios_registrados">Incendios Registrados</label>
                                                                 <input type="number" id="incendios_registrados" name="incendios_registrados"
-                                                                    placeholder="Introducir Incendios Registrados" class="form-control" required>
+                                                                    placeholder="Introducir Incendios Registrados" class="form-control" >
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="incendios_activos">Incendios Activos</label>
                                                                 <input type="number" id="incendios_activos" name="incendios_activos"
-                                                                    placeholder="Introducir Incendios Activos" class="form-control" required>
+                                                                    placeholder="Introducir Incendios Activos" class="form-control" >
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="necesidades">Necesidades</label>
-                                                                <input type="text" id="necesidades" name="necesidades" placeholder="Introducir necesidades"
-                                                                    class="form-control">
+                                                                <input type="text" id="necesidades" name="necesidades" placeholder="Introducir necesidades" class="form-control">
                                                             </div>
                                                             <div class="form-group">
                                                                 <label for="num_familias_afectadas">Familias Afectadas</label>
                                                                 <input type="number" id="num_familias_afectadas" name="num_familias_afectadas"
-                                                                    placeholder="Introducir Numero" class="form-control" required>
+                                                                    placeholder="Introducir Numero" class="form-control">
                                                             </div>
+                                                            
                                                             <div class="form-group">
                                                                 <label for="num_familias_damnificadas">Familias Damnificadas</label>
                                                                 <input type="number" id="num_familias_damnificadas" name="num_familias_damnificadas"
-                                                                    placeholder="Introducir Numero" class="form-control" required>
+                                                                    placeholder="Introducir Numero" class="form-control">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -246,7 +250,7 @@
                                                                         </td>
                                                                         <td>
                                                                             <input type="number" name="cantidad_afectados_por_incendios[]"
-                                                                                class="form-control" min="0" required>
+                                                                                class="form-control" min="0">
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach
@@ -278,7 +282,7 @@
                                                                             </td>
                                                                             @foreach ($modalidadEducacions as $modalidadEducacion)
                                                                                 <td>
-                                                                                    <input type="number" name="num_estudiantes[{{ $institucion->id }}][{{ $modalidadEducacion->id }}]" class="form-control" min="0" required>
+                                                                                    <input type="number" name="num_estudiantes[{{ $institucion->id }}][{{ $modalidadEducacion->id }}]" class="form-control" min="0">
                                                                                 </td>
                                                                             @endforeach
                                                                         </tr>
@@ -336,7 +340,7 @@
                                                                                 @foreach ($detalleEnfermedades as $detalleEnfermedad)
                                                                                     <td>
                                                                                         <input type="number" name="cantidad_grupo_enfermos[{{ $grupoEtarioSalud->id }}][{{ $detalleEnfermedad->id }}]"
-                                                                                            class="form-control" min="0" required>
+                                                                                            class="form-control" min="0">
                                                                                     </td>
                                                                                 @endforeach
                                                                             </tr>
@@ -396,7 +400,7 @@
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="number" name="numeros_infraestructuras_afectadas[]"
-                                                                                        class="form-control" required>
+                                                                                        class="form-control">
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -432,11 +436,11 @@
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="text" name="informacion_tipo_dano[]"
-                                                                                        class="form-control" placeholder="Describa el daño" required>
+                                                                                        class="form-control" placeholder="Describa el daño" >
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="number" name="numero_comunidades_afectadas[]"
-                                                                                        class="form-control" required>
+                                                                                        class="form-control" >
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -496,11 +500,11 @@
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="number" name="numero_animales_afectados[]"
-                                                                                        class="form-control" min="0" required>
+                                                                                        class="form-control" min="0" >
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="number" name="numero_animales_fallecidos[]"
-                                                                                        class="form-control" min="0" required>
+                                                                                        class="form-control" min="0" >
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -535,11 +539,11 @@
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="number" name="hectareas_afectados[]"
-                                                                                        class="form-control" min="0" required>
+                                                                                        class="form-control" min="0" >
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="number" name="hectareas_perdidas[]"
-                                                                                        class="form-control" min="0" required>
+                                                                                        class="form-control" min="0" >
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -598,7 +602,7 @@
                                                                                 </td>
                                                                                 <td>
                                                                                     <input type="number" name="hectareas_perdidas_forestales[]"
-                                                                                        class="form-control" min="0" required placeholder="Número de hectáreas">
+                                                                                        class="form-control" min="0" placeholder="Número de hectáreas">
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
@@ -635,7 +639,7 @@
                                                                                 @foreach ($tipoFaunaEspecies as $tipoFaunaEspecie)
                                                                                     <td>
                                                                                         <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestre->id }}][{{ $tipoFaunaEspecie->id }}]"
-                                                                                               class="form-control" min="0" required placeholder="Número de animales afectados">
+                                                                                               class="form-control" min="0"  placeholder="Número de animales afectados">
                                                                                     </td>
                                                                                 @endforeach
                                                                             </tr>
@@ -647,6 +651,69 @@
                                                     </div>
                                                 </div>
 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            {{-- ASISTENCIA Y REFORESTACION --}}
+                            <div class="row">
+                                <div class="panel-group" id="accordionReforestacion" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingReforestacion">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#accordionReforestacion"
+                                                    href="#collapseReforestacion" aria-expanded="true" aria-controls="collapseReforestacion">
+                                                    REFORESTACIONES
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseReforestacion" class="panel-collapse collapse in" role="tabpanel"
+                                            aria-labelledby="headingReforestacion">
+                                            <div class="panel-body">
+
+                                                <div class="form-group col-md-6">
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading"><b>Reforestacion</b></div>
+                                                        <div class="panel-body">
+                                                            <h4>REFORESTACION</h4>
+                                                            {{-- <div class="table-responsive">
+                                                                <table class="table" role="table" aria-labelledby="reforestacionTable">
+                                                                    <caption>Información sobre la Reforestación</caption>
+                                                                    @php
+                                                                        $plantines = ['Tajibo', 'Tamarindo', 'Asaí', 'Acerola', 'Limón', 'Toronja', 'Palmeras', 'Achachairú', 'Maracuyá', 'Cacao', 'Naranja', 'Albaca', 'Limón Camba', 'Cáctus', 'Sábila', 'Guayaba', 'Sinini', 'Cayú'];
+                                                                    @endphp
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Plantin</th>
+                                                                            <th>Cantidad de Plantines</th>
+                                                                        
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach ($plantines as $index => $plantin)
+                                                                            <tr>
+                                                                                <td>
+                                                                                    {{ $plantin }}
+                                                                                    <input type="hidden" name="plantin[]" value="{{ $plantin }}">
+                                                                        
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" name="cantidad_plantines[]" class="form-control">
+                                                                                </td>
+                                                                        
+                                                                            </tr>
+                                                                        @endforeach
+                                                                    </tbody>
+                                                                </table>
+                                                            </div> --}}
+
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

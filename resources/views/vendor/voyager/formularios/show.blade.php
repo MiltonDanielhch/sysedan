@@ -84,6 +84,32 @@
                                                             <label for="tipo_comunidad">Tipo de Comunidad</label>
                                                             <p> {{ $form->comunidad->tipo_comunidad }}</p>
                                                         </div>
+
+                                                        {{-- Actividad --}}
+                                                        <div class="form-group">
+                                                            <label for="actividades">Actividades</label>
+                                                            @foreach($asistencias as $asistencia)
+                                                                <p>{{ $asistencia->actividades }}</p>
+                                                            @endforeach
+
+                                                            {{-- @dump($asistencias); --}}
+                                                        </div>
+
+
+                                                        <div class="form-group">
+                                                            <label for="cantidad_beneficiarios">cantidad beneficiarios</label>
+                                                            @foreach($asistencias as $asistencia)
+                                                                <p>{{ $asistencia->cantidad_beneficiarios }}</p>
+                                                            @endforeach
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="fecha_asistencia">Fecha de la Actividad</label>
+                                                            @foreach($asistencias as $asistencia)
+                                                                <p>{{ $asistencia->fecha_asistencia }}</p>
+                                                            @endforeach
+   
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

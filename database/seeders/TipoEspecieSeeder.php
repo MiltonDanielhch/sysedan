@@ -19,6 +19,7 @@ class TipoEspecieSeeder extends Seeder
             ['nombre_tipo_especie' => 'Porcinos'],
             ['nombre_tipo_especie' => 'Aves'],
             ['nombre_tipo_especie' => 'Piscícolas'],
+            
             ['nombre_tipo_especie' => 'Mamíferos'],
             ['nombre_tipo_especie' => 'Reptiles'],
 

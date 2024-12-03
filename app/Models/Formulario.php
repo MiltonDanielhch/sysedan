@@ -69,6 +69,9 @@ class Formulario extends Model
           return $this->hasMany(FaunaSilvestre::class);
       }
 
+      public function asistencias(){
+        return $this->hasMany(Asistencia::class);
+      }
         /**
      * Elimina el formulario y sus relaciones de manera segura.
      */

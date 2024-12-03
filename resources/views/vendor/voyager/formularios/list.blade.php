@@ -30,15 +30,19 @@
                         </td>
 
                         @php
-                            $incendioPivot = $formulario->comunidad->incendios->first()->pivot;
+                            $incendio = $formulario->comunidad->incendios->first();
                         @endphp
-                        <td><p>
-                            Incendios Registrados: {{ $incendioPivot->incendios_activos }} <br>
-                            Incendios Activos: {{ $incendioPivot->incendios_activos }} <br>
-                            Necesidades: {{ $incendioPivot->necesidades }} <br>
-                            Familias Afectadas: {{ $incendioPivot->num_familias_afectadas }} <br>
-                            Familias Damnificadas: {{ $incendioPivot->num_familias_damnificadas }} <br>
-                        </p></td>
+
+                        @if($incendio)
+                            <td><p>
+                                Incendios Registrados: {{ $incendio->pivot->incendios_activos }} <br>
+                                Incendios Activos: {{ $incendio->pivot->incendios_activos }} <br>
+                                Necesidades: {{ $incendio->pivot->necesidades }} <br>
+                            </p></td>
+                        @else
+                            <td><p>Incendios NO registrados</p></td>
+                        @endif
+
 
                         <td class="no-sort no-click bread-actions text-right">
                             <a href="{{ route('formularios.show', $formulario->id) }}" title="Ver" class="btn btn-sm btn-warning view">

@@ -118,6 +118,42 @@
                                                                     @endforeach
                                                                 </select>
                                                             </div>
+
+                                                            <div class="form-group">
+                                                                <label for="actividades">Actividades</label>
+                                                                    @foreach($asistencias as $asistencia)
+                                                                        <textarea id="actividades" name="actividades[{{ $asistencia->id }}]" placeholder="Actividades" class="form-control">{{ old('actividades.' . $asistencia->id, $asistencia->actividades) }}</textarea>
+                                                                    @endforeach                                                                
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="cantidad_beneficiarios">Cantidad de Beneficiarios</label>
+                                                                @foreach($asistencias as $asistencia)
+                                                                    <!-- Set unique name for each input -->
+                                                                    <input type="number" 
+                                                                           id="cantidad_beneficiarios_{{ $asistencia->id }}" 
+                                                                           name="cantidad_beneficiarios[{{ $asistencia->id }}]" 
+                                                                           placeholder="Introducir Cantidad Beneficiarios" 
+                                                                           class="form-control" 
+                                                                           value="{{ old('cantidad_beneficiarios.' . $asistencia->id, $asistencia->cantidad_beneficiarios) }}" 
+                                                                           required>
+                                                                @endforeach
+                                                            </div>
+                                                            
+                                                            <div class="form-group">
+                                                                <label for="fecha_asistencia">Fecha de la Actividad</label>
+                                                                @foreach($asistencias as $asistencia)
+                                                                    <!-- Set a unique name for each input field based on Asistencia ID -->
+                                                                    <input type="date" 
+                                                                        id="fecha_asistencia_{{ $asistencia->id }}" 
+                                                                        name="fecha_asistencia[{{ $asistencia->id }}]" 
+                                                                        class="form-control" 
+                                                                        value="{{ old('fecha_asistencia.' . $asistencia->id, $asistencia->fecha_asistencia->toDateString()) }}" 
+                                                                        required>
+                                                                @endforeach
+                                                            </div>
+                                                            
+                                                                                                                
                                                         </div>
                                                     </div>
                                                 </div>

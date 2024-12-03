@@ -34,15 +34,21 @@ class CreateFormularioRequest extends FormRequest
             'causas_probables' => 'nullable|string',
             'estado' => 'nullable|string',
             // comunidad_incendios
-            'incendios_registrados' => 'required|integer',
-            'incendios_activos' => 'required|integer',
+            'incendios_registrados' => 'nullable|integer',
+            'incendios_activos' => 'nullable|integer',
             'necesidades' => 'nullable|string',
-            'num_familias_afectadas' => 'required|integer',
-            'num_familias_damnificadas' => 'required|integer',
+            'num_familias_afectadas' => 'nullable|integer',
+            'num_familias_damnificadas' => 'nullable|integer',
+
+
+            // asistencia
+            'actividades' => 'nullable|string',
+            'cantidad_beneficiarios' => 'nullable|integer',
+            'fecha_asistencia' => 'nullable|date',
 
             // persona_afectada_incendios
             'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
-            'cantidad_afectados_por_incendios.*' => 'required|integer',
+            'cantidad_afectados_por_incendios.*' => 'nullable|integer',
 
             // saluds
             'detalle_enfermedad_id.*' => 'required|integer|exists:detalle_enfermedads,id',
@@ -73,11 +79,18 @@ class CreateFormularioRequest extends FormRequest
 
             // area forestal
             'detalle_area_forestal_id.*' => 'required|integer',
-            'hectareas_perdidas_forestales.*' => 'required|numeric',
+            'hectareas_perdidas_forestales.*' => 'nullable|numeric',
 
             //  fauna silvestre
             'detalle_fauna_silvestre_id.*' => 'required|integer',
-            'numero_fauna_silvestre.*.*' => 'required|integer',
+            'numero_fauna_silvestre.*.*' => 'nullable|integer',
+
+
+
+            // reforestacion
+            // 'especie_plantin' => 'nullable|string',
+            // 'cantidad_plantines' => 'nullable|integer',
+            // 'fecha_reforestacion' => 'nullable|date',
         ];
     }
 }

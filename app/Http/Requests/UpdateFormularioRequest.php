@@ -38,6 +38,12 @@ class UpdateFormularioRequest extends FormRequest
             'necesidades' => 'nullable|string',
             'num_familias_afectadas' => 'required|integer',
             'num_familias_damnificadas' => 'required|integer',
+
+            // asistencias
+            'actividades.*' => 'nullable|string',
+            'cantidad_beneficiarios.*' => 'nullable|integer',
+            'fecha_asistencia.*' => 'nullable|date',
+            
             // persona_afectada_incendios
             // 'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
             'cantidad_afectados_por_incendios.*' => 'required|integer',

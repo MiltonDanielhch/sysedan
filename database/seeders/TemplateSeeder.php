@@ -26,6 +26,7 @@ class TemplateSeeder extends Seeder
             UsersTableSeeder::class,
             ProvinciaSeeder::class,
             MunicipioSeeder::class,
+            ComunidadSeeder::class,
             GrupoEtarioSeeder::class,
             DetalleEnfermedadSeeder::class,
             ModalidadEducacionSeeder::class,
