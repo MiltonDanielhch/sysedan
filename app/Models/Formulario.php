@@ -72,6 +72,10 @@ class Formulario extends Model
       public function asistencias(){
         return $this->hasMany(Asistencia::class);
       }
+
+      public function reforestacion(){
+        return $this->hasMany(Reforestacion::class);
+      }
         /**
      * Elimina el formulario y sus relaciones de manera segura.
      */

@@ -123,37 +123,37 @@
                                                                 <label for="actividades">Actividades</label>
                                                                     @foreach($asistencias as $asistencia)
                                                                         <textarea id="actividades" name="actividades[{{ $asistencia->id }}]" placeholder="Actividades" class="form-control">{{ old('actividades.' . $asistencia->id, $asistencia->actividades) }}</textarea>
-                                                                    @endforeach                                                                
+                                                                    @endforeach
                                                             </div>
 
                                                             <div class="form-group">
                                                                 <label for="cantidad_beneficiarios">Cantidad de Beneficiarios</label>
                                                                 @foreach($asistencias as $asistencia)
                                                                     <!-- Set unique name for each input -->
-                                                                    <input type="number" 
-                                                                           id="cantidad_beneficiarios_{{ $asistencia->id }}" 
-                                                                           name="cantidad_beneficiarios[{{ $asistencia->id }}]" 
-                                                                           placeholder="Introducir Cantidad Beneficiarios" 
-                                                                           class="form-control" 
-                                                                           value="{{ old('cantidad_beneficiarios.' . $asistencia->id, $asistencia->cantidad_beneficiarios) }}" 
+                                                                    <input type="number"
+                                                                           id="cantidad_beneficiarios_{{ $asistencia->id }}"
+                                                                           name="cantidad_beneficiarios[{{ $asistencia->id }}]"
+                                                                           placeholder="Introducir Cantidad Beneficiarios"
+                                                                           class="form-control"
+                                                                           value="{{ old('cantidad_beneficiarios.' . $asistencia->id, $asistencia->cantidad_beneficiarios) }}"
                                                                            required>
                                                                 @endforeach
                                                             </div>
-                                                            
+
                                                             <div class="form-group">
                                                                 <label for="fecha_asistencia">Fecha de la Actividad</label>
                                                                 @foreach($asistencias as $asistencia)
                                                                     <!-- Set a unique name for each input field based on Asistencia ID -->
-                                                                    <input type="date" 
-                                                                        id="fecha_asistencia_{{ $asistencia->id }}" 
-                                                                        name="fecha_asistencia[{{ $asistencia->id }}]" 
-                                                                        class="form-control" 
-                                                                        value="{{ old('fecha_asistencia.' . $asistencia->id, $asistencia->fecha_asistencia->toDateString()) }}" 
+                                                                    <input type="date"
+                                                                        id="fecha_asistencia_{{ $asistencia->id }}"
+                                                                        name="fecha_asistencia[{{ $asistencia->id }}]"
+                                                                        class="form-control"
+                                                                        value="{{ old('fecha_asistencia.' . $asistencia->id, $asistencia->fecha_asistencia->toDateString()) }}"
                                                                         required>
                                                                 @endforeach
                                                             </div>
-                                                            
-                                                                                                                
+
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -743,28 +743,8 @@
                                                             </tfoot>
                                                         </table>
 
-                                                        <script>
-                                                            // Función para actualizar el total de hectáreas perdidas forestales
-                                                            function updateTotalHectareasPerdidas() {
-                                                                let totalHectareasPerdidas = 0;
-
-                                                                // Sumar los valores de los inputs con la clase 'hectareas-perdidas-forestales'
-                                                                document.querySelectorAll('.hectareas-perdidas-forestales').forEach(function(input) {
-                                                                    totalHectareasPerdidas += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
-                                                                });
-
-                                                                // Actualizar el total en el elemento correspondiente
-                                                                document.getElementById('total-hectareas-perdidas-forestales').textContent = totalHectareasPerdidas;
-                                                            }
-
-                                                            // Llamar a la función para establecer el total inicial
-                                                            updateTotalHectareasPerdidas();
-
-                                                            // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
-                                                            document.querySelectorAll('.hectareas-perdidas-forestales').forEach(function(input) {
-                                                                input.addEventListener('input', updateTotalHectareasPerdidas);
-                                                            });
-                                                        </script>
+                                                        {{-- <script>
+                                                         </script> --}}
 
                                                     </div>
                                                 </div>
@@ -805,29 +785,7 @@
                                                             </tfoot>
                                                         </table>
 
-                                                        <script>
-                                                            // Función para actualizar el total de fauna silvestre
-                                                            function updateTotalFaunaSilvestre() {
-                                                                let totalFaunaSilvestre = 0;
-
-                                                                // Sumar los valores de los inputs con la clase 'fauna-silvestre'
-                                                                document.querySelectorAll('.fauna-silvestre').forEach(function(input) {
-                                                                    totalFaunaSilvestre += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
-                                                                });
-
-                                                                // Actualizar el total en el elemento correspondiente
-                                                                document.getElementById('total-fauna-silvestre').textContent = totalFaunaSilvestre;
-                                                            }
-
-                                                            // Llamar a la función para establecer el total inicial
-                                                            updateTotalFaunaSilvestre();
-
-                                                            // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
-                                                            document.querySelectorAll('.fauna-silvestre').forEach(function(input) {
-                                                                input.addEventListener('input', updateTotalFaunaSilvestre);
-                                                            });
-                                                        </script>
-                                                                                                            </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -837,10 +795,90 @@
                             </div>
                         </div>
                      </div>
+
+                     <div class="form-group">
+                        {{-- ASISTENCIA Y REFORESTACION --}}
+                        {{-- Mostrar mensajes de error y éxito --}}
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        @if(session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        <div class="row">
+                            <div class="panel-group" id="accordionReforestacion" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingReforestacion">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordionReforestacion"
+                                                href="#collapseReforestacion" aria-expanded="true" aria-controls="collapseReforestacion">
+                                                REFORESTACIONES
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseReforestacion" class="panel-collapse collapse in" role="tabpanel"
+                                        aria-labelledby="headingReforestacion">
+                                        <div class="panel-body">
+
+                                            <div class="form-group col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading"><b>Reforestacion</b></div>
+                                                    <div class="panel-body">
+                                                        <h4>REFORESTACION</h4>
+                                                        <div class="table-responsive">
+                                                            <table class="table" role="table" aria-labelledby="reforestacionTable">
+                                                                <caption>Información sobre la Reforestación</caption>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Plantín</th>
+                                                                        <th>Cantidad de Plantines</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($reforestacions as $index => $plantin)
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $plantin->especie_plantin }}
+                                                                                <input type="hidden" name="id_plantins[]" value="{{ $plantin->id }}">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" name="cantidad_plantines[]" class="form-control" min="0" value="{{ old('cantidad_plantines.' . $index, $plantin->cantidad_plantines) }}" data-index="{{ $index }}">
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <!-- Suma total de plantines -->
+                                                                        <td><strong>Total de Plantines:</strong></td>
+                                                                        <td> <span id="totalPlantines">0</span></td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
         </form>
+
     </div>
 </div>
 @stop

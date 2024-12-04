@@ -658,7 +658,7 @@
                             </div>
                         </div>
 
-                         <div class="form-group">
+                        <div class="form-group">
                             {{-- ASISTENCIA Y REFORESTACION --}}
                             <div class="row">
                                 <div class="panel-group" id="accordionReforestacion" role="tablist" aria-multiselectable="true">
@@ -680,7 +680,7 @@
                                                         <div class="panel-heading"><b>Reforestacion</b></div>
                                                         <div class="panel-body">
                                                             <h4>REFORESTACION</h4>
-                                                            {{-- <div class="table-responsive">
+                                                            <div class="table-responsive">
                                                                 <table class="table" role="table" aria-labelledby="reforestacionTable">
                                                                     <caption>Información sobre la Reforestación</caption>
                                                                     @php
@@ -688,9 +688,8 @@
                                                                     @endphp
                                                                     <thead>
                                                                         <tr>
-                                                                            <th>Plantin</th>
+                                                                            <th>Plantín</th>
                                                                             <th>Cantidad de Plantines</th>
-                                                                        
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -698,19 +697,31 @@
                                                                             <tr>
                                                                                 <td>
                                                                                     {{ $plantin }}
-                                                                                    <input type="hidden" name="plantin[]" value="{{ $plantin }}">
-                                                                        
+                                                                                    <input type="hidden" name="especie_plantin[]" value="{{ $plantin }}">
                                                                                 </td>
                                                                                 <td>
-                                                                                    <input type="number" name="cantidad_plantines[]" class="form-control">
+                                                                                    <input type="number" name="cantidad_plantines[]" class="form-control" min="0">
                                                                                 </td>
-                                                                        
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>
                                                                 </table>
-                                                            </div> --}}
+                                                                @if ($errors->any())
+                                                                    <div class="alert alert-danger">
+                                                                        <ul>
+                                                                            @foreach ($errors->all() as $error)
+                                                                                <li>{{ $error }}</li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    </div>
+                                                                @endif
 
+                                                                @if(session('success'))
+                                                                    <div class="alert alert-success">
+                                                                        {{ session('success') }}
+                                                                    </div>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -108,7 +108,7 @@
                                                             @foreach($asistencias as $asistencia)
                                                                 <p>{{ $asistencia->fecha_asistencia }}</p>
                                                             @endforeach
-   
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -653,6 +653,72 @@
                                     </div>
                                 </div>
 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{-- ASISTENCIA Y REFORESTACION --}}
+                        <div class="row">
+                            <div class="panel-group" id="accordionReforestacion" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingReforestacion">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordionReforestacion"
+                                                href="#collapseReforestacion" aria-expanded="true" aria-controls="collapseReforestacion">
+                                                REFORESTACIONES
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseReforestacion" class="panel-collapse collapse in" role="tabpanel"
+                                        aria-labelledby="headingReforestacion">
+                                        <div class="panel-body">
+
+                                            <div class="form-group col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading"><b>Reforestacion</b></div>
+                                                    <div class="panel-body">
+                                                        <h4>REFORESTACION</h4>
+                                                        <div class="table-responsive">
+                                                            <table class="table" role="table" aria-labelledby="reforestacionTable">
+                                                                <caption>Información sobre la Reforestación</caption>
+                                                                @php
+                                                                    $totalReforestacion = $reforestacions->sum('cantidad_plantines');
+                                                                @endphp
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Plantín</th>
+                                                                        <th>Cantidad de Plantines</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach ($reforestacions as $index => $plantin)
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $plantin->especie_plantin }}
+                                                                            </td>
+                                                                            <td>
+                                                                               {{ $plantin->cantidad_plantines }}
+                                                                            </td>
+                                                                        </tr>
+                                                                        {{-- @dump($plantin); --}}
+                                                                    @endforeach
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <th>Total</th>
+                                                                        <th>
+                                                                            {{$totalReforestacion}}
+                                                                        </th>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

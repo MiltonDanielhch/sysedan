@@ -215,3 +215,72 @@ $(document).on('change', '#select_municipio', function(){
         $('#poblacion_total').val('');
     }
 });
+
+
+// Función para actualizar el total de hectáreas perdidas forestales
+function updateTotalHectareasPerdidas() {
+    let totalHectareasPerdidas = 0;
+
+    // Sumar los valores de los inputs con la clase 'hectareas-perdidas-forestales'
+    document.querySelectorAll('.hectareas-perdidas-forestales').forEach(function(input) {
+        totalHectareasPerdidas += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+    });
+
+    // Actualizar el total en el elemento correspondiente
+    document.getElementById('total-hectareas-perdidas-forestales').textContent = totalHectareasPerdidas;
+    }
+
+    // Llamar a la función para establecer el total inicial
+    updateTotalHectareasPerdidas();
+
+    // Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+    document.querySelectorAll('.hectareas-perdidas-forestales').forEach(function(input) {
+    input.addEventListener('input', updateTotalHectareasPerdidas);
+});
+
+// Función para actualizar el total de fauna silvestre
+function updateTotalFaunaSilvestre() {
+    let totalFaunaSilvestre = 0;
+
+    // Sumar los valores de los inputs con la clase 'fauna-silvestre'
+    document.querySelectorAll('.fauna-silvestre').forEach(function(input) {
+        totalFaunaSilvestre += parseFloat(input.value) || 0; // Si el valor no es válido, se considera 0
+    });
+
+    // Actualizar el total en el elemento correspondiente
+    document.getElementById('total-fauna-silvestre').textContent = totalFaunaSilvestre;
+}
+// Llamar a la función para establecer el total inicial
+updateTotalFaunaSilvestre();
+
+// Añadir un eventListener a cada input para actualizar el total cuando cambie el valor
+document.querySelectorAll('.fauna-silvestre').forEach(function(input) {
+    input.addEventListener('input', updateTotalFaunaSilvestre);
+});
+
+
+
+// actualizar el total de reforestacion
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input[name="cantidad_plantines[]"]');
+    const totalElement = document.getElementById('totalPlantines');
+
+    // Función para actualizar la suma total
+    function updateTotal() {
+        let total = 0;
+        // Itera sobre todos los inputs y suma sus valores
+        inputs.forEach(function(input) {
+            total += parseInt(input.value) || 0;  // Asegura que no se sumen valores NaN
+        });
+        // Muestra el total actualizado
+        totalElement.textContent = total;
+    }
+
+    // Agrega un listener de evento 'input' a cada campo
+    inputs.forEach(function(input) {
+        input.addEventListener('input', updateTotal);
+    });
+
+    // Inicializa la suma al cargar la página
+    updateTotal();
+});

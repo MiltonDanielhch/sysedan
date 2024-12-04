@@ -88,8 +88,11 @@ class CreateFormularioRequest extends FormRequest
 
 
             // reforestacion
-            // 'especie_plantin' => 'nullable|string',
-            // 'cantidad_plantines' => 'nullable|integer',
+            'especie_plantin' => 'nullable|array', 
+            'especie_plantin.*' => 'nullable|string', 
+            'cantidad_plantines' => 'nullable|array',  
+            'cantidad_plantines.*' => 'nullable|integer|min:0',  
+    
             // 'fecha_reforestacion' => 'nullable|date',
         ];
     }

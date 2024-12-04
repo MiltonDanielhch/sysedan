@@ -8,6 +8,7 @@
                     <th>Lugar</th>
                     <th>incendio</th>
                     <th>Comunidad - incendio</th>
+                    <th>Actividades</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -42,6 +43,18 @@
                         @else
                             <td><p>Incendios NO registrados</p></td>
                         @endif
+                        <td>
+                            @if($formulario->asistencias->isEmpty())
+                                <p>No hay asistencias registradas</p>
+                            @else
+                                @foreach ($formulario->asistencias as $asistencia)
+                                    <p>{{ $asistencia->actividades }}</p>
+                                    Cantidad Beneficiarios:  {{ $asistencia->cantidad_beneficiarios }} <br>
+                                    <p>{{ \Carbon\Carbon::parse($asistencia->fecha_asistencia)->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
+                                @endforeach
+                            @endif
+
+                        </td>
 
 
                         <td class="no-sort no-click bread-actions text-right">

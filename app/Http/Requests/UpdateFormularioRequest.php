@@ -26,18 +26,18 @@ class UpdateFormularioRequest extends FormRequest
             'fecha_llenado' => 'required|date',
             // Comunidad
             'nombre_comunidad' => 'required|string',
-            'tipo_comunidad' => 'required|string',
+            'tipo_comunidad' => 'nullable|string',
             'municipio_id' => 'required|integer|exists:municipios,id',
             // Incendio
             'fecha_inicio' => 'required|date',
             'causas_probables' => 'nullable|string',
             'estado' => 'nullable|string',
             // Comunidad Incendios
-            'incendios_registrados' => 'required|integer',
-            'incendios_activos' => 'required|integer',
+            'incendios_registrados' => 'nullable|integer',
+            'incendios_activos' => 'nullable|integer',
             'necesidades' => 'nullable|string',
-            'num_familias_afectadas' => 'required|integer',
-            'num_familias_damnificadas' => 'required|integer',
+            'num_familias_afectadas' => 'nullable|integer',
+            'num_familias_damnificadas' => 'nullable|integer',
 
             // asistencias
             'actividades.*' => 'nullable|string',
@@ -46,7 +46,7 @@ class UpdateFormularioRequest extends FormRequest
             
             // persona_afectada_incendios
             // 'grupo_etario_id.*' => 'required|integer|exists:grupo_etarios,id',
-            'cantidad_afectados_por_incendios.*' => 'required|integer',
+            'cantidad_afectados_por_incendios.*' => 'nullable|integer',
             // educacion
             'institucion_id.*' => 'required|integer',
             'num_estudiantes.*.*' => 'nullable|integer',
@@ -75,11 +75,23 @@ class UpdateFormularioRequest extends FormRequest
 
              // area forestal
              'detalle_area_forestal_id.*' => 'required|integer',
-             'hectareas_perdidas_forestales.*' => 'required|numeric',
+             'hectareas_perdidas_forestales.*' => 'nullable|numeric',
 
             //  fauna silvestre
             'detalle_fauna_silvestre_id.*' => 'required|integer',
-            'numero_fauna_silvestre.*.*' => 'required|integer',
+            'numero_fauna_silvestre.*.*' => 'nullable|integer',
+
+             // reforestacion
+             'especie_plantin' => 'nullable|array', 
+             'especie_plantin.*' => 'nullable|string', 
+             'cantidad_plantines' => 'nullable|array',  
+             'cantidad_plantines.*' => 'nullable|integer|min:0',  
+
+
+             'id_plantins' => 'array', // Asegura que 'id_plantins' sea un arreglo
+             'id_plantins.*' => 'required|integer|exists:reforestacions,id', // Valida que cada ID exista en la tabla reforestacions
+ 
+
         ];
     }
 }

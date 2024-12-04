@@ -22,6 +22,7 @@ use App\Models\ModalidadEducacion;
 use App\Models\Municipio;
 use App\Models\PersonaAfectadaIncendio;
 use App\Models\Provincia;
+use App\Models\Reforestacion;
 use App\Models\Salud;
 use App\Models\SectorAgricola;
 use App\Models\SectorPecuario;
@@ -46,13 +47,27 @@ class FormController extends Controller
         $paginate = request('paginate') ?? 10;
         $search = request('search');
 
-        $data = Formulario::with(['comunidad.municipio.provincia', 'incendio'])
-            ->where('id', 'like', '%' . $search . '%')
-            ->orderBy('id', 'asc')
+        // Comienza la consulta
+        $data = Formulario::with(['comunidad.municipio.provincia', 'incendio', 'asistencias'])
+            ->where(function ($query) use ($search) {
+                // Añadimos todas las condiciones de búsqueda aquí dentro de una función anónima
+                $query->where('id', 'like', '%' . $search . '%')
+                    ->orWhereHas('comunidad', function ($query) use ($search) {
+                        $query->where('nombre_comunidad', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('comunidad.municipio', function ($query) use ($search) {
+                        $query->where('nombre_municipio', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('comunidad.municipio.provincia', function ($query) use ($search) {
+                        $query->where('nombre_provincia', 'like', '%' . $search . '%');
+                    });
+            })
+            ->orderBy('id', 'desc')
             ->paginate($paginate);
 
-            return view('voyager::formularios.list', compact('data'));
+        return view('voyager::formularios.list', compact('data'));
     }
+
     public function create()
     {
         $provincias = Provincia::all();
@@ -190,8 +205,8 @@ class FormController extends Controller
         $validatedData = $request->validated();
         // dd($validatedData);
 
-        return DB::transaction(function () use ($validatedData) {
-        try {
+        // return DB::transaction(function () use ($validatedData) {
+        // try {
             // Encontrar el municipio
             $municipio = Municipio::find($validatedData['municipio_id']);
 
@@ -361,15 +376,27 @@ class FormController extends Controller
             }
             // dd($allData);
 
+            // Procesar los datos validados y almacenarlos
+            foreach ($validatedData['especie_plantin'] as $index => $plantin) {
+                // Obtener la cantidad de plantines, si no existe, asignar 0
+                $cantidad = $validatedData['cantidad_plantines'][$index] ?? 0;
+                // Crear un nuevo registro de reforestación en la base de datos
+                Reforestacion::create([
+                    'especie_plantin' => $plantin, // Especie del plantín
+                    'cantidad_plantines' => $cantidad, // Cantidad de plantines
+                    'formulario_id' => $formulario->id,
+                ]);
+            }
+            // dd($plantin);
         // Redirigir después de guardar
         return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
 
-            } catch (\Exception $e) {
-                Log::error('Error in transaction: ' . $e->getMessage());
-                return redirect()->back()->with('error', 'Ocurrió un error al guardar el formulario.');
-            }
+        //     } catch (\Exception $e) {
+        //         Log::error('Error in transaction: ' . $e->getMessage());
+        //         return redirect()->back()->with('error', 'Ocurrió un error al guardar el formulario.');
+        //     }
 
-        }, 3);
+        // }, 3);
     }
 
     public function show($id){
@@ -402,12 +429,14 @@ class FormController extends Controller
 
             $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
 
+            $reforestacions = Reforestacion::where('formulario_id', $id)->get();
+
         } catch (\Exception $e) {
             Log::error('Error al cargar formulario: ' . $e->getMessage());
             return redirect()->route('formularios.index')->with('error', 'Hubo un problema al cargar el formulario.');
         }
 
-        return view('vendor.voyager.formularios.show', compact('form', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'pecuarios', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres', 'asistencias'));
+        return view('vendor.voyager.formularios.show', compact('form', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'pecuarios', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres', 'asistencias', 'reforestacions'));
     }
 
 
@@ -447,18 +476,19 @@ class FormController extends Controller
 
         $faunaSilvestres = FaunaSilvestre::with('detalleFaunaSilvestre', 'tipoEspecie')->where('formulario_id', $id)->get();
 
+        $reforestacions = Reforestacion::where('formulario_id', $id)->get();
 
-        return view('vendor.voyager.formularios.edit', compact('formulario', 'provinciaId', 'provincias', 'municipioId', 'municipios', 'grupoEtarios', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres', 'asistencias'));
+        return view('vendor.voyager.formularios.edit', compact('formulario', 'provinciaId', 'provincias', 'municipioId', 'municipios', 'grupoEtarios', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres', 'asistencias', 'reforestacions'));
     }
 
     public function update(UpdateFormularioRequest $request, $id)
     {
         $validatedData = $request->validated();
         // dd($validatedData);
-        // DB::beginTransaction();
+        DB::beginTransaction();
 
         // dd($validatedData);
-        // try {
+        try {
             // Encontrar el formulario a actualizar
             $formulario = Formulario::findOrFail($id);
 
@@ -486,7 +516,7 @@ class FormController extends Controller
               // Loop through the validated data and update the corresponding Asistencia records
             foreach ($validatedData['actividades'] as $asistenciaId => $actividad) {
                 $asistencia = Asistencia::findOrFail($asistenciaId);
-                
+
                 // Update the fields if they are present
                 if (isset($validatedData['actividades'][$asistenciaId])) {
                     $asistencia->actividades = $validatedData['actividades'][$asistenciaId];
@@ -613,14 +643,30 @@ class FormController extends Controller
                 ]);
             }
 
-            // DB::commit();
+               // Procesar la actualización de las cantidades de plantines
+                foreach ($validatedData['cantidad_plantines'] as $index => $cantidad) {
+                    // Obtener el ID correspondiente para este índice
+                    $plantinId = $validatedData['id_plantins'][$index];
+
+                    // Buscar el plantín usando el ID
+                    $plantin = Reforestacion::find($plantinId);
+
+                    if ($plantin) {
+                        // Actualiza la cantidad de plantines
+                        $plantin->cantidad_plantines = $cantidad;
+                        $plantin->save(); // Guarda los cambios
+                    }
+                }
+
+
+            DB::commit();
 
             return redirect()->route('formularios.index')->with('success', 'Formulario actualizado correctamente');
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     // Manejar el error, por ejemplo, mostrar un mensaje al usuario
-        //     return redirect()->back()->withErrors(['error' => 'Ocurrió un error al actualizar el formulario.']);
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Manejar el error, por ejemplo, mostrar un mensaje al usuario
+            return redirect()->back()->withErrors(['error' => 'Ocurrió un error al actualizar el formulario.']);
+        }
     }
 
     public function destroy(Formulario $formulario)
