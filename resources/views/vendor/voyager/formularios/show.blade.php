@@ -29,7 +29,7 @@
                                             <a role="button" data-toggle="collapse" data-parent="#accordionLugar"
                                                 href="#collapseLugar" aria-expanded="true"
                                                 aria-controls="collapseLugar">
-                                                LISTADO DEL LUGAR
+                                                LISTADO DEL LUGAR DEL LUGAR DE INCENDIO
                                             </a>
                                         </h4>
                                     </div>
@@ -38,8 +38,8 @@
                                         <div class="panel-body">
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Lugar</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Detalle del Lugar</b></div>
+                                                    <div class="panel-body"><br>
                                                         {{-- Select Provincia --}}
                                                         <div class="form-group">
                                                             <label for="provincia"><b>Provincia</b></label>
@@ -48,19 +48,19 @@
 
                                                         {{-- Select Municipio --}}
                                                         <div class="form-group">
-                                                            <label for="municipio">Municipio</label>
+                                                            <label for="municipio"><b>Municipio</b></label>
                                                             <p>{{ $form->comunidad->municipio->nombre_municipio }}</p>
                                                         </div>
 
                                                         {{-- Nombre del Alcalde --}}
                                                         <div class="form-group">
-                                                            <label for="nombre_alcalde">Nombre del Alcalde</label>
+                                                            <label for="nombre_alcalde"><b>Nombre del Alcalde</b></label>
                                                             <p>{{ $form->comunidad->municipio->nombre_alcalde }}</p>
                                                         </div>
 
                                                         {{-- Población Total --}}
                                                         <div class="form-group">
-                                                            <label for="poblacion_total">Población Total</label>
+                                                            <label for="poblacion_total"><b>Población Total</b></label>
                                                             <p>{{ $form->comunidad->municipio->poblacion_total }}</p>
                                                         </div>
                                                     </div>
@@ -70,24 +70,24 @@
                                             {{-- Detalles de la Comunidad --}}
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Detalles de la Comunidad</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Detalles de la Comunidad y Actividades Realizadas</b></div>
+                                                    <div class="panel-body"><br>
                                                         <div class="form-group">
-                                                            <label for="fecha_llenado">Fecha de Llenado</label>
+                                                            <label for="fecha_llenado"><b>Fecha de Llenado</b></label>
                                                             <p> {{ $form->fecha_llenado }}</p>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="nombre_comunidad">Nombre Comunidad</label>
+                                                            <label for="nombre_comunidad"><b>Nombre Comunidad</b></label>
                                                             <p> {{ $form->comunidad->nombre_comunidad }}</p>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="tipo_comunidad">Tipo de Comunidad</label>
+                                                            <label for="tipo_comunidad"><b>Tipo de Comunidad</b></label>
                                                             <p> {{ $form->comunidad->tipo_comunidad }}</p>
                                                         </div>
 
                                                         {{-- Actividad --}}
                                                         <div class="form-group">
-                                                            <label for="actividades">Actividades</label>
+                                                            <label for="actividades"><b>Actividades</b></label>
                                                             @foreach($asistencias as $asistencia)
                                                                 <p>{{ $asistencia->actividades }}</p>
                                                             @endforeach
@@ -97,18 +97,17 @@
 
 
                                                         <div class="form-group">
-                                                            <label for="cantidad_beneficiarios">cantidad beneficiarios</label>
+                                                            <label for="cantidad_beneficiarios"><b>cantidad beneficiarios</b></label>
                                                             @foreach($asistencias as $asistencia)
                                                                 <p>{{ $asistencia->cantidad_beneficiarios }}</p>
                                                             @endforeach
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label for="fecha_asistencia">Fecha de la Actividad</label>
+                                                            <label for="fecha_asistencia"><b>Fecha de la Actividad</b></label>
                                                             @foreach($asistencias as $asistencia)
-                                                                <p>{{ $asistencia->fecha_asistencia }}</p>
+                                                            <p>{{ \Carbon\Carbon::parse($asistencia->fecha_asistencia)->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
                                                             @endforeach
-
                                                         </div>
                                                     </div>
                                                 </div>
@@ -119,6 +118,78 @@
                             </div> <!-- End of Accordion Lugar -->
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        {{-- INCENDIOS FORESTALES --}}
+                        <div class="row">
+                            <div class="panel-group" id="accordionIncendio" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingIncendio">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordionIncendio" href="#collapseIncendio"
+                                               aria-expanded="true" aria-controls="collapseIncendio">
+                                               DATOS DEL INCENDIOS FORESTALES DE LAS COMUNIDAD
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseIncendio" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingIncendio">
+                                        <div class="panel-body">
+                                            <div class="form-group col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading"><b>Datos del Incendio</b></div>
+                                                    <div class="panel-body"><br>
+                                                        <div class="form-group">
+                                                            <label for="fecha_inicio"><b>Fecha de Inicio</b></label>
+                                                            <p>{{ $form->incendio->fecha_inicio }}</p>
+
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="causas_probables"><b>Causas Probables</b></label>
+                                                            <p>{{ $form->incendio->causas_probables }}</p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="estado"><b>Estado</b></label>
+                                                            <p>{{ $form->incendio->estado }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Incendios en la comunidad --}}
+                                            <div class="form-group col-md-6">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading"><b>Datos de los Afectados en el Incendios en la Comunidad</b></div>
+                                                    <div class="panel-body"><br>
+                                                        <div class="form-group">
+                                                            <label for="incendios_registrados"><b>Incendios Registrados</b></label>
+                                                            <p>{{ $form->comunidad->incendios->first()->pivot->incendios_registrados }}</p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="incendios_activos"><b>Incendios Activos</b></label>
+                                                            <p>{{ $form->comunidad->incendios->first()->pivot->incendios_activos }}</p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="necesidades"><b>Necesidades</b></label>
+                                                            <p>{{ $form->comunidad->incendios->first()->pivot->necesidades }}</p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="num_familias_afectadas"><b>Familias Afectadas</b></label>
+                                                            <p>{{ $form->comunidad->incendios->first()->pivot->num_familias_afectadas }}</p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="num_familias_damnificadas"><b>Familias Damnificadas</b></label>
+                                                           <p>{{ $form->comunidad->incendios->first()->pivot->num_familias_damnificadas }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                             {{-- PERSONAS AFECTADAS --}}
                         <div class="row">
@@ -128,7 +199,7 @@
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" data-parent="#accordion"
                                                 href="#collapsePersonaAfectada" aria-expanded="true" aria-controls="collapsePersonaAfectada">
-                                                PERSONAS AFECTADAS
+                                                DATOS DE LAS PERSONAS AFECTADAS E INFORMACIÓN EN LA EDUCACIÓN
                                             </a>
                                         </h4>
                                     </div>
@@ -138,8 +209,8 @@
 
                                             <div class="form-group col-md-7">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Personas</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Datos de Personas afectadas en la Comunidad</b></div>
+                                                    <div class="panel-body"><br>
                                                         <h4>PERSONAS AFECTADAS</h4>
                                                         @isset($personasAfectadas)
                                                             <table class="table">
@@ -181,8 +252,8 @@
 
                                             <div class="form-group col-md-5">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Personas</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Datos de afectados en Educación en la Comunidad</b></div>
+                                                    <div class="panel-body"><br>
                                                         <h4>INFORMACIÓN EN EDUCACIÓN</h4>
                                                             @php
                                                                 $educacionData = [];
@@ -255,8 +326,8 @@
                                         <div class="panel-body">
                                             <div class="form-group col-md-10">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Salud</b></div>
-                                                        <div class="panel-body">
+                                                    <div class="panel-heading"><b>Datos de Salud por Grupo Etario y Enfermedad</b></div>
+                                                        <div class="panel-body"><br>
                                                             <h4> INFORMACIÓN DE SALUD</h4>
 
                                                             @php
@@ -331,6 +402,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="form-group">
                         {{-- DAÑOS A INFRAESTRUCTURAS AFECTADAS --}}
                         <div class="row">
@@ -340,19 +412,18 @@
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" data-parent="#accordionInfraestructura"
                                                 href="#collapseInfraestructura" aria-expanded="true" aria-controls="collapseInfraestructura">
-                                                DAÑOS A INFRAESTRUCTURAS AFECTADAS
+                                                DATOS DE DAÑOS A INFRAESTRUCTURAS AFECTADAS Y SERVICIOS BASICOS
                                             </a>
                                         </h4>
                                     </div>
                                     <div id="collapseInfraestructura" class="panel-collapse collapse in" role="tabpanel"
                                             aria-labelledby="headingInfraestructura">
                                         <div class="panel-body">
-
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Daños</b></div>
-                                                    <div class="panel-body">
-                                                        <h4>DAÑOS A INFRAESTRUCTURAS AFECTADAS</h4>
+                                                    <div class="panel-heading"><b>Información sobre Daños a Infraestructuras</b></div>
+                                                    <div class="panel-body"><br>
+                                                        <h4>INFRAESTRUCTURAS AFECTADAS</h4>
                                                         <table class="table">
                                                             <thead>
                                                                 <tr>
@@ -389,8 +460,8 @@
 
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Personas</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Datos de Daños a Servicios Básicos</b></div>
+                                                    <div class="panel-body"><br>
                                                         <h4>SERVICIOS BÁSICOS</h4>
                                                         <table class="table">
                                                             <thead>
@@ -444,7 +515,7 @@
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" data-parent="#accordionPecuario"
                                                 href="#collapsePecuario" aria-expanded="true" aria-controls="collapsePecuario">
-                                                DAÑOS PECUARIOS POR INCENDIOS FORESTALES
+                                                DATOS DE LOS DAÑOS PECUARIOS Y AGRICOLAS POR INCENDIOS FORESTALES
                                             </a>
                                         </h4>
                                     </div>
@@ -454,8 +525,8 @@
 
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Daños</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Información sobre Daños Pecuarios</b></div>
+                                                    <div class="panel-body"><br>
                                                         <h4>DAÑOS PECUARIOS</h4>
                                                         <table class="table">
                                                             <thead>
@@ -496,12 +567,11 @@
                                                 </div>
                                             </div>
 
-
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Daños</b></div>
-                                                    <div class="panel-body">
-                                                        <h4>DAÑOS AGRÍCOLAS POR INCENDIOS FORESTALES</h4>
+                                                    <div class="panel-heading"><b>Información sobre Daños Agrícolas</b></div>
+                                                    <div class="panel-body"><br>
+                                                        <h4>DAÑOS AGRÍCOLAS</h4>
                                                         <table class="table">
                                                             <thead>
                                                                 <tr>
@@ -536,7 +606,6 @@
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -555,7 +624,7 @@
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" data-parent="#accordionForestales"
                                                 href="#collapseForestales" aria-expanded="true" aria-controls="collapseForestales">
-                                                ÁREAS FORESTALES PERDIDAS
+                                                DAÑOS DE ÁREAS FORESTALES PERDIDAS Y FAUNA SILVESTRES AFECTADAS
                                             </a>
                                         </h4>
                                     </div>
@@ -564,8 +633,8 @@
                                         <div class="panel-body">
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Areas</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Datos de Áreas Forestales Perdidas por Incendio</b></div>
+                                                    <div class="panel-body"><br>
                                                         <h4> ÁREAS FORESTALES PERDIDAS</h4>
                                                         <table class="table">
                                                             <thead>
@@ -603,9 +672,9 @@
 
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Fauna Silvestre</b></div>
-                                                    <div class="panel-body">
-                                                        <h4>FAUNA SILVESTRE AFECTADA POR INCENDIOS FORESTALES</h4>
+                                                    <div class="panel-heading"><b>Datos de Fauna Silvestre Afectada por incendios</b></div>
+                                                    <div class="panel-body"><br>
+                                                        <h4>FAUNA SILVESTRE AFECTADA</h4>
                                                         @php
                                                             $faunaSilvestreData = [];
                                                             $totalFaunaSilvestre = 0;  // Variable para almacenar el total de fauna silvestre
@@ -657,7 +726,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {{-- ASISTENCIA Y REFORESTACION --}}
+                        {{--  REFORESTACION --}}
                         <div class="row">
                             <div class="panel-group" id="accordionReforestacion" role="tablist" aria-multiselectable="true">
                                 <div class="panel panel-default">
@@ -665,7 +734,7 @@
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" data-parent="#accordionReforestacion"
                                                 href="#collapseReforestacion" aria-expanded="true" aria-controls="collapseReforestacion">
-                                                REFORESTACIONES
+                                                ENTREGA DE PLANTINES PARA REFORESTACIONES
                                             </a>
                                         </h4>
                                     </div>
@@ -675,12 +744,12 @@
 
                                             <div class="form-group col-md-6">
                                                 <div class="panel panel-default">
-                                                    <div class="panel-heading"><b>Reforestacion</b></div>
-                                                    <div class="panel-body">
+                                                    <div class="panel-heading"><b>Información sobre la Reforestación</b></div>
+                                                    <div class="panel-body"><br>
                                                         <h4>REFORESTACION</h4>
                                                         <div class="table-responsive">
                                                             <table class="table" role="table" aria-labelledby="reforestacionTable">
-                                                                <caption>Información sobre la Reforestación</caption>
+                                                                <caption></caption>
                                                                 @php
                                                                     $totalReforestacion = $reforestacions->sum('cantidad_plantines');
                                                                 @endphp

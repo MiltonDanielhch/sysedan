@@ -176,6 +176,7 @@ class FormController extends Controller
         ]);
     }
 
+    //funcion para actualizar el total de personas afectadas
     public function actualizarTotalAfectados(Request $request)
     {
         // Validar que la data venga correctamente
@@ -196,6 +197,235 @@ class FormController extends Controller
         ]);
     }
 
+    //funcion para actualizar el total de Educacion
+    public function actualizarTotalEducacion(Request $request)
+    {
+        // Validar los datos recibidos
+        $validated = $request->validate([
+            'cantidad_estudiantes' => 'array',
+            'cantidad_estudiantes.*' => 'nullable|numeric',
+        ]);
+    
+        // Obtener los datos de los estudiantes por modalidad
+        $cantidadEstudiantes = $validated['cantidad_estudiantes'];
+    
+        // Devolver el total por modalidad y general
+        $totalesPorModalidad = $cantidadEstudiantes;
+        $totalGeneral = array_sum($totalesPorModalidad);
+    
+        // Devolver la respuesta como JSON con los totales calculados
+        return response()->json([
+            'totalesPorModalidad' => $totalesPorModalidad,
+            'totalGeneral' => $totalGeneral
+        ]);
+    }
+    
+   
+    public function actualizarTotalSalud(Request $request)
+    {
+        // Validar los datos recibidos
+        $validated = $request->validate([
+            'cantidad_grupo_enfermos' => 'array',
+            'cantidad_grupo_enfermos.*' => 'array',
+            'cantidad_grupo_enfermos.*.*' => 'nullable|numeric',
+        ]);
+
+        $cantidadGrupoEnfermos = $validated['cantidad_grupo_enfermos'];
+        
+        // Inicializamos los totales por enfermedad, grupo etario y total general
+        $totalesPorEnfermedad = [];
+        $totalesPorGrupoEtario = [];  // Inicializamos el array para los totales por grupo etario
+        $totalGeneral = 0;
+
+        // Recorremos los datos de cantidad_grupo_enfermos
+        foreach ($cantidadGrupoEnfermos as $enfermedadId => $grupos) {
+            foreach ($grupos as $grupoEtarioId => $cantidad) {
+                // Sumar por cada enfermedad
+                if (!isset($totalesPorEnfermedad[$enfermedadId])) {
+                    $totalesPorEnfermedad[$enfermedadId] = 0;
+                }
+                $totalesPorEnfermedad[$enfermedadId] += $cantidad;
+
+                // Sumar por cada grupo etario
+                if (!isset($totalesPorGrupoEtario[$grupoEtarioId])) {
+                    $totalesPorGrupoEtario[$grupoEtarioId] = 0;
+                }
+                $totalesPorGrupoEtario[$grupoEtarioId] += $cantidad;
+
+                // Sumar al total general
+                $totalGeneral += $cantidad;
+            }
+        }
+
+        // Devolvemos los totales de enfermedades, grupos etarios y el total general en formato JSON
+        return response()->json([
+            'totalesPorEnfermedad' => $totalesPorEnfermedad,
+            'totalesPorGrupoEtario' => $totalesPorGrupoEtario,  // Añadimos los totales por grupo etario
+            'totalGeneral' => $totalGeneral
+        ]);
+    }
+
+    public function actualizarInfraestructuras(Request $request)
+    {
+        // Validar los datos recibidos
+        $validated = $request->validate([
+            'numeros_infraestructuras_afectadas' => 'array',
+            'numeros_infraestructuras_afectadas.*' => 'nullable|numeric',
+        ]);
+
+        $numerosInfraestructurasAfectadas = $validated['numeros_infraestructuras_afectadas'];
+        
+        // Inicializamos los totales
+        $totalInfraestructuras = 0;
+
+        // Recorremos los datos de las infraestructuras afectadas
+        foreach ($numerosInfraestructurasAfectadas as $tipoInfraestructuraId => $cantidad) {
+            $totalInfraestructuras += $cantidad;
+        }
+
+        // Devolver los totales calculados en formato JSON
+        return response()->json([
+            'totalInfraestructuras' => $totalInfraestructuras
+        ]);
+    }
+
+    // servicios basicos
+    public function actualizarComunidadesAfectadas(Request $request)
+    {
+        // Validamos los datos recibidos
+        $validated = $request->validate([
+            'numero_comunidades_afectadas' => 'array',
+            'numero_comunidades_afectadas.*' => 'nullable|numeric',
+        ]);
+
+        $numeroComunidadesAfectadas = $validated['numero_comunidades_afectadas'];
+
+        // Aquí puedes procesar los datos según tus necesidades (guardar en base de datos, calcular totales, etc.)
+
+        // Devolver la respuesta al frontend (puedes incluir los nuevos totales si es necesario)
+        return response()->json([
+            'success' => true,  // Indica que la operación fue exitosa
+            'data' => $numeroComunidadesAfectadas,  // Datos enviados para confirmar la actualización
+        ]);
+    }
+
+
+    public function actualizarPecuarios(Request $request)
+    {
+        // Validamos los datos recibidos
+        $validated = $request->validate([
+            'numero_animales_afectados' => 'array',
+            'numero_animales_afectados.*' => 'nullable|numeric',
+            'numero_animales_fallecidos' => 'array',
+            'numero_animales_fallecidos.*' => 'nullable|numeric',
+        ]);
+
+        $animalesAfectados = $validated['numero_animales_afectados'];
+        $animalesFallecidos = $validated['numero_animales_fallecidos'];
+
+        // Aquí puedes procesar los datos según tus necesidades (guardar en base de datos, calcular totales, etc.)
+
+        // Devolver la respuesta al frontend
+        return response()->json([
+            'success' => true,  // Indica que la operación fue exitosa
+            'data' => [
+                'animales_afectados' => $animalesAfectados,
+                'animales_fallecidos' => $animalesFallecidos,
+            ],
+        ]);
+    }
+
+
+    public function actualizarAgricolas(Request $request)
+    {
+        // Validamos los datos recibidos
+        $validated = $request->validate([
+            'hectareas_afectadas' => 'array',
+            'hectareas_afectadas.*' => 'nullable|numeric',
+            'hectareas_perdidas' => 'array',
+            'hectareas_perdidas.*' => 'nullable|numeric',
+        ]);
+
+        $hectareasAfectadas = $validated['hectareas_afectadas'];
+        $hectareasPerdidas = $validated['hectareas_perdidas'];
+
+        // Aquí puedes procesar los datos según tus necesidades (guardar en base de datos, calcular totales, etc.)
+
+        // Devolver la respuesta al frontend
+        return response()->json([
+            'success' => true,  // Indica que la operación fue exitosa
+            'data' => [
+                'hectareas_afectadas' => $hectareasAfectadas,
+                'hectareas_perdidas' => $hectareasPerdidas,
+            ],
+        ]);
+    }
+        
+    public function actualizarForestales(Request $request)
+    {
+        // Validamos los datos recibidos
+        $validated = $request->validate([
+            'hectareas_perdidas_forestales' => 'array',
+            'hectareas_perdidas_forestales.*' => 'nullable|numeric',
+        ]);
+
+        $hectareasPerdidasForestales = $validated['hectareas_perdidas_forestales'];
+
+        // Aquí puedes procesar los datos según tus necesidades (guardar en base de datos, calcular totales, etc.)
+
+        // Devolver la respuesta al frontend
+        return response()->json([
+            'success' => true,  // Indica que la operación fue exitosa
+            'data' => [
+                'hectareas_perdidas_forestales' => $hectareasPerdidasForestales,
+            ],
+        ]);
+    }
+    public function actualizarFaunaSilvestre(Request $request)
+    {
+        // Validamos los datos recibidos
+        $validated = $request->validate([
+            'fauna_silvestre_afectada' => 'array',
+            'fauna_silvestre_afectada.*' => 'array',
+            'fauna_silvestre_afectada.*.*' => 'nullable|numeric',
+        ]);
+    
+        $faunaSilvestreAfectada = $validated['fauna_silvestre_afectada'];
+    
+        // Aquí puedes procesar los datos (guardar en base de datos, calcular totales, etc.)
+    
+        // Devolver la respuesta al frontend
+        return response()->json([
+            'success' => true,
+            'data' => $faunaSilvestreAfectada,
+        ]);
+    }
+
+    
+    public function actualizarReforestacion(Request $request)
+    {
+        // Validamos los datos recibidos
+        $validated = $request->validate([
+            'plantines' => 'array',
+            'plantines.*.id' => 'required|exists:plantins,id', // Asegúrate de que los IDs sean válidos
+            'plantines.*.cantidad' => 'nullable|numeric|min:0',
+        ]);
+
+        // Procesar la actualización de la cantidad de plantines
+        foreach ($validated['plantines'] as $plantinData) {
+            $plantin = Reforestacion::find($plantinData['id']);
+            if ($plantin) {
+                $plantin->cantidad_plantines = $plantinData['cantidad'];
+                $plantin->save();
+            }
+        }
+
+        // Responder al frontend
+        return response()->json([
+            'success' => true,
+            'message' => 'Datos de reforestación actualizados correctamente.',
+        ]);
+    }
 
 
     public function store(CreateFormularioRequest $request){
@@ -205,8 +435,8 @@ class FormController extends Controller
         $validatedData = $request->validated();
         // dd($validatedData);
 
-        // return DB::transaction(function () use ($validatedData) {
-        // try {
+        return DB::transaction(function () use ($validatedData) {
+        try {
             // Encontrar el municipio
             $municipio = Municipio::find($validatedData['municipio_id']);
 
@@ -391,12 +621,12 @@ class FormController extends Controller
         // Redirigir después de guardar
         return redirect()->route('formularios.index')->with('success', 'Formulario guardado correctamente');
 
-        //     } catch (\Exception $e) {
-        //         Log::error('Error in transaction: ' . $e->getMessage());
-        //         return redirect()->back()->with('error', 'Ocurrió un error al guardar el formulario.');
-        //     }
+            } catch (\Exception $e) {
+                Log::error('Error in transaction: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Ocurrió un error al guardar el formulario.');
+            }
 
-        // }, 3);
+        }, 3);
     }
 
     public function show($id){

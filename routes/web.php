@@ -35,6 +35,25 @@ Route::group(['prefix' => 'admin', 'middleware' => 'desarrollo.creativo'], funct
 
     Route::post('/actualizar-total-afectados', [FormController::class, 'actualizarTotalAfectados'])->name('actualizarTotalAfectados');
 
+    Route::post('/actualizar-total-educacion', [FormController::class, 'actualizarTotalEducacion'])->name('actualizarTotalEducacion');
+
+    Route::post('/actualizar-total-salud', [FormController::class, 'actualizarTotalSalud'])->name('actualizarTotalSalud');
+
+    Route::post('/actualizar-infraestructuras', [FormController::class, 'actualizarInfraestructuras'])->name('actualizarInfraestructuras');
+
+    Route::post('/actualizar-comunidades-afectadas', [FormController::class, 'actualizarComunidadesAfectadas'])->name('actualizarComunidadesAfectadas');
+
+    Route::post('/actualizar-pecuarios', [FormController::class, 'actualizarPecuarios'])->name('actualizarPecuarios');
+
+    Route::post('/actualizar-agricolas', [FormController::class, 'actualizarAgricolas'])->name('actualizarAgricolas');
+
+    Route::post('/actualizar-forestales', [FormController::class, 'actualizarForestales'])->name('actualizarForestales');
+
+    Route::post('/actualizar-fauna-silvestre', [FormController::class, 'actualizarFaunaSilvestre'])->name('actualizarFaunaSilvestre');
+
+    Route::post('/actualizar-reforestacion', [FormController::class, 'actualizarReforestacion'])->name('actualizarReforestacion');
+
+
     Route::post('/comunidad', [ComunidadController::class, 'store'])->name('comunidad.store');
 
 });
