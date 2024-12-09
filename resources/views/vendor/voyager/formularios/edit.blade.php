@@ -43,12 +43,13 @@
                                                     <div class="panel panel-default">
                                                         <div class="panel-heading"><b>Detalle del Lugar</b></div>
                                                         <div class="panel-body"><br>
+
                                                             <div class="form-group">
                                                                 <label for="provincia"><b>Provincia</b></label>
-                                                                <select name="provincia_id" id="provincia_id" class="form-control" required>
-                                                                    <option value="">-- Selecciona Provincia --</option>
+                                                                <select name="provincia" id="select_provincia" class="form-control" required>
+                                                                    <option value="" disabled selected>-- Selecciona Provincia --</option>
                                                                     @foreach ($provincias as $provincia)
-                                                                        <option value="{{ $provincia->id }}" {{ $provincia->id === $provinciaId ? 'selected' : '' }}>
+                                                                        <option value="{{ $provincia->id }}" {{ $provincia->id == $provinciaId ? 'selected' : '' }}>
                                                                             {{ $provincia->nombre_provincia }}
                                                                         </option>
                                                                     @endforeach
@@ -58,14 +59,18 @@
                                                             <div class="form-group">
                                                                 <label for="municipio"><b>Municipio</b></label>
                                                                 <div id="respuesta_provincia">
-                                                                    <select name="municipio_id" id="select_municipio" class="form-control" required>
-                                                                        <option value="" disabled selected>-- Selecciona un Municipio --</option>
-                                                                        @foreach ($municipios as $municipio)
-                                                                            <option value="{{ $municipio->id }}" {{ $municipio->id === $municipioId ? 'selected' : '' }}>
-                                                                                {{ $municipio->nombre_municipio }}
-                                                                            </option>
-                                                                        @endforeach
-                                                                    </select>
+                                                                    @if (isset($municipios) && $municipios->count() > 0)
+                                                                        <select name="municipio_id" id="select_municipio" class="form-control" required>
+                                                                            <option value="" disabled selected>-- Selecciona un Municipio --</option>
+                                                                            @foreach ($municipios as $municipio)
+                                                                                <option value="{{ $municipio->id }}" {{ $municipio->id == $municipioId ? 'selected' : '' }}>
+                                                                                    {{ $municipio->nombre_municipio }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @else
+                                                                        <div class="loading-indicator">Cargando...</div>
+                                                                    @endif
                                                                 </div>
                                                             </div>
 
@@ -100,8 +105,49 @@
 
                                                             <div class="form-group">
                                                                 <label for="nombre_comunidad"><b>Nombre Comunidad</b></label>
-                                                                <input type="text" name="nombre_comunidad" class="form-control" value="{{ $formulario->comunidad->nombre_comunidad }}" required aria-label="Nombre de la comunidad">
+                                                                <input type="text" name="nombre_comunidad" class="form-control" value="{{ $formulario->comunidad->nombre_comunidad }}"  required aria-label="Nombre de la comunidad">
                                                             </div>
+
+
+                                                            {{-- <div class="form-group">
+                                                                <label for="comunidad"><b>Comunidad</b></label>
+                                                                <div id="respuesta_municipio">
+                                                                    @if (isset($comunidades) && $comunidades->count() > 0)
+                                                                        <select name="comunidad_id" id="select_comunidad" class="form-control" required>
+                                                                            <option value="" disabled selected>-- Selecciona una Comunidad --</option>
+                                                                            @foreach ($comunidades as $comunidad)
+                                                                                <option value="{{ $comunidad->id }}" {{ $comunidad->id == $comunidadId ? 'selected' : '' }}>
+                                                                                    {{ $comunidad->nombre_comunidad }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @else
+                                                                        <div class="loading-indicator">Cargando...</div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                             --}}
+                                                            {{-- Select Comunidad --}}
+                                                            {{-- <div class="form-group">
+                                                                <label for="comunidad"><b>Comunidad</b></label>
+                                                                <div id="respuesta_municipio">
+                                                                    @if (isset($comunidades))
+                                                                        <select name="comunidad_id" id="select_comunidad" class="form-control" required>
+                                                                            <option value="" disabled selected>-- Selecciona una Comunidad --</option>
+                                                                            @foreach ($comunidades as $comunidad)
+                                                                                <option value="{{ $comunidad->id }}" {{ $comunidad->id == $formulario->comunidad_id ? 'selected' : '' }}>
+                                                                                    {{ $comunidad->nombre_comunidad }}
+                                                                                </option>
+
+                                                                            @endforeach
+                                                                        </select>
+                                                                    @else
+                                                                        <div class="loading-indicator">Cargando...</div>
+                                                                    @endif
+                                                                </div>
+                                                            </div> --}}
+
+
 
                                                             @php
                                                                 $tipo_comunidades = [
@@ -348,12 +394,12 @@
                                                                                 <td>{{ $educacion->first()->institucion->nombre_institucion }}</td>
                                                                                 @foreach ($educacion as $edu)
                                                                                     <td>
-                                                                                        <input type="number" 
-                                                                                            name="num_estudiantes[{{ $institucionId }}][{{ $edu->modalidadEducacion->id }}]" 
+                                                                                        <input type="number"
+                                                                                            name="num_estudiantes[{{ $institucionId }}][{{ $edu->modalidadEducacion->id }}]"
                                                                                             class="form-control num-estudiantes"
                                                                                             value="{{ old('num_estudiantes.' . $institucionId, $educacionData[$institucionId][$edu->modalidadEducacion->id] ?? $edu->num_estudiantes) }}"
-                                                                                            min="0" 
-                                                                                            data-modalidad-id="{{ $edu->modalidadEducacion->id }}" 
+                                                                                            min="0"
+                                                                                            data-modalidad-id="{{ $edu->modalidadEducacion->id }}"
                                                                                             data-institucion-id="{{ $institucionId }}"
                                                                                             onchange="actualizarTotalesEducacion()">
                                                                                     </td>
@@ -468,9 +514,9 @@
                                                                                 <th id="cantidad_grupo_enfermos_total-global">0</th> <!-- Total global -->
                                                                             </tr>
                                                                         </tfoot>
-                                                                        
+
                                                                     </table>
-                                                                    
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -524,7 +570,7 @@
                                                                             <td>{{ $infraestructura->first()->tipoInfraestructura->nombre_tipo_infraestructura }}</td>
                                                                             @foreach ($infraestructura as $infra)
                                                                                 <td>
-                                                                                    <input type="number" 
+                                                                                    <input type="number"
                                                                                         name="numeros_infraestructuras_afectadas[{{ $tipoInfraestructuraId }}]"
                                                                                         class="form-control infraestructra-afectadas" min="0"
                                                                                         value="{{ old('numeros_infraestructuras_afectadas.' . $tipoInfraestructuraId, $infraestructuraData[$tipoInfraestructuraId] ?? $infra->numeros_infraestructuras_afectadas) }}"
@@ -566,7 +612,7 @@
                                                                 @php
                                                                     $totalComunidadAfectada = 0; // Inicializamos el total
                                                                 @endphp
-                                                        
+
                                                                 @foreach ($servicioBasicos->groupBy('tipo_servicio_basico_id') as $tipoServicioBasicoId => $servicioBasicoGroup)
                                                                     <tr>
                                                                         <td>{{ $servicioBasicoGroup->first()->tipoServicioBasico->nombre_servicio_basico ?? 'N/A' }}</td>
@@ -591,7 +637,7 @@
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
-                                                        
+
 
                                                     </div>
                                                 </div>
@@ -659,7 +705,7 @@
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
-                                                        
+
 
                                                     </div>
                                                 </div>
@@ -703,7 +749,7 @@
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
-                                                    
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -763,7 +809,7 @@
                                                             </tfoot>
                                                         </table>
 
-                           
+
 
                                                     </div>
                                                 </div>
@@ -790,7 +836,7 @@
                                                                         @foreach ($faunaSilvestre as $fauna)
                                                                             <td>
                                                                                 <input type="number" name="numero_fauna_silvestre[{{ $detalleFaunaSilvestreId }}][{{ $fauna->tipoEspecie->id }}]"
-                                                                                       class="form-control fauna-silvestre" 
+                                                                                       class="form-control fauna-silvestre"
                                                                                        value="{{ old('numero_fauna_silvestre.' . $detalleFaunaSilvestreId, $fauna->numero_fauna_silvestre) }}">
                                                                             </td>
                                                                         @endforeach
@@ -804,7 +850,7 @@
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
-                                                        
+
 
                                                     </div>
                                                 </div>

@@ -1,55 +1,108 @@
-// Acción cuando cambia el select de la provincia
+// // Acción cuando cambia el select de la provincia
+// $('#select_provincia').on('change', function() {
+//     var id_provincia = $(this).val();
+//     $('#respuesta_provincia').html('<div class="loading-indicator">Loading...</div>');
+//     $.ajax({
+//         url: "/admin/formularios/edit/provincia/" + id_provincia, // Cambié a 'edit' para indicar que es para actualización
+//         type: "GET",
+//         success: function(data) {
+//             $('#respuesta_provincia').html(data);
+//         },
+//         error: function() {
+//             $('#respuesta_provincia').html('<div class="error-message">An error occurred. Please try again later.</div>');
+//         }
+//     });
+// });
+
+// Acción cuando cambia el select de municipio
+// $(document).on('change', '#select_municipio', function(){
+//     var id_municipio = $(this).val();
+//     if(id_municipio) {
+//         $.ajax({
+//             url: "/admin/formularios/edit/get-alcalde/" + id_municipio,
+//             type: "GET",
+//             success: function(response) {
+//                 if (response.nombre_alcalde) {
+//                     $('#nombre_alcalde').val(response.nombre_alcalde);
+//                 } else {
+//                     $('#nombre_alcalde').val('');
+//                 }
+//             },
+//             error: function() {
+//                 alert('Error al cargar el nombre del alcalde');
+//             }
+//         });
+
+//         $.ajax({
+//             url: "/admin/formularios/edit/get-poblacion/" + id_municipio,
+//             type: "GET",
+//             success: function(response) {
+//                 if (response.poblacion_total) {
+//                     $('#poblacion_total').val(response.poblacion_total);
+//                 } else {
+//                     $('#poblacion_total').val('');
+//                 }
+//             },
+//             error: function() {
+//                 alert('Error al cargar la población total');
+//             }
+//         });
+//     } else {
+//         $('#nombre_alcalde').val('');
+//         $('#poblacion_total').val('');
+//     }
+// });
 $('#select_provincia').on('change', function() {
-    var id_provincia = $(this).val();
-    $('#respuesta_provincia').html('<div class="loading-indicator">Loading...</div>');
+    var id_provincia = $(this).val();  // Obtener el id de la provincia seleccionada
+    $('#respuesta_provincia').html('<div class="loading-indicator">Cargando...</div>');  // Mostrar el mensaje de carga
+
+    // Realizar la solicitud AJAX para cargar los municipios
     $.ajax({
-        url: "/admin/formularios/edit/provincia/" + id_provincia, // Cambié a 'edit' para indicar que es para actualización
-        type: "GET",
+        url: '/admin/formularios/create/provincia/' + id_provincia,  // La URL del controlador
+        type: 'GET',
         success: function(data) {
+            // Llenar el select de municipios con los nuevos datos
             $('#respuesta_provincia').html(data);
         },
         error: function() {
-            $('#respuesta_provincia').html('<div class="error-message">An error occurred. Please try again later.</div>');
+            $('#respuesta_provincia').html('<div class="error-message">Ocurrió un error. Intenta de nuevo.</div>');
         }
     });
 });
 
-// Acción cuando cambia el select de municipio
+// $('#select_provincia').on('change', function() {
+//     var id_provincia = $(this).val();
+
+//     $('#respuesta_provincia').html('<div class="loading-indicator">Cargando...</div>');
+//     $.ajax({
+//         url: "/admin/formularios/create/provincia/" + id_provincia,
+//         type: "GET",
+//         success: function(data) {
+//             $('#respuesta_provincia').html(data);
+//         },
+//         error: function() {
+//             $('#respuesta_provincia').html('<div class="error-message">An error occurred. Please try again later.</div>');
+//         }
+//     });
+// });
+
+
+
 $(document).on('change', '#select_municipio', function(){
     var id_municipio = $(this).val();
-    if(id_municipio) {
+    if(id_municipio){
         $.ajax({
-            url: "/admin/formularios/edit/get-alcalde/" + id_municipio,
+            url: "/admin/formularios/create/municipio/" + id_municipio,
             type: "GET",
-            success: function(response) {
-                if (response.nombre_alcalde) {
-                    $('#nombre_alcalde').val(response.nombre_alcalde);
-                } else {
-                    $('#nombre_alcalde').val('');
-                }
+            success: function(data) {
+                $('#respuesta_municipio').html(data);
             },
-            error: function() {
-                alert('Error al cargar el nombre del alcalde');
-            }
-        });
-
-        $.ajax({
-            url: "/admin/formularios/edit/get-poblacion/" + id_municipio,
-            type: "GET",
-            success: function(response) {
-                if (response.poblacion_total) {
-                    $('#poblacion_total').val(response.poblacion_total);
-                } else {
-                    $('#poblacion_total').val('');
-                }
-            },
-            error: function() {
-                alert('Error al cargar la población total');
+            error: function(xhr, status, error) {
+                alert("An error occurred: " + error);
             }
         });
     } else {
-        $('#nombre_alcalde').val('');
-        $('#poblacion_total').val('');
+        alert('Por favor, selecciona un municipio.');
     }
 });
 
@@ -169,7 +222,7 @@ function actualizarTotalesSalud() {
         },
         body: JSON.stringify({
             cantidad_grupo_enfermos: cantidadEnfermos  // Enviamos los datos de enfermos
-            
+
         })
     })
     .then(response => response.json())

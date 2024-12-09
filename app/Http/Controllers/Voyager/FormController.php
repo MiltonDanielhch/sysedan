@@ -116,6 +116,8 @@ class FormController extends Controller
         }
     }
 
+
+
     public function buscar_comunidad($id_municipio)
     {
         // try {
@@ -205,22 +207,22 @@ class FormController extends Controller
             'cantidad_estudiantes' => 'array',
             'cantidad_estudiantes.*' => 'nullable|numeric',
         ]);
-    
+
         // Obtener los datos de los estudiantes por modalidad
         $cantidadEstudiantes = $validated['cantidad_estudiantes'];
-    
+
         // Devolver el total por modalidad y general
         $totalesPorModalidad = $cantidadEstudiantes;
         $totalGeneral = array_sum($totalesPorModalidad);
-    
+
         // Devolver la respuesta como JSON con los totales calculados
         return response()->json([
             'totalesPorModalidad' => $totalesPorModalidad,
             'totalGeneral' => $totalGeneral
         ]);
     }
-    
-   
+
+
     public function actualizarTotalSalud(Request $request)
     {
         // Validar los datos recibidos
@@ -231,7 +233,7 @@ class FormController extends Controller
         ]);
 
         $cantidadGrupoEnfermos = $validated['cantidad_grupo_enfermos'];
-        
+
         // Inicializamos los totales por enfermedad, grupo etario y total general
         $totalesPorEnfermedad = [];
         $totalesPorGrupoEtario = [];  // Inicializamos el array para los totales por grupo etario
@@ -274,7 +276,7 @@ class FormController extends Controller
         ]);
 
         $numerosInfraestructurasAfectadas = $validated['numeros_infraestructuras_afectadas'];
-        
+
         // Inicializamos los totales
         $totalInfraestructuras = 0;
 
@@ -360,7 +362,7 @@ class FormController extends Controller
             ],
         ]);
     }
-        
+
     public function actualizarForestales(Request $request)
     {
         // Validamos los datos recibidos
@@ -389,11 +391,11 @@ class FormController extends Controller
             'fauna_silvestre_afectada.*' => 'array',
             'fauna_silvestre_afectada.*.*' => 'nullable|numeric',
         ]);
-    
+
         $faunaSilvestreAfectada = $validated['fauna_silvestre_afectada'];
-    
+
         // Aquí puedes procesar los datos (guardar en base de datos, calcular totales, etc.)
-    
+
         // Devolver la respuesta al frontend
         return response()->json([
             'success' => true,
@@ -401,7 +403,7 @@ class FormController extends Controller
         ]);
     }
 
-    
+
     public function actualizarReforestacion(Request $request)
     {
         // Validamos los datos recibidos
@@ -673,12 +675,36 @@ class FormController extends Controller
 
     public function edit($id)
     {
+        // $formulario = Formulario::findOrFail($id);
+        // $provinciaId = $formulario->comunidad->municipio->provincia->id ?? null;
+
         $formulario = Formulario::findOrFail($id);
-        $provinciaId = $formulario->comunidad->municipio->provincia->id ?? null;
+        $provinciaId = $formulario->comunidad && $formulario->comunidad->municipio && $formulario->comunidad->municipio->provincia
+            ? $formulario->comunidad->municipio->provincia->id
+            : null;
+
+
+        // Obtener el comunidad_id de la comunidad asociada al formulario
+        $comunidadId = $formulario->comunidad ? $formulario->comunidad->id : null;
+
+        // Obtener el municipio_id de la comunidad asociada al formulario
+        $municipioId = $formulario->comunidad && $formulario->comunidad->municipio
+        ? $formulario->comunidad->municipio->id
+        : null;
+
+        // Obtener los municipios correspondientes a la provincia del formulario
+        $municipios = Municipio::where('provincia_id', $provinciaId)->get();
+
+        // Obtener las comunidades del municipio seleccionado en el formulario
+        $comunidades = Comunidad::where('municipio_id', $formulario->municipio_id)->get();
+
         // dd($formularios);
         $provincias = Provincia::all();
 
-        $municipioId = $formulario->comunidad->municipio->id ?? null;
+        // $municipios = Municipio::where('provincia_id', $formulario->provincia_id)->get();  // Municipios de la provincia seleccionada
+        // $comunidades = Comunidad::where('municipio_id', $formulario->comunidad->municipio->id)->get();  // Comunidades del municipio seleccionado
+
+
         $municipios = Municipio::all();
 
         $grupoEtarios = GrupoEtario::all();
@@ -708,11 +734,12 @@ class FormController extends Controller
 
         $reforestacions = Reforestacion::where('formulario_id', $id)->get();
 
-        return view('vendor.voyager.formularios.edit', compact('formulario', 'provinciaId', 'provincias', 'municipioId', 'municipios', 'grupoEtarios', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres', 'asistencias', 'reforestacions'));
+        return view('vendor.voyager.formularios.edit', compact('formulario', 'provincias','provinciaId', 'municipios', 'municipioId', 'comunidades','comunidadId', 'grupoEtarios', 'personasAfectadas', 'educacions', 'modalidadEducacions', 'saluds', 'detalleEnfermedades', 'infraestructuras', 'servicioBasicos', 'sectorPecuarios', 'sectorAgricolas', 'areaForestals', 'faunaSilvestres', 'asistencias', 'reforestacions'));
     }
 
     public function update(UpdateFormularioRequest $request, $id)
     {
+        // dd($request);
         $validatedData = $request->validated();
         // dd($validatedData);
         DB::beginTransaction();
