@@ -147,8 +147,6 @@
                                                                 </div>
                                                             </div> --}}
 
-
-
                                                             @php
                                                                 $tipo_comunidades = [
                                                                     'INDÍGENA' => 'INDÍGENA',
@@ -198,8 +196,6 @@
                                                                         required>
                                                                 @endforeach
                                                             </div>
-
-
                                                         </div>
                                                     </div>
                                                 </div>

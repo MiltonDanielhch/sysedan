@@ -53,9 +53,7 @@
                                     <p>{{ \Carbon\Carbon::parse($asistencia->fecha_asistencia)->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
                                 @endforeach
                             @endif
-
                         </td>
-
 
                         <td class="no-sort no-click bread-actions text-right">
                             <a href="{{ route('formularios.show', $formulario->id) }}" title="Ver" class="btn btn-sm btn-warning view">

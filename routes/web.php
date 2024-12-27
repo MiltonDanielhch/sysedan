@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\ComunidadController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Voyager\FormController;
+use App\Http\Controllers\ListFormHomeController;
+use App\Http\Controllers\FormDataController;
+use App\Http\Controllers\IncendioPorMunicipioController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use TCG\Voyager\Facades\Voyager;
@@ -10,9 +14,22 @@ Route::get('login', function () {
     return redirect('admin/login');
 })->name('login');
 
-Route::get('/', function () {
-    return redirect('admin');
-});
+// Route::get('/', function () {
+//     return redirect('admin');
+// });
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/incencio', [ListFormHomeController::class, 'index'])->name('incencio');
+
+Route::get('/incendioPorMunicipio', [IncendioPorMunicipioController::class, 'index'])->name('incendioPorMuncipio');
+
+Route::get('/incencio/formdata/{formulario}', [FormDataController::class, 'index'])->name('formdata');
+
+// routes/web.php
+Route::get('/map', function () {
+    return view('frontend.address');
+})->name('map');
 
 Route::get('maintenance', function () {
     return view('errors.maintenance');
