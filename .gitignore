@@ -17,3 +17,5 @@ composer.lock
 /public/app
 /public/assets
 borrado.blade.php
+
+.codegpt

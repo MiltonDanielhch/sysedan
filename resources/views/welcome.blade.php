@@ -28,7 +28,7 @@
                                         <form action="{{ route('incencio') }}" method="GET">
                                             <div class="wd-find-select">
                                                 <div class="form-group form-group-1 search-form">
-                                                    <input type="search" class="search-field" placeholder="Escribe la palabra clave..." name="search" title="Buscar">
+                                                    <input type="search" class="search-field" placeholder="Escribe la comunidad..." name="search" title="Buscar">
                                                 </div>
                                                 <div class="form-group form-group-3">
                                                     <div class="group-select">
@@ -63,7 +63,6 @@
                                         <!-- End Job  Search Form-->
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <div class="wrap-icon flex align-center justify-center link-style-3">
@@ -72,7 +71,6 @@
                             <div class="icon-box fs-13"><span class="icons-house icon-house-3"></span><a href="#">Recursos y Ayuda</a></div>
                             <div class="icon-box fs-13"><span class="icons-house icon-house-4"></span><a href="#">Noticias y Alertas</a></div>
                         </div>
-
                     </div>
                 </div>
 
@@ -97,6 +95,9 @@
                                     </li>
                                     <li class="item-title">
                                         <h4 class="inner">Gráfico</h4>
+                                    </li>
+                                    <li class="item-title">
+                                        <h4 class="inner">imagenes</h4>
                                     </li>
                                 </ul>
                             </div>
@@ -135,7 +136,103 @@
 
                                 <!-- Chart Tab Content -->
                                 <div class="content-inner tab-content">
-                                    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+                                    <div id="chartContainerPoblacion" style="height: 370px; width: 100%;"></div>
+                                </div>
+
+                                <div class="content-inner tab-content">
+                                    <section class="flat-discover wg-dream home4">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="heading-section center">
+                                                        <h2>incendios forestales en Provincias</h2>
+                                                        <p class="text-color-4">Conoce los detalles sobre los incendios forestales y sus impactos en las Provincias.</p>
+                                                    </div>
+                                                    @php
+                                                        // Initialize the array to store images by province
+                                                        $imagenesPorProvincia = [];
+                                                    @endphp
+
+                                                    <div class="swiper-container2">
+                                                        <div class="one-carousel owl-carousel owl-theme">
+                                                            @foreach ($datosPorProvincia as $provincia)
+                                                                @php
+                                                                    $provinceName = $provincia->nombre_provincia;  // Nombre de la provincia
+
+                                                                    // Ruta dinámica basada en el nombre de la provincia
+                                                                    $path = storage_path('app/public/provincia/' . $provinceName);  // Ruta dinámica para la provincia específica
+
+                                                                    // Verificar si el directorio existe
+                                                                    if (File::exists($path)) {
+                                                                        // Obtener todos los archivos en el directorio
+                                                                        $archivos = File::files($path);
+
+                                                                        // Filtrar solo archivos de imagen
+                                                                        $imagenes = array_filter($archivos, function ($archivo) {
+                                                                            return in_array(strtolower($archivo->getExtension()), ['jpg', 'jpeg', 'png', 'gif', 'bmp']);
+                                                                        });
+
+                                                                        // Agregar las imágenes al array de imágenes por provincia
+                                                                        $imagenesPorProvincia[$provinceName] = $imagenes;
+                                                                    } else {
+                                                                        // Manejar el caso donde el directorio de la provincia no existe
+                                                                        $imagenesPorProvincia[$provinceName] = [];
+                                                                    }
+                                                                @endphp
+
+                                                                <div class="slide-item">
+                                                                    <div class="box box-dream hv-one">
+                                                                        <div class="image-group relative">
+                                                                            <span class="icon-bookmark"><i class="far fa-bookmark"></i></span>
+                                                                            <div class="swiper-container noo carousel-2 img-style">
+                                                                                <a href="#" class="icon-plus"><img src="assets/images/icon/plus.svg" alt="images"></a>
+                                                                                <div class="swiper-wrapper">
+                                                                                    @php
+                                                                                        $imagenes = $imagenesPorProvincia[$provinceName] ?? [];  // Get images for the current province
+                                                                                    @endphp
+
+                                                                                    @if(empty($imagenes))
+                                                                                        <p>No images found for this province.</p>
+                                                                                    @else
+                                                                                        @foreach ($imagenes as $imagen)
+                                                                                            @if (is_a($imagen, 'SplFileInfo')) <!-- Ensure $imagen is a file object -->
+                                                                                                <div class="swiper-slide">
+                                                                                                    <img src="{{ asset('storage/provincia/' . $provinceName . '/' . $imagen->getFilename()) }}"
+                                                                                                        alt="Imagen del incendio forestal en {{ $provinceName }}"
+                                                                                                        loading="lazy">
+                                                                                                </div>
+                                                                                            @endif
+                                                                                        @endforeach
+                                                                                    @endif
+                                                                                </div>
+                                                                                <div class="pagi2">
+                                                                                    <div class="swiper-pagination2"></div>
+                                                                                </div>
+                                                                                <div class="swiper-button-next2"><i class="fal fa-arrow-right"></i></div>
+                                                                                <div class="swiper-button-prev2"><i class="fal fa-arrow-left"></i></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="content">
+                                                                            <h3 class="link-style-1"><a href="#">Incendio forestal</a></h3>
+                                                                            <div class="text-address">
+                                                                                <p class="p-12">Provincia: {{$provincia->nombre_provincia}}</p>
+                                                                            </div>
+
+                                                                            <div class="icon-box flex">
+                                                                                <div class="icons icon-1 flex"><span>Afectados: </span><span class="fw-6">{{$provincia->total_afectados}}</span></div>
+                                                                                <div class="icons icon-2 flex"><span>Área afectada: </span><span class="fw-6">{{$provincia->hectareas_afectados}} hectáreas</span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +243,6 @@
     </div>
 </div>
 </section>
-
 
 <section>
     <div class="slider">
@@ -178,7 +274,7 @@
                                     <div class="content-inner tab-content active">
                                         <h3 style="text-align: center;">Total Afectados por Provincia 1</h3>
                                         <!-- Table for Population Data -->
-                                        <table class="table">
+                                        <table class="table table-responsive">
                                             <thead>
                                                 <tr>
                                                     <th>Provincia</th>
@@ -244,17 +340,17 @@
                                     <div class="content-inner tab-content active">
                                         <h3 style="text-align: center;">Total animales por Provincia 2</h3>
                                         <!-- Table for Population Data -->
-                                        <table class="table">
+                                        <table class="table table-responsive">
                                             <thead>
                                                 <tr>
-                                                        <th>Provincia</th>
-                                                        <th>Total Animales</th>
-                                                        <th>Total Fallecidos</th>
-                                                        <th>Hectareas Afectados</th>
-                                                        <th>Hectareas Perdidas</th>
-                                                        <th>Total Hectareas Perdidas Forestales</th>
-                                                        <th>Total Fauna Silvestre</th>
-                                                        <th>Total Cantidad Plantines</th>
+                                                    <th>Provincia</th>
+                                                    <th>Total Animales</th>
+                                                    <th>Total Fallecidos</th>
+                                                    <th>Hectareas Afectados</th>
+                                                    <th>Hectareas Perdidas</th>
+                                                    <th>Total Hectareas Perdidas Forestales</th>
+                                                    <th>Total Fauna Silvestre</th>
+                                                    <th>Total Cantidad Plantines</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -339,7 +435,6 @@
     </div>
 </section>
 
-
 <section>
     <div class="slider">
         <div class="slider-item">
@@ -364,7 +459,7 @@
                                     <div class="content-inner tab-content active">
                                         <h3 style="text-align: center;">Población Total por Provincia</h3>
                                         <!-- Table for Population Data -->
-                                        <table class="table">
+                                        <table class="table table-responsive">
                                             <thead>
                                                 <tr>
                                                     <th colspan="2">Datos de Incendios y Familias Afectadas</th>
@@ -395,7 +490,6 @@
                                     <div class="content-inner tab-content">
                                           <!-- Gráfico -->
                                           <div id="chartContainerFamilias" style="height: 370px; width: 100%;"></div>
-
                                     </div>
                                 </div>
                             </div>
@@ -408,7 +502,7 @@
     </section>
 
 
-<section class="flat-explore tf-section">
+<!--<section class="flat-explore tf-section">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -521,32 +615,34 @@
         </div>
     </div>
 </section>
+-->
 
-<section class="flat-discover wg-dream home4">
+
+<!-- <section class="flat-discover wg-dream home4">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="heading-section center">
-                    <h2>Descubre los últimos incendios forestales</h2>
-                    <p class="text-color-4">Conoce los detalles sobre los incendios forestales más recientes y sus impactos en las comunidades.</p>
+                    <h2>incendios forestales en Provincias</h2>
+                    <p class="text-color-4">Conoce los detalles sobre los incendios forestales y sus impactos en las Provincias.</p>
+
                 </div>
                 <div class="swiper-container2">
                     <div class="one-carousel owl-carousel owl-theme">
-
                         <div class="slide-item">
                             <div class="box box-dream hv-one">
                                 <div class="image-group relative ">
                                     <span class="featured fs-12 fw-6">Destacado</span>
-                                    <span class="featured style fs-12 fw-6">En curso</span>
+                                    {{-- <span class="featured style fs-12 fw-6">En curso</span> --}}
                                     <span class="icon-bookmark"><i class="far fa-bookmark"></i></span>
                                     <div class="swiper-container noo carousel-2 img-style">
                                         <a href="incendio-detalle.html" class="icon-plus"><img src="assets/images/icon/plus.svg" alt="images"></a>
                                         <div class="swiper-wrapper ">
-                                            <div class="swiper-slide"><img src="assets/images/house/featured-21.jpg" alt="images"></div>
-                                            <div class="swiper-slide"><img src="assets/images/house/featured-2.jpg" alt="images"></div>
-                                            <div class="swiper-slide"><img src="assets/images/house/featured-3.jpg" alt="images"></div>
-                                            <div class="swiper-slide"><img src="assets/images/house/featured-4.jpg" alt="images"></div>
-                                            <div class="swiper-slide"><img src="assets/images/house/featured-5.jpg" alt="images"></div>
+                                            {{-- @foreach ($imagenes as $imagen)
+                                                <div class="swiper-slide"><img src="{{ asset('storage/provincia/' . $imagen->getFilename()) }}" alt="{{ $imagen->getFilename() }}"></div>
+                                            @endforeach --}}
+
+                                            {{-- <div class="swiper-slide"><img src="assets/images/house/featured-21.jpg" alt="images"></div> --}}
                                         </div>
                                         <div class="pagi2"><div class="swiper-pagination2">  </div> </div>
                                         <div class="swiper-button-next2 "><i class="fal fa-arrow-right"></i></div>
@@ -554,9 +650,8 @@
                                     </div>
                                 </div>
                                 <div class="content">
-                                    <h3 class="link-style-1"><a href="incendio-detalle.html">Incendio forestal en San Lorenzo</a></h3>
-                                    <div class="text-address"><p class="p-12">San Lorenzo, Provincia Cercado</p></div>
-                                    <div class="money fs-18 fw-6 text-color-3"><a href="incendio-detalle.html">Daños estimados: $10,000</a></div>
+                                    <h3 class="link-style-1"><a href="#">Incendio forestal</a></h3>
+                                    <div class="text-address"><p class="p-12">Provincia Cercado</p></div>
 
                                     <div class="icon-box flex">
                                         <div class="icons icon-1 flex"><span>Afectados: </span><span class="fw-6">23 familias</span></div>
@@ -564,8 +659,6 @@
                                         {{-- <div class="icons icon-3 flex"><span>Incendios activos: </span><span class="fw-6">4</span></div> --}}
                                     </div>
                                     <div class="days-box flex justify-space align-center">
-                                        <a class="compare flex align-center fw-6" href="#">Comparar</a>
-                                        <div class="img-author hv-tool" data-tooltip="Juan Pérez"><img src="assets/images/author/author-1.jpg" alt="images"></div>
                                         <div class="days">8 de diciembre de 2024</div>
                                     </div>
                                 </div>
@@ -652,41 +745,9 @@
         </div>
     </div>
 </section>
+ -->
 
-{{-- <section class="flat-blog tf-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="heading-section center">
-                    <h2>Desde nuestro blog sobre incendios forestales</h2>
-                    <p class="text-color-4">Descubre las últimas noticias, investigaciones y consejos sobre los incendios forestales. Cómo prevenirlos, su impacto en el medio ambiente y las comunidades afectadas.</p>
-                </div>
 
-            </div>
-            <div class="col-lg-4 col-md-4">
-                <div class="box hover-img">
-                    <div class="images img-style relative ">
-                        <a href="blog-detail.html"><img src="assets/images/img-box/blog-1.jpg" alt="images"></a>
-                        <div class="sub-box flex align-center fs-13 fw-6">
-                            <div class="title-1"></div><a class="title-2 text-color-3">Incendios</a>
-                        </div>
-
-                    </div>
-                    <div class="content center">
-                        <h3 class="link-style-1"><a href="blog-detail.html">Impacto de los incendios forestales en la biodiversidad y cómo prevenirlos</a></h3>
-                        <div class="meta">
-                            <a href="blog-detail.html" class="btn-button flex align-center justify-center fs-13 fw-6 text-color-3"><span>Leer más </span>
-                                <svg width="13" height="12" viewbox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.875 6H12.125M12.125 6L7.0625 0.9375M12.125 6L7.0625 11.0625" stroke="#FFA920" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section> --}}
 
 <script>
     window.onload = function () {
@@ -799,7 +860,7 @@
         });
 
         // Tercer gráfico: Población por Provincia
-        var chartPoblacion = new CanvasJS.Chart("chartContainer", {
+        var chartPoblacion = new CanvasJS.Chart("chartContainerPoblacion", {
             animationEnabled: true,
             theme: "light2",
             title: {
@@ -846,9 +907,8 @@
     }
 </script>
 
-
 {{-- busqueda desce el welcome a incendio  --}}
-    <script>
+<script>
     document.querySelectorAll('.nice-select .option').forEach(function(item) {
         item.addEventListener('click', function() {
             var selectedLocation = this.getAttribute('data-value');
@@ -857,7 +917,4 @@
         });
     });
 </script>
-
-
 @endsection
-

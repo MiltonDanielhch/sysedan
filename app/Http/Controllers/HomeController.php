@@ -7,6 +7,7 @@ use App\Models\Provincia;
 use App\Models\Comunidad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class HomeController extends Controller
 {
@@ -195,9 +196,47 @@ class HomeController extends Controller
                 'label' => $dato->nombre_provincia,
                 'y' => $dato->total_cantidad_plantines ?? 0
             ];
-        }
+        }   
 
 
+      
+        // // Usar public_path solo si las imágenes están directamente en public/provincia
+        // // Si están en storage/app/public/provincia, usa storage_path
+        // $path = storage_path('app/public/provincia/Cercado');  // Si las imágenes están en storage/app/public/provincia
+        // $archivos = File::files($path);
+        
+        // // Filtrar solo imágenes
+        // $imagenes = array_filter($archivos, function ($archivo) {
+        //     return in_array(strtolower($archivo->getExtension()), ['jpg', 'jpeg', 'png', 'gif', 'bmp']);
+        // });
+
+        // $imagenesPorProvincia = [];
+
+        // foreach($poblacionPorProvincia as $provincia) {
+        //     $provinceName = $provincia->nombre_provincia;  // Nombre de la provincia
+        
+        //     // Ruta dinámica basada en el nombre de la provincia
+        //     $path = storage_path('app/public/provincia/' . $provinceName);  // Ruta dinámica para la provincia específica
+        
+        //     // Verificar si el directorio existe
+        //     if (File::exists($path)) {
+        //         // Obtener todos los archivos en el directorio
+        //         $archivos = File::files($path);
+        
+        //         // Filtrar solo archivos de imagen
+        //         $imagenes = array_filter($archivos, function ($archivo) {
+        //             return in_array(strtolower($archivo->getExtension()), ['jpg', 'jpeg', 'png', 'gif', 'bmp']);
+        //         });
+        
+        //         // Agregar las imágenes al array de imágenes por provincia
+        //         $imagenesPorProvincia[$provinceName] = $imagenes;
+        //     } else {
+        //         // Manejar el caso donde el directorio de la provincia no existe
+        //         $imagenesPorProvincia[$provinceName] = [];
+        //     }
+        // }
+        
+        // Ahora $imagenesPorProvincia contiene las imágenes filtradas por cada provincia
         return view('welcome', compact('provincias', 'totalIncendios', 'totalIncendiosActivos', 'totalNumFamiliasAfectadas', 'totalNumFamiliasDamnificadas', 'poblacionPorProvincia', 'datosPorProvincia', 'dataPointsAfectados', 'dataPointsEstudiantes', 'dataPointsInfraestructuras', 'dataPointsSalud', 'dataPointsServicioBasico', 'dataPointsAnimales', 'dataPointsFallecidos', 'dataPointsHectareasAfectados', 'dataPointsHectareasPerdidas', 'dataPointsHectareasPerdidasForestales', 'dataPointsFaunaSilvestre', 'dataPointsCantidadPlantines'));
 
 

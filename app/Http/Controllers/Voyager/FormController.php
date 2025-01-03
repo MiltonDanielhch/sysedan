@@ -33,6 +33,7 @@ use App\Models\TipoInfraestructura;
 use App\Models\TipoServicioBasico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
 class FormController extends Controller
@@ -40,7 +41,7 @@ class FormController extends Controller
     public function index(Request $request)
     {
         return view('vendor.voyager.formularios.browse');
-    }
+    }        
 
     public function list()
     {

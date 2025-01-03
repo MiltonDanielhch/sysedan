@@ -28,7 +28,7 @@
                                         <form action="{{ route('incencio') }}" method="GET">
                                             <div class="wd-find-select">
                                                 <div class="form-group form-group-1 search-form">
-                                                    <input type="search" class="search-field" placeholder="Escribe la palabra clave..." name="search" title="Buscar">
+                                                    <input type="search" class="search-field" placeholder="Escribe la comunidad..." name="search" title="Buscar">
                                                 </div>
                                                 <div class="form-group form-group-3">
                                                     <div class="group-select">
@@ -63,7 +63,6 @@
                                         <!-- End Job  Search Form-->
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <div class="wrap-icon flex align-center justify-center link-style-3">
@@ -72,10 +71,8 @@
                             <div class="icon-box fs-13"><span class="icons-house icon-house-3"></span><a href="#">Recursos y Ayuda</a></div>
                             <div class="icon-box fs-13"><span class="icons-house icon-house-4"></span><a href="#">Noticias y Alertas</a></div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -105,7 +102,7 @@
                                 <div class="content-inner tab-content active">
                                     <h3 style="text-align: center;">Población Total por Provincia</h3>
                                     <!-- Table for Population Data -->
-                                    <table class="table">
+                                    <table class="table table-responsive">
                                         <thead>
                                             <tr>
                                                 <th>Provincia</th>
@@ -172,7 +169,7 @@
                                     <div class="content-inner tab-content active">
                                         <h3 style="text-align: center;">Total Afectados por Provincia 1</h3>
                                         <!-- Table for Population Data -->
-                                        <table class="table table-bordered table-striped">
+                                        <table class="table table-bordered table-striped table-responsive">
                                             <thead>
                                                 <tr>
                                                     <th>Municipio</th>
@@ -272,7 +269,7 @@
                                         </table> --}}
 
 
-                                            <table class="table table-striped">
+                                            <table class="table table-striped table-responsive">
                                                 <thead>
                                                     <tr>
                                                         <th>Municipio</th>

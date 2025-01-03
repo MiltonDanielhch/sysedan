@@ -17,7 +17,7 @@
                                 <ul class="navigation clearfix">
                                     <li class="{{ request()->routeIs('home') ? 'current' : '' }}"><a href="{{ route('home') }}">Inicio</a></li>
                                     <li class="{{ request()->routeIs('incencio') ? 'current' : '' }}"><a href="{{ route('incencio') }}">Incendios</a></li>
-                                    <li class="{{ request()->routeIs('pagina') ? 'current' : '' }}"><a href="#">Página</a></li>
+                                    <li class="{{ request()->routeIs('incendioPorMuncipio') ? 'current' : '' }}"><a href="{{ route('incendioPorMuncipio') }}">Municipios</a></li>
                                     <li><a href="contact.html">Contacto</a></li>
                                 </ul>
                             </div>

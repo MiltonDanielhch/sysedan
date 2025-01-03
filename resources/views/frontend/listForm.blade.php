@@ -110,7 +110,7 @@
 
                                             <div class="left-column">
                                                 @if($incendio)
-                                                    <div class="icons icon-3 flex"><span class="fw-6">Incendios Registrados: </span>{{ $incendio->pivot->incendios_activos }}</div>
+                                                    <div class="icons icon-3 flex"><span class="fw-6">Incendios Registrados: </span>{{ $incendio->pivot->incendios_registrados }}</div>
                                                     <div class="icons icon-3 flex"><span class="fw-6">Incendios Activos:</span> {{ $incendio->pivot->incendios_activos }}</div>
                                                     <div class="icons icon-3 flex"><span class="fw-6">Necesidades: </span>{{ $incendio->pivot->necesidades }} </div>
                                                 @else
