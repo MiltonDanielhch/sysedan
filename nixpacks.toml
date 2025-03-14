@@ -11,7 +11,8 @@ nixPkgs = [
     "php82Packages.composer", 
     "python311Packages.supervisor",
     "nginx",
-    "nodejs"
+    "nodejs",
+    "cacert"
   ]
 [phases.build]
 cmds = [
@@ -19,6 +20,11 @@ cmds = [
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh",
+    "update-ca-certificates",  
+    "composer config --global --unset disable-tls",  
+    "composer config --global secure-http false", 
+    "composer install --ignore-platform-reqs --no-interaction",
+    "composer config --global secure-http true",
     "php artisan template:install -r",
 ]
 
