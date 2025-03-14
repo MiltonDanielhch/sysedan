@@ -1,6 +1,18 @@
 {
     "name": "laravel/laravel",
     "type": "project",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.org", 
+            "secure-http": true
+        },
+        {
+            "type": "composer",
+            "url": "http://larapack.io",
+            "secure-http": false
+        }
+    ],
     "description": "The Laravel Framework.",
     "keywords": [
         "framework",
@@ -59,16 +71,5 @@
         "sort-packages": true
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": {
-        "hooks": {
-            "type": "composer",
-            "url": "https://larapack.io",
-            "options": {
-                "ssl": {
-                    "verify_peer": false
-                }
-            }
-        }
-    }
+    "prefer-stable": true
 }
