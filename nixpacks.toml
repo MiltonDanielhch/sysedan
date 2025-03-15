@@ -25,7 +25,7 @@ cmds = [
 ]
 
 [start]
-cmd = '/assets/start.sh'C
+cmd = '/assets/start.sh'
 
 [staticAssets]
 "start.sh" = '''
