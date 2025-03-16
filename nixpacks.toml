@@ -20,8 +20,7 @@ cmds = [
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh",
-    "composer install --no-dev",
-    "php artisan template:install -r",
+    "composer install --no-dev"
 ]
 
 [start]
