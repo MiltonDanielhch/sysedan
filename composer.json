@@ -63,7 +63,7 @@
     "repositories": {
         "hooks": {
             "type": "composer",
-            "url": "https://larapack.io",
+            "url": "https://packagist.org",
             "options": {
                 "ssl": {
                     "verify_peer": false
