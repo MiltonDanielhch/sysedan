@@ -29,7 +29,7 @@ cmds = [
 ]
 
 [start]
-cmd = '/assets/start.sh'
+cmd = "/app/start-laravel.sh /assets/start.sh"
 
 [staticAssets]
 "start.sh" = '''
