@@ -9,8 +9,8 @@ nixPkgs = [
     "php82Extensions.curl",
     "php82Extensions.zip",
     "php82Extensions.bcmath",
-    "php82Extensions.gd", 
-    "php82Packages.composer", 
+    "php82Extensions.gd",
+    "php82Packages.composer",
     "python311Packages.supervisor",
     "nginx",
     "nodejs",
@@ -23,6 +23,9 @@ cmds = [
     "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh",
     "composer install --no-dev"
+
+    "chown -R www-data:www-data /app/storage /app/bootstrap/cache",
+    "chmod -R ug+rw /app/storage /app/bootstrap/cache"
 ]
 
 [start]
